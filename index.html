@@ -1,31 +1,110 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa de Riesgo de Plagas - Mendoza</title>
+  <title>Mapa de Riesgo y NDVI - Mendoza</title>
   <meta charset="utf-8" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/papaparse/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; font-family: sans-serif; }
+    #map { height: 100vh; width: 100vw; }
+  </style>
 </head>
 <body>
-  <h2>Mapa de Riesgo de Plagas - Mendoza</h2>
-  <div id="map" style="height:600px;"></div>
+  <div id="map"></div>
 
   <script>
-    // Crear mapa centrado en Mendoza
-    var map = L.map('map').setView([-32.889, -68.845], 8);
+    // 1. Inicializar el mapa centrado en Mendoza / Valle de Uco
+    var map = L.map('map').setView([-33.58, -69.13], 11);
 
-    // Capa base
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18
+    // 2. Capa base con MapTiler
+    L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=pA0O2I617xTzrBmgMIUT', {
+      maxZoom: 18,
+      attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Leer CSV exportado desde GEE
-    Papa.parse("NDVI_Clima_Mendoza.csv", {
+    // 3. URLs exactas según los nombres que subiste a GitHub
+    var urlClima = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Clima_Mendoza.csv";
+    var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
+
+    // 4. Leer ambos archivos en paralelo
+    Papa.parse(urlClima, {
       download: true,
       header: true,
-      complete: function(results) {
-        var data = results.data[0]; // primera fila del CSV
-        var ndvi = data.NDVI;
-        var temp = data.mean_2m_air_temperature;
-        var hum = data.mean_2m_relative_humidity;
+      complete: function(climaResults) {
+        Papa.parse(urlNDVI, {
+          download: true,
+          header: true,
+          complete: function(ndviResults) {
+            var clima = climaResults.data[0];
+            var ndviRow = ndviResults.data[0];
+
+            if (!clima || !ndviRow) return;
+
+            // Extraer y procesar valores
+            var ndviValue = parseFloat(ndviRow.NDVI);
+            var tempKelvin = parseFloat(clima.mean_2m_air_temperature);
+            var tempCelsius = !isNaN(tempKelvin) ? (tempKelvin - 273.15).toFixed(1) : "N/D";
+            var hum = clima.mean_2m_relative_humidity;
+            var precip = clima.total_precipitation;
+
+            // Lógica de colores y riesgo según NDVI
+            var riesgo = "Bajo (Saludable)";
+            var color = "green";
+            if (ndviValue < 0.4) {
+              riesgo = "Alto (Estrés / Suelo)";
+              color = "red";
+            } else if (ndviValue < 0.6) {
+              riesgo = "Moderado";
+              color = "yellow";
+            }
+
+            // Contenido del popup interactivo
+            var popupContent = 
+              "<b>Zona:</b> Valle de Uco<br>" +
+              "<b>Riesgo:</b> " + riesgo +
+              "<br><b>NDVI:</b> " + ndviValue.toFixed(3) +
+              "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
+              "<br><b>Humedad:</b> " + hum + " %";
+
+            // Si el CSV tiene geometría (.geo), dibuja el polígono real
+            if (ndviRow[".geo"]) {
+              try {
+                var geo = JSON.parse(ndviRow[".geo"]);
+                var layer = L.geoJSON(geo, {
+                  style: {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.5,
+                    weight: 2
+                  }
+                }).addTo(map);
+
+                layer.bindPopup(popupContent);
+                map.fitBounds(layer.getBounds());
+              } catch (e) {
+                console.error("Error al parsear el polígono, usando marcador de punto:", e);
+                crearMarcadorPunto(color, popupContent);
+              }
+            } else {
+              crearMarcadorPunto(color, popupContent);
+            }
+          }
+        });
+      }
+    });
+
+    function crearMarcadorPunto(color, popupContent) {
+      var marker = L.circleMarker([-33.58, -69.13], {
+        radius: 15,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.6
+      }).addTo(map);
+
+      marker.bindPopup(popupContent).openPopup();
+    }
+  </script>
+</body>
+</html>
