@@ -1,1 +1,25 @@
+name: Actualizar NDVI Automatico
 
+on:
+  schedule:
+    - cron: '0 8 * * 1'
+  workflow_dispatch:
+
+jobs:
+  actualizar-datos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Copiar repositorio
+        uses: actions/checkout@v4
+
+      - name: Actualizar registro
+        run: |
+          echo "Actualizado automáticamente el: $(date)" >> update_log.txt
+
+      - name: Guardar cambios
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Actualización automática del NDVI"
+          file_pattern: "*.txt"
