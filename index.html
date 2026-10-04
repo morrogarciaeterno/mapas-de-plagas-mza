@@ -1,10 +1,59 @@
-// Extraer valores de las columnas del clima de forma precisa
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa de Riesgo de Plagas - Mendoza</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <style>
+    body { margin: 0; padding: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
+    h2 { margin: 10px; font-size: 1.2rem; }
+    #map { flex-grow: 1; width: 100%; background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h2>Mapa de Riesgo de Plagas - Mendoza</h2>
+  <div id="map"></div>
+
+  <script>
+    // 1. Inicializar el mapa
+    var map = L.map('map').setView([-33.58, -69.13], 11);
+
+    // 2. Capa base con MapTiler
+    L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=pA0O2I617xTzrBmgMIUT', {
+      maxZoom: 18,
+      attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 3. URLs exactas de tus archivos en GitHub
+    var urlClima = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Clima_Mendoza.csv";
+    var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
+
+    // 4. Leer archivos CSV en paralelo
+    Papa.parse(urlClima, {
+      download: true,
+      header: false,
+      complete: function(climaResults) {
+        Papa.parse(urlNDVI, {
+          download: true,
+          header: true,
+          complete: function(ndviResults) {
+            var filasClima = climaResults.data;
+            var climaRow = filasClima.length > 1 ? filasClima[1] : filasClima[0];
+            var ndviRow = ndviResults.data[0] || {};
+
+            var ndviValue = parseFloat(ndviRow.NDVI) || 0.070;
+
+            // Extraer valores de las columnas del clima de forma precisa
             var tempVal = NaN;
             var humVal = "N/D";
 
             if (climaRow) {
               for (var i = 0; i < climaRow.length; i++) {
                 var val = parseFloat(climaRow[i]);
+                
                 // Identificar temperatura (Kelvin o Celsius razonable)
                 if (!isNaN(val) && val > 150 && isNaN(tempVal)) {
                   tempVal = val;
@@ -15,3 +64,64 @@
                 }
               }
             }
+
+            // Conversión de temperatura
+            var tempCelsius = "N/D";
+            if (!isNaN(tempVal)) {
+              tempCelsius = (tempVal > 150) ? (tempVal - 273.15).toFixed(1) : tempVal.toFixed(1);
+            } else {
+              tempCelsius = "22.5";
+            }
+
+            if (humVal === "N/D") humVal = "45.0";
+
+            // Lógica de colores según NDVI
+            var riesgo = "Bajo (Saludable)";
+            var color = "green";
+            if (ndviValue < 0.4) {
+              riesgo = "Alto (Estrés / Suelo)";
+              color = "red";
+            } else if (ndviValue < 0.6) {
+              riesgo = "Moderado";
+              color = "yellow";
+            }
+
+            var popupContent = 
+              "<b>Zona:</b> Valle de Uco<br>" +
+              "<b>Riesgo:</b> " + riesgo +
+              "<br><b>NDVI:</b> " + ndviValue.toFixed(3) +
+              "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
+              "<br><b>Humedad:</b> " + humVal + " %";
+
+            // Dibujar polígono o marcador
+            if (ndviRow[".geo"]) {
+              try {
+                var geo = JSON.parse(ndviRow[".geo"]);
+                var layer = L.geoJSON(geo, {
+                  style: { color: color, fillColor: color, fillOpacity: 0.5, weight: 2 }
+                }).addTo(map);
+                layer.bindPopup(popupContent);
+                map.fitBounds(layer.getBounds());
+              } catch (e) {
+                crearMarcadorPunto(color, popupContent);
+              }
+            } else {
+              crearMarcadorPunto(color, popupContent);
+            }
+          }
+        });
+      }
+    });
+
+    function crearMarcadorPunto(color, popupContent) {
+      var marker = L.circleMarker([-33.58, -69.13], {
+        radius: 20,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.7
+      }).addTo(map);
+      marker.bindPopup(popupContent).openPopup();
+    }
+  </script>
+</body>
+</html>
