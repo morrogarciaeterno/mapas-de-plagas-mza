@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa de Riesgo de Plagas - Valle de Uco</title>
+  <title>Mapa de Riesgo de Plagas - Interactivo</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -9,21 +9,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
     body { margin: 0; padding: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
-    h2 { margin: 10px; font-size: 1.2rem; }
+    #info-bar { background: #333; color: white; padding: 10px; font-size: 0.9rem; text-align: center; }
     #map { flex-grow: 1; width: 100%; background: #f0f0f0; }
   </style>
 </head>
 <body>
-  <h2>Mapa de Riesgo de Plagas - Valle de Uco</h2>
+  <div id="info-bar">💡 Arrastra el marcador a cualquier región para consultar el clima y estado en tiempo real.</div>
   <div id="map"></div>
 
   <script>
-    // 1. Coordenadas fijas del Valle de Uco (Tunuyán / Los Chacayes)
-    var latValleUco = -33.65;
-    var lonValleUco = -69.20;
+    // 1. Coordenadas iniciales (Valle de Uco)
+    var latInicial = -33.65;
+    var lonInicial = -69.20;
 
-    // 2. Inicializar el mapa centrado obligatoriamente en el Valle de Uco
-    var map = L.map('map').setView([latValleUco, lonValleUco], 11);
+    // 2. Inicializar el mapa
+    var map = L.map('map').setView([latInicial, lonInicial], 10);
 
     // 3. Capa base con MapTiler
     L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=pA0O2I617xTzrBmgMIUT', {
@@ -31,78 +31,69 @@
       attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // 4. URLs exactas de tus archivos en GitHub
-    var urlClima = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Clima_Mendoza.csv";
-    var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
+    // 4. Crear un marcador ARRASTRABLE (draggable: true)
+    var marker = L.marker([latInicial, lonInicial], {
+      draggable: true
+    }).addTo(map);
 
-    // 5. Leer archivos CSV en paralelo
-    Papa.parse(urlClima, {
-      download: true,
-      header: false,
-      complete: function(climaResults) {
-        Papa.parse(urlNDVI, {
-          download: true,
-          header: true,
-          complete: function(ndviResults) {
-            var filasClima = climaResults.data;
-            var climaRow = filasClima.length > 1 ? filasClima[1] : filasClima[0];
-            var ndviRow = ndviResults.data[0] || {};
+    // Función principal para consultar clima y calcular estado según la posición
+    function actualizarDatosUbicacion(lat, lon) {
+      // Consultar clima en tiempo real para las nuevas coordenadas con Open-Meteo
+      var urlClimaAPI = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,relative_humidity_2m";
 
-            var ndviValue = parseFloat(ndviRow.NDVI) || 0.070;
+      fetch(urlClimaAPI)
+        .then(response => response.json())
+        .then(climaData => {
+          var tempActual = "22.5";
+          var humActual = "45.0";
 
-            // Extraer valores de clima
-            var tempVal = NaN;
-            var humVal = "N/D";
-
-            if (climaRow) {
-              for (var i = 0; i < climaRow.length; i++) {
-                var val = parseFloat(climaRow[i]);
-                if (!isNaN(val) && val > 150 && isNaN(tempVal)) {
-                  tempVal = val;
-                } else if (!isNaN(val) && val >= 15 && val <= 95 && humVal === "N/D") {
-                  humVal = val.toFixed(1);
-                }
-              }
-            }
-
-            var tempCelsius = "N/D";
-            if (!isNaN(tempVal)) {
-              tempCelsius = (tempVal > 150) ? (tempVal - 273.15).toFixed(1) : tempVal.toFixed(1);
-            } else {
-              tempCelsius = "22.5";
-            }
-
-            if (humVal === "N/D") humVal = "45.0";
-
-            var riesgo = "Bajo (Saludable)";
-            var color = "green";
-            if (ndviValue < 0.4) {
-              riesgo = "Alto (Estrés / Suelo)";
-              color = "red";
-            } else if (ndviValue < 0.6) {
-              riesgo = "Moderado";
-              color = "yellow";
-            }
-
-            var popupContent = 
-              "<b>Zona:</b> Valle de Uco<br>" +
-              "<b>Riesgo:</b> " + riesgo +
-              "<br><b>NDVI:</b> " + ndviValue.toFixed(3) +
-              "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
-              "<br><b>Humedad:</b> " + humVal + " %";
-
-            // Creamos el marcador directamente en el Valle de Uco sin hacer zoom automático a geometrías viejas
-            var marker = L.circleMarker([latValleUco, lonValleUco], {
-              radius: 22,
-              color: color,
-              fillColor: color,
-              fillOpacity: 0.7
-            }).addTo(map);
-
-            marker.bindPopup(popupContent).openPopup();
+          if (climaData && climaData.current) {
+            tempActual = climaData.current.temperature_2m;
+            humActual = climaData.current.relative_humidity_2m;
           }
+
+          // Leemos el NDVI base de GitHub como referencia general del estudio
+          var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
+
+          Papa.parse(urlNDVI, {
+            download: true,
+            header: true,
+            complete: function(ndviResults) {
+              var ndviRow = ndviResults.data[0] || {};
+              var ndviValue = parseFloat(ndviRow.NDVI) || 0.070;
+
+              // Lógica de colores y riesgo
+              var riesgo = "Bajo (Saludable)";
+              if (ndviValue < 0.4) {
+                riesgo = "Alto (Estrés / Suelo)";
+              } else if (ndviValue < 0.6) {
+                riesgo = "Moderado";
+              }
+
+              var popupContent = 
+                "<b>Ubicación:</b> " + lat.toFixed(4) + ", " + lon.toFixed(4) + "<br>" +
+                "<b>Riesgo:</b> " + riesgo +
+                "<br><b>NDVI Est.:</b> " + ndviValue.toFixed(3) +
+                "<br><b>Temperatura:</b> " + tempActual + " °C" +
+                "<br><b>Humedad:</b> " + humActual + " %";
+
+              marker.setPopupContent(popupContent);
+              marker.openPopup();
+            }
+          });
+        })
+        .catch(error => {
+          console.error("Error al consultar la API del clima:", error);
         });
-      }
+    }
+
+    // Cargar datos por defecto al iniciar
+    actualizarDatosUbicacion(latInicial, lonInicial);
+
+    // Evento que se ejecuta cuando SUeltas el marcador en otra parte del mapa
+    marker.on('dragend', function(event) {
+      var posicion = marker.getLatLng();
+      actualizarDatosUbicacion(posicion.lat, posicion.lng);
     });
   </script>
 </body>
