@@ -18,7 +18,7 @@
   <div id="map"></div>
 
   <script>
-    // 1. Inicializar el mapa centrado en el Valle de Uco
+    // 1. Inicializar el mapa
     var map = L.map('map').setView([-33.58, -69.13], 11);
 
     // 2. Capa base con MapTiler
@@ -31,7 +31,7 @@
     var urlClima = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Clima_Mendoza.csv";
     var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
 
-    // 4. Leer archivos CSV
+    // 4. Leer archivos CSV en paralelo
     Papa.parse(urlClima, {
       download: true,
       header: true,
@@ -40,18 +40,38 @@
           download: true,
           header: true,
           complete: function(ndviResults) {
-            var clima = climaResults.data[0];
-            var ndviRow = ndviResults.data[0];
+            var clima = climaResults.data[0] || {};
+            var ndviRow = ndviResults.data[0] || {};
 
-            if (!clima || !ndviRow) {
-              console.warn("No se encontraron datos en los CSV");
-              return;
-            }
+            // Imprimir las columnas en la consola del navegador por si acaso
+            console.log("Clima row:", clima);
+            console.log("NDVI row:", ndviRow);
 
             var ndviValue = parseFloat(ndviRow.NDVI) || 0.372;
-            var tempKelvin = parseFloat(clima.mean_2m_air_temperature);
-            var tempCelsius = !isNaN(tempKelvin) ? (tempKelvin - 273.15).toFixed(1) : "N/D";
-            var hum = clima.mean_2m_relative_humidity || "N/D";
+
+            // Buscar dinámicamente las propiedades de clima sin importar variaciones de nombre
+            var tempVal = NaN;
+            var humVal = "N/D";
+            
+            for (var key in clima) {
+              var lowerKey = key.toLowerCase();
+              if (lowerKey.includes('temp') || lowerKey.includes('air') || lowerKey.includes('mean')) {
+                tempVal = parseFloat(clima[key]);
+              }
+              if (lowerKey.includes('hum') || lowerKey.includes('rel')) {
+                humVal = clima[key];
+              }
+            }
+
+            // Convertir de Kelvin a Celsius si el valor es alto (ej: > 200)
+            var tempCelsius = "N/D";
+            if (!isNaN(tempVal)) {
+              if (tempVal > 150) {
+                tempCelsius = (tempVal - 273.15).toFixed(1);
+              } else {
+                tempCelsius = tempVal.toFixed(1);
+              }
+            }
 
             // Lógica de colores según NDVI
             var riesgo = "Bajo (Saludable)";
@@ -69,7 +89,7 @@
               "<b>Riesgo:</b> " + riesgo +
               "<br><b>NDVI:</b> " + ndviValue.toFixed(3) +
               "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
-              "<br><b>Humedad:</b> " + hum + " %";
+              "<br><b>Humedad:</b> " + humVal + " %";
 
             // Intentar dibujar polígono o marcador por defecto
             if (ndviRow[".geo"]) {
