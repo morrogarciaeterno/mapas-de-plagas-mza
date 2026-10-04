@@ -18,20 +18,24 @@
   <div id="map"></div>
 
   <script>
-    // 1. Inicializar el mapa centrado en el corazón del Valle de Uco (Tunuyán / Vista Flores)
-    var map = L.map('map').setView([-33.70, -69.25], 11);
+    // 1. Coordenadas fijas del Valle de Uco (Tunuyán / Los Chacayes)
+    var latValleUco = -33.65;
+    var lonValleUco = -69.20;
 
-    // 2. Capa base con MapTiler
+    // 2. Inicializar el mapa centrado obligatoriamente en el Valle de Uco
+    var map = L.map('map').setView([latValleUco, lonValleUco], 11);
+
+    // 3. Capa base con MapTiler
     L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=pA0O2I617xTzrBmgMIUT', {
       maxZoom: 18,
       attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // 3. URLs exactas de tus archivos en GitHub
+    // 4. URLs exactas de tus archivos en GitHub
     var urlClima = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Clima_Mendoza.csv";
     var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
 
-    // 4. Leer archivos CSV en paralelo
+    // 5. Leer archivos CSV en paralelo
     Papa.parse(urlClima, {
       download: true,
       header: false,
@@ -87,43 +91,19 @@
               "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
               "<br><b>Humedad:</b> " + humVal + " %";
 
-            // Intentar dibujar el polígono geojson si existe
-            var dibujado = false;
-            if (ndviRow[".geo"]) {
-              try {
-                var geo = JSON.parse(ndviRow[".geo"]);
-                var layer = L.geoJSON(geo, {
-                  style: { color: color, fillColor: color, fillOpacity: 0.5, weight: 2 }
-                }).addTo(map);
-                layer.bindPopup(popupContent);
-                map.fitBounds(layer.getBounds());
-                dibujado = true;
-              } catch (e) {
-                console.error("Error al parsear geometría:", e);
-              }
-            }
+            // Creamos el marcador directamente en el Valle de Uco sin hacer zoom automático a geometrías viejas
+            var marker = L.circleMarker([latValleUco, lonValleUco], {
+              radius: 22,
+              color: color,
+              fillColor: color,
+              fillOpacity: 0.7
+            }).addTo(map);
 
-            // Si no hay polígono, buscar si el CSV tiene columnas de latitud y longitud explícitas
-            if (!dibujado) {
-              var lat = parseFloat(ndviRow.lat) || parseFloat(ndviRow.LATITUDE) || -33.70;
-              var lon = parseFloat(ndviRow.lon) || parseFloat(ndviRow.LONGITUDE) || -69.25;
-              crearMarcadorPunto(lat, lon, color, popupContent);
-            }
+            marker.bindPopup(popupContent).openPopup();
           }
         });
       }
     });
-
-    function crearMarcadorPunto(lat, lon, color, popupContent) {
-      map.setView([lat, lon], 13); // Centra el mapa en las coordenadas del lote
-      var marker = L.circleMarker([lat, lon], {
-        radius: 20,
-        color: color,
-        fillColor: color,
-        fillOpacity: 0.7
-      }).addTo(map);
-      marker.bindPopup(popupContent).openPopup();
-    }
   </script>
 </body>
 </html>
