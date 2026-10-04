@@ -28,9 +28,20 @@
       attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Crear marcador arrastrable con el popup vinculado una sola vez
+    // Función para crear un ícono con color dinámico
+    function crearIconoRiesgo(colorHex) {
+      return L.divIcon({
+        className: 'custom-pin',
+        html: `<div style="background-color: ${colorHex}; width: 26px; height: 26px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.6);"></div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+      });
+    }
+
+    // Crear marcador arrastrable con color inicial por defecto (gris o verde)
     var marker = L.marker([latInicial, lonInicial], {
-      draggable: true
+      draggable: true,
+      icon: crearIconoRiesgo('#2ecc71')
     }).addTo(map);
 
     marker.bindPopup("Cargando datos...").openPopup();
@@ -61,11 +72,18 @@
               var ndviValue = parseFloat(ndviRow.NDVI) || 0.070;
 
               var riesgo = "Bajo (Saludable)";
+              var colorRiesgo = "#2ecc71"; // Verde
+
               if (ndviValue < 0.4) {
                 riesgo = "Alto (Estrés / Suelo)";
+                colorRiesgo = "#e74c3c"; // Rojo
               } else if (ndviValue < 0.6) {
                 riesgo = "Moderado";
+                colorRiesgo = "#f39c12"; // Naranja / Amarillo
               }
+
+              // Actualizar el color visual del marcador en el mapa
+              marker.setIcon(crearIconoRiesgo(colorRiesgo));
 
               var popupContent = 
                 "<b>Coordenadas:</b> " + lat.toFixed(3) + ", " + lon.toFixed(3) + "<br>" +
@@ -74,13 +92,11 @@
                 "<br><b>Temperatura:</b> " + tempActual + " °C" +
                 "<br><b>Humedad:</b> " + humActual + " %";
 
-              // Actualizamos el contenido sin romper la referencia del marcador
               marker.setPopupContent(popupContent);
               marker.openPopup();
               document.getElementById('info-bar').innerHTML = "✅ Actualizado: " + lat.toFixed(3) + ", " + lon.toFixed(3);
             },
             error: function() {
-              // Respaldo por si falla el CSV pero el clima sí responde
               var popupContent = 
                 "<b>Coordenadas:</b> " + lat.toFixed(3) + ", " + lon.toFixed(3) + "<br>" +
                 "<b>Temperatura:</b> " + tempActual + " °C<br>" +
