@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mapa de Riesgo de Plagas - Mendoza</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/papaparse/papaparse.min.js"></script>
+</head>
+<body>
+  <h2>Mapa de Riesgo de Plagas - Mendoza</h2>
+  <div id="map" style="height:600px;"></div>
+
+  <script>
+    // Crear mapa centrado en Mendoza
+    var map = L.map('map').setView([-32.889, -68.845], 8);
+
+    // Capa base
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18
+    }).addTo(map);
+
+    // Leer CSV exportado desde GEE
+    Papa.parse("NDVI_Clima_Mendoza.csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        var data = results.data[0]; // primera fila del CSV
+        var ndvi = data.NDVI;
+        var temp = data.mean_2m_air_temperature;
+        var hum = data.mean_2m_relative_humidity;
