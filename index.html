@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mapa de Riesgo de Plagas - Mendoza</title>
+  <title>Mapa de Riesgo de Plagas - Valle de Uco</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -14,11 +14,11 @@
   </style>
 </head>
 <body>
-  <h2>Mapa de Riesgo de Plagas - Mendoza</h2>
+  <h2>Mapa de Riesgo de Plagas - Valle de Uco</h2>
   <div id="map"></div>
 
   <script>
-    // 1. Inicializar el mapa
+    // 1. Inicializar el mapa centrado en el Valle de Uco (Ej: Tunuyán / Los Chacayes)
     var map = L.map('map').setView([-33.58, -69.13], 11);
 
     // 2. Capa base con MapTiler
@@ -93,7 +93,7 @@
               "<br><b>Temperatura:</b> " + tempCelsius + " °C" +
               "<br><b>Humedad:</b> " + humVal + " %";
 
-            // Dibujar polígono o marcador
+            // Dibujar polígono o marcador (usando coordenadas del Valle de Uco)
             if (ndviRow[".geo"]) {
               try {
                 var geo = JSON.parse(ndviRow[".geo"]);
@@ -114,6 +114,7 @@
     });
 
     function crearMarcadorPunto(color, popupContent) {
+      // Coordenadas centradas en el Valle de Uco (-33.80, -69.20 por ejemplo, o ajusta a tu lote)
       var marker = L.circleMarker([-33.58, -69.13], {
         radius: 20,
         color: color,
