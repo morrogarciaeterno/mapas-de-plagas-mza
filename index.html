@@ -9,36 +9,35 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <style>
     body { margin: 0; padding: 0; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; }
-    #info-bar { background: #333; color: white; padding: 10px; font-size: 0.9rem; text-align: center; }
+    #info-bar { background: #2c3e50; color: white; padding: 12px; font-size: 0.95rem; text-align: center; font-weight: bold; z-index: 1000; }
     #map { flex-grow: 1; width: 100%; background: #f0f0f0; }
   </style>
 </head>
 <body>
-  <div id="info-bar">💡 Arrastra el marcador a cualquier región para consultar el clima y estado en tiempo real.</div>
+  <div id="info-bar">📍 Mueve el marcador a cualquier lugar para consultar el clima.</div>
   <div id="map"></div>
 
   <script>
-    // 1. Coordenadas iniciales (Valle de Uco)
     var latInicial = -33.65;
     var lonInicial = -69.20;
 
-    // 2. Inicializar el mapa
-    var map = L.map('map').setView([latInicial, lonInicial], 10);
+    var map = L.map('map').setView([latInicial, lonInicial], 11);
 
-    // 3. Capa base con MapTiler
     L.tileLayer('https://api.maptiler.com/maps/outdoor-v4/{z}/{x}/{y}.png?key=pA0O2I617xTzrBmgMIUT', {
       maxZoom: 18,
       attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // 4. Crear un marcador ARRASTRABLE (draggable: true)
+    // Crear marcador arrastrable con el popup vinculado una sola vez
     var marker = L.marker([latInicial, lonInicial], {
       draggable: true
     }).addTo(map);
 
-    // Función principal para consultar clima y calcular estado según la posición
+    marker.bindPopup("Cargando datos...").openPopup();
+
     function actualizarDatosUbicacion(lat, lon) {
-      // Consultar clima en tiempo real para las nuevas coordenadas con Open-Meteo
+      document.getElementById('info-bar').innerHTML = "⏳ Consultando clima...";
+
       var urlClimaAPI = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,relative_humidity_2m";
 
       fetch(urlClimaAPI)
@@ -52,7 +51,6 @@
             humActual = climaData.current.relative_humidity_2m;
           }
 
-          // Leemos el NDVI base de GitHub como referencia general del estudio
           var urlNDVI = "https://raw.githubusercontent.com/morrogarciaeterno/mapas-de-plagas-mza/refs/heads/main/NDVI_Mendoza.csv";
 
           Papa.parse(urlNDVI, {
@@ -62,7 +60,6 @@
               var ndviRow = ndviResults.data[0] || {};
               var ndviValue = parseFloat(ndviRow.NDVI) || 0.070;
 
-              // Lógica de colores y riesgo
               var riesgo = "Bajo (Saludable)";
               if (ndviValue < 0.4) {
                 riesgo = "Alto (Estrés / Suelo)";
@@ -71,26 +68,38 @@
               }
 
               var popupContent = 
-                "<b>Ubicación:</b> " + lat.toFixed(4) + ", " + lon.toFixed(4) + "<br>" +
+                "<b>Coordenadas:</b> " + lat.toFixed(3) + ", " + lon.toFixed(3) + "<br>" +
                 "<b>Riesgo:</b> " + riesgo +
                 "<br><b>NDVI Est.:</b> " + ndviValue.toFixed(3) +
                 "<br><b>Temperatura:</b> " + tempActual + " °C" +
                 "<br><b>Humedad:</b> " + humActual + " %";
 
+              // Actualizamos el contenido sin romper la referencia del marcador
+              marker.setPopupContent(popupContent);
+              marker.openPopup();
+              document.getElementById('info-bar').innerHTML = "✅ Actualizado: " + lat.toFixed(3) + ", " + lon.toFixed(3);
+            },
+            error: function() {
+              // Respaldo por si falla el CSV pero el clima sí responde
+              var popupContent = 
+                "<b>Coordenadas:</b> " + lat.toFixed(3) + ", " + lon.toFixed(3) + "<br>" +
+                "<b>Temperatura:</b> " + tempActual + " °C<br>" +
+                "<b>Humedad:</b> " + humActual + " %";
               marker.setPopupContent(popupContent);
               marker.openPopup();
             }
           });
         })
         .catch(error => {
-          console.error("Error al consultar la API del clima:", error);
+          console.error("Error:", error);
+          document.getElementById('info-bar').innerHTML = "❌ Error al obtener el clima.";
         });
     }
 
-    // Cargar datos por defecto al iniciar
+    // Cargar al iniciar
     actualizarDatosUbicacion(latInicial, lonInicial);
 
-    // Evento que se ejecuta cuando SUeltas el marcador en otra parte del mapa
+    // Evento al soltar el marcador
     marker.on('dragend', function(event) {
       var posicion = marker.getLatLng();
       actualizarDatosUbicacion(posicion.lat, posicion.lng);
