@@ -66,7 +66,7 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     #map {
-        height: 750px; /* <--- MAPA MUCHO MÁS GRANDE */
+        height: 750px;
         border-radius: 12px;
         border: 1px solid var(--border);
         z-index: 1;
@@ -175,7 +175,7 @@
 <div class="container">
     <header>
         <h1 id="tituloEstacion">🌊 Territoria - Mapa y Monitoreo Hídrico</h1>
-        <p id="instruccionMapa">Hacé clic en los puntos celestes del mapa o cargá una estación nueva a la derecha.</p>
+        <p id="instruccionMapa">Hacé clic o arrastrá los puntos celestes en el mapa, o cargá una estación nueva a la derecha.</p>
     </header>
 
     <div class="layout-grid">
@@ -200,7 +200,7 @@
                     Información de la red y ubicación...
                 </div>
 
-                <!-- FORMULARIO MOVIDO A LA DERECHA -->
+                <!-- FORMULARIO A LA DERECHA -->
                 <div class="form-manual">
                     <h4 id="formTitulo">➕ Cargar Estación Interactiva</h4>
                     <input id="nuevoId" placeholder="ID (ej: 19104)">
@@ -232,7 +232,6 @@
 <script>
 const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
-// Puntos base extendidos en cuencas de Mendoza
 const estacionesDefault = {
     "1413": { nombre: "Estación 1413 - Guido", red: "Río Mendoza, Mendoza", coords: [-32.83, -69.30] },
     "1507": { nombre: "Estación 1507 - Cerro Polleras", red: "Río Plomo, Mendoza", coords: [-32.60, -69.80] },
@@ -306,13 +305,28 @@ function actualizarSelectYMapa() {
         if (info.coords) {
             const customIcon = L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="background: #38bdf8; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #000; box-shadow: 0 0 10px #38bdf8; cursor: pointer;"></div>`,
-                iconSize: [16, 16]
+                html: `<div style="background: #38bdf8; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #000; box-shadow: 0 0 12px #38bdf8; cursor: grab;"></div>`,
+                iconSize: [18, 18]
             });
 
-            const marker = L.marker(info.coords, { icon: customIcon }).addTo(markersLayer);
-            marker.bindPopup(`<b style="color:#000;">${info.nombre}</b><br><span style="color:#333;">ID: ${id}</span><br><small>${info.red}</small>`);
+            // Marcador con la propiedad draggable: true para poder moverlo
+            const marker = L.marker(info.coords, { icon: customIcon, draggable: true }).addTo(markersLayer);
+            
+            marker.bindPopup(`<b style="color:#000;">${info.nombre}</b><br><span style="color:#333;">ID: ${id}</span><br><small>💡 Arrastrá el punto para reubicarlo</small>`);
+            
             marker.on('click', () => {
+                select.value = id;
+                consultar();
+            });
+
+            // Evento al terminar de arrastrar el marcador en el mapa
+            marker.on('dragend', function (event) {
+                const nuevaPos = event.target.getLatLng();
+                estacionesData[id].coords = [nuevaPos.lat, nuevaPos.lng];
+                
+                // Guardar automáticamente la nueva posición en el navegador
+                localStorage.setItem("territoria_estaciones", JSON.stringify(estacionesData));
+                
                 select.value = id;
                 consultar();
             });
@@ -336,7 +350,7 @@ function prepararModoUbicacion() {
     datosPendientes = { id, nombre: nombreInput, red: red || "Red Hidrológica Nacional, Mendoza" };
     modoUbicacionActivo = true;
     
-    document.getElementById("instruccionMapa").innerHTML = `<span style="color: #22c55e; font-weight: bold;">👉 ¡Modo ubicación activo! Hacé clic en el mapa para posicionar la estación "${nombreInput}".</span>`;
+    document.getElementById("instruccionMapa").innerHTML = `<span style="color: #22c55e; font-weight: bold;">👉 ¡Modo ubicación activo! Hacé clic en el mapa para posicionar la nueva estación "${nombreInput}".</span>`;
 }
 
 map.on('click', function(e) {
@@ -365,7 +379,7 @@ map.on('click', function(e) {
     
     document.getElementById("formTitulo").textContent = "➕ Cargar Estación Interactiva";
     document.getElementById("btnCancelar").style.display = "none";
-    document.getElementById("instruccionMapa").textContent = "Hacé clic en los puntos celestes del mapa o cargá una estación nueva a la derecha.";
+    document.getElementById("instruccionMapa").textContent = "Hacé clic o arrastrá los puntos celestes en el mapa, o cargá una estación nueva a la derecha.";
 
     document.getElementById("nuevoId").value = "";
     document.getElementById("nuevoNombre").value = "";
@@ -392,7 +406,7 @@ function cargarEstacionParaEditar() {
 
     document.getElementById("formTitulo").textContent = "✏️ Editando Estación (" + idSeleccionado + ")";
     document.getElementById("btnCancelar").style.display = "block";
-    document.getElementById("instruccionMapa").innerHTML = `<span style="color: #eab308; font-weight: bold;">👉 Modificá los datos y hacé clic en el mapa si querés actualizar su ubicación.</span>`;
+    document.getElementById("instruccionMapa").innerHTML = `<span style="color: #eab308; font-weight: bold;">👉 Modificá los datos o arrastrá el marcador en el mapa para cambiar su ubicación.</span>`;
 }
 
 function cancelarEdicion() {
@@ -404,7 +418,7 @@ function cancelarEdicion() {
     document.getElementById("nuevoId").value = "";
     document.getElementById("nuevoNombre").value = "";
     document.getElementById("nuevaRed").value = "";
-    document.getElementById("instruccionMapa").textContent = "Hacé clic en los puntos celestes del mapa o cargá una estación nueva a la derecha.";
+    document.getElementById("instruccionMapa").textContent = "Hacé clic o arrastrá los puntos celestes en el mapa, o cargá una estación nueva a la derecha.";
 }
 
 function toggleJson() {
