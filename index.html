@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test de Validación - API SNIH Argentina</title>
+<title>Test SNIH con Proxy CORS - Territoria</title>
 <style>
     :root {
         --bg: #070a14;
@@ -92,7 +92,7 @@
         font-size: 0.75rem;
         color: #22c55e;
         margin-top: 15px;
-        max-height: 100px;
+        max-height: 120px;
         overflow-y: auto;
     }
 </style>
@@ -101,12 +101,12 @@
 
 <div class="container">
     <div class="card">
-        <h1>📡 Test de Conectividad - API SNIH Argentina</h1>
-        <p>Evaluación del endpoint de WebMethod para extracción de datos hidrométricos en tiempo real.</p>
+        <h1>📡 Test SNIH con Proxy CORS - Territoria</h1>
+        <p>Extracción de datos hidrométricos en tiempo real saltando restricciones de navegador.</p>
         
         <div class="input-group">
             <input id="estacion" value="1413" placeholder="ID Estación (ej: 1413 Guido)">
-            <button onclick="leerDatos()">Consultar API</button>
+            <button onclick="leerDatosConProxy()">Consultar vía Proxy</button>
         </div>
 
         <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 4px;">Mediciones Actuales:</div>
@@ -114,21 +114,25 @@
             <div style="color: var(--text-muted); font-size: 0.8rem;">Esperando consulta...</div>
         </div>
 
-        <div id="logConsola" class="log-box">Estado: Listo para probar conexión.</div>
+        <div id="logConsola" class="log-box">Estado: Listo para probar conexión mediante proxy.</div>
     </div>
 </div>
 
 <script>
-async function leerDatos() {
+async function leerDatosConProxy() {
     const estacion = document.getElementById("estacion").value.trim();
     const resultado = document.getElementById("resultado");
     const logBox = document.getElementById("logConsola");
     
-    resultado.innerHTML = `<div style="color: var(--accent); font-size: 0.8rem;">Enviando petición POST al servidor nacional...</div>`;
-    logBox.innerHTML = `Enviando POST a https://snih.hidricosargentina.gob.ar/... (Estación ID: ${estacion})`;
+    resultado.innerHTML = `<div style="color: var(--accent); font-size: 0.8rem;">Enviando petición a través del proxy CORS...</div>`;
+    logBox.innerHTML = `Enviando POST a través de proxy hacia estación ID: ${estacion}`;
+
+    // Usamos un servicio proxy CORS público para desarrollo y pruebas
+    const targetUrl = "https://snih.hidricosargentina.gob.ar/MuestraDatos.aspx/LeerDatosActuales";
+    const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(targetUrl);
 
     try {
-        const response = await fetch("https://snih.hidricosargentina.gob.ar/MuestraDatos.aspx/LeerDatosActuales", {
+        const response = await fetch(proxyUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json; charset=utf-8"
@@ -141,17 +145,20 @@ async function leerDatos() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
-        console.log("Respuesta SNIH:", data);
-        logBox.innerHTML += `<br>✔ Respuesta HTTP exitosa. Parseando estructura JSON...`;
+        console.log("Respuesta SNIH via Proxy:", data);
+        logBox.innerHTML += `<br>✔ Conexión exitosa. Analizando datos...`;
 
-        if (!data.d || !data.d.Mediciones || data.d.Mediciones.length === 0) {
+        // Algunos proxies envuelven el JSON, verificamos ambas estructuras posibles
+        const payload = data.d ? data.d : data;
+
+        if (!payload || !payload.Mediciones || payload.Mediciones.length === 0) {
             resultado.innerHTML = `<div style="color: #facc15; font-size: 0.8rem;">La estación respondió pero no devolvió mediciones válidas.</div>`;
-            logBox.innerHTML += `<br>⚠ Estructura 'd.Mediciones' vacía o no encontrada.`;
+            logBox.innerHTML += `<br>⚠ Estructura de mediciones vacía.`;
             return;
         }
 
         let html = "";
-        data.d.Mediciones.forEach(m => {
+        payload.Mediciones.forEach(m => {
             html += `
                 <div class="item">
                     <div class="item-titulo">${m.NombreCodigo}</div>
@@ -160,12 +167,12 @@ async function leerDatos() {
             `;
         });
         resultado.innerHTML = html;
-        logBox.innerHTML += `<br>🎉 ¡Datos extraídos y renderizados con éxito!`;
+        logBox.innerHTML += `<br>🎉 ¡Datos obtenidos y listados con éxito!`;
 
     } catch(error) {
         console.error(error);
-        resultado.innerHTML = `<div style="color: #ef4444; font-size: 0.8rem;">Error de conexión o bloqueo CORS.</div>`;
-        logBox.innerHTML += `<br><span style="color:#ef4444;">❌ Error: ${error.message}. (Causado por políticas de seguridad CORS del navegador).</span>`;
+        resultado.innerHTML = `<div style="color: #ef4444; font-size: 0.8rem;">Error al conectar con el proxy o servidor.</div>`;
+        logBox.innerHTML += `<br><span style="color:#ef4444;">❌ Error: ${error.message}</span>`;
     }
 }
 </script>
