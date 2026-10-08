@@ -2,105 +2,113 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hidrometría Mendoza</title>
 
 <style>
 
-body{
+*{
     margin:0;
-    font-family:Segoe UI, Arial, sans-serif;
-    background:#f4f7fb;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family: "Segoe UI", sans-serif;
+    background:#eef3f9;
+    color:#333;
 }
 
 header{
-    background:#0b63ce;
+    background:linear-gradient(135deg,#0066cc,#0099ff);
     color:white;
-    padding:20px;
+    padding:30px;
     text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+
+header h1{
+    font-size:32px;
+}
+
+header p{
+    opacity:.9;
+    margin-top:8px;
 }
 
 .container{
-    max-width:1100px;
+    max-width:1200px;
     margin:auto;
-    padding:20px;
+    padding:30px;
 }
 
-.toolbar{
+.search-box{
+    background:white;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
     display:flex;
     gap:10px;
-    margin-bottom:20px;
+    margin-bottom:25px;
 }
 
 input{
-    padding:10px;
+    flex:1;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
     font-size:16px;
-    border:1px solid #ccc;
-    border-radius:8px;
 }
 
 button{
-    background:#0b63ce;
-    color:white;
+    padding:14px 24px;
     border:none;
-    border-radius:8px;
-    padding:10px 20px;
+    border-radius:10px;
+    background:#0066cc;
+    color:white;
+    font-weight:bold;
     cursor:pointer;
 }
 
 button:hover{
-    background:#084da3;
+    background:#0051a8;
 }
 
 .cards{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:15px;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
 }
 
 .card{
     background:white;
-    border-radius:12px;
-    padding:20px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
 }
 
 .nombre{
-    color:#555;
+    color:#777;
     font-size:14px;
     margin-bottom:10px;
 }
 
 .valor{
-    font-size:32px;
-    font-weight:bold;
-    color:#0b63ce;
+    font-size:38px;
+    font-weight:700;
+    color:#0066cc;
 }
 
-.fecha{
-    margin-top:10px;
-    font-size:12px;
-    color:#777;
+.unidad{
+    color:#999;
+    margin-top:4px;
 }
 
-pre{
-    background:#111;
-    color:#00ff88;
-    padding:15px;
-    border-radius:10px;
-    overflow:auto;
-    margin-top:20px;
-}
-
-</style>
-</head>
-<body>
-
-<header>
-    <h1>🌊 Hidrometría Argentina</h1>
-    <p>Datos en tiempo real desde SNIH</p>
-</header>
-
-<div class="container">
-
-    <div
+.json-box{
+    margin-top:25px;
+    background
