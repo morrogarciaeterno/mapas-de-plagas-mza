@@ -196,7 +196,7 @@
         <div class="panel">
             <div class="search-box">
                 <select id="id" onchange="consultar()">
-                    <!-- Se llena dinámicamente con las estaciones -->
+                    <!-- Se llena dinámicamente -->
                 </select>
                 <button onclick="consultar()">Actualizar</button>
             </div>
@@ -222,7 +222,7 @@
 <script>
 const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
-// Base inicial de estaciones
+// Base de estaciones con IDs oficiales correctos (incluyendo el prefijo 1)
 let estacionesData = {
     "1413": { nombre: "Estación 1413 - Guido", red: "Río Mendoza, Mendoza", coords: [-32.83, -69.30] },
     "1507": { nombre: "Estación 1507 - Cerro Polleras", red: "Río Plomo, Mendoza", coords: [-32.60, -69.80] },
@@ -247,10 +247,8 @@ const iconosMetricas = {
     "Presión Atmosférica [mBar]": "⏱️", "Radiacion Solar": "☀️", "Equivalente de agua en nieve": "❄️"
 };
 
-// Inicializar el Mapa centrado en Mendoza
 const map = L.map('map').setView([-33.5, -68.8], 8);
 
-// Usamos OpenStreetMap estándar sin restricciones de API Key
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
     attribution: '&copy; OpenStreetMap contributors'
