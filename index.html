@@ -2,179 +2,104 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test SNIH con Proxy CORS - Territoria</title>
+<title>SNIH Test</title>
+
 <style>
-    :root {
-        --bg: #070a14;
-        --card-bg: #0e1526;
-        --card-inner: #162035;
-        --accent: #38bdf8;
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --border: #1e293b;
-    }
-    body{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: var(--bg);
-        color: var(--text-main);
-        padding: 20px;
-        margin: 0;
-    }
-    .container {
-        max-width: 700px;
-        margin: auto;
-    }
-    .card{
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    h1 { color: var(--accent); font-size: 1.2rem; margin-top: 0; }
-    p { font-size: 0.85rem; color: var(--text-muted); }
-    .input-group {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-    input {
-        flex-grow: 1;
-        background: var(--card-inner);
-        border: 1px solid var(--border);
-        color: var(--text-main);
-        padding: 10px 12px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        outline: none;
-    }
-    input:focus { border-color: var(--accent); }
-    button{
-        background: var(--accent);
-        color: #000;
-        border: none;
-        padding: 10px 18px;
-        border-radius: 8px;
-        font-weight: 800;
-        cursor: pointer;
-        font-size: 0.85rem;
-    }
-    button:hover { opacity: 0.9; }
-    .grid-resultados {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
-        margin-top: 15px;
-    }
-    .item{
-        background: var(--card-inner);
-        border: 1px solid var(--border);
-        padding: 12px;
-        border-radius: 10px;
-    }
-    .item-titulo {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-    }
-    .valor{
-        font-size: 1.2rem;
-        font-weight: 800;
-        color: var(--accent);
-        margin-top: 4px;
-    }
-    .log-box {
-        background: #02040a;
-        border: 1px solid var(--border);
-        padding: 10px;
-        border-radius: 8px;
-        font-family: monospace;
-        font-size: 0.75rem;
-        color: #22c55e;
-        margin-top: 15px;
-        max-height: 120px;
-        overflow-y: auto;
-    }
+body{
+    font-family:Arial,sans-serif;
+    padding:30px;
+    background:#f5f5f5;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    max-width:700px;
+}
+
+input{
+    padding:8px;
+}
+
+button{
+    padding:8px 20px;
+    cursor:pointer;
+}
+
+pre{
+    background:#111;
+    color:#0f0;
+    padding:15px;
+    overflow:auto;
+}
 </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card">
-        <h1>📡 Test SNIH con Proxy CORS - Territoria</h1>
-        <p>Extracción de datos hidrométricos en tiempo real saltando restricciones de navegador.</p>
-        
-        <div class="input-group">
-            <input id="estacion" value="1413" placeholder="ID Estación (ej: 1413 Guido)">
-            <button onclick="leerDatosConProxy()">Consultar vía Proxy</button>
-        </div>
+<div class="card">
 
-        <div style="font-size: 0.8rem; font-weight: 700; margin-bottom: 4px;">Mediciones Actuales:</div>
-        <div id="resultado" class="grid-resultados">
-            <div style="color: var(--text-muted); font-size: 0.8rem;">Esperando consulta...</div>
-        </div>
+    <h2>SNIH Proxy Test</h2>
 
-        <div id="logConsola" class="log-box">Estado: Listo para probar conexión mediante proxy.</div>
-    </div>
+    <input id="estacion" value="11424">
+
+    <button onclick="consultar()">
+        Consultar
+    </button>
+
+    <pre id="salida"></pre>
+
 </div>
 
 <script>
-async function leerDatosConProxy() {
-    const estacion = document.getElementById("estacion").value.trim();
-    const resultado = document.getElementById("resultado");
-    const logBox = document.getElementById("logConsola");
-    
-    resultado.innerHTML = `<div style="color: var(--accent); font-size: 0.8rem;">Enviando petición a través del proxy CORS...</div>`;
-    logBox.innerHTML = `Enviando POST a través de proxy hacia estación ID: ${estacion}`;
 
-    // Usamos un servicio proxy CORS público para desarrollo y pruebas
-    const targetUrl = "https://snih.hidricosargentina.gob.ar/MuestraDatos.aspx/LeerDatosActuales";
-    const proxyUrl = "https://corsproxy.io/?url=" + encodeURIComponent(targetUrl);
+async function consultar(){
 
-    try {
-        const response = await fetch(proxyUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json; charset=utf-8"
-            },
-            body: JSON.stringify({
-                estacion: estacion
-            })
-        });
+    const salida =
+        document.getElementById("salida");
 
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    salida.textContent = "Consultando...";
 
-        const data = await response.json();
-        console.log("Respuesta SNIH via Proxy:", data);
-        logBox.innerHTML += `<br>✔ Conexión exitosa. Analizando datos...`;
+    try{
 
-        // Algunos proxies envuelven el JSON, verificamos ambas estructuras posibles
-        const payload = data.d ? data.d : data;
+        const endpoint =
+            "https://snih.hidricosargentina.gob.ar/MuestraDatos.aspx/LeerDatosActuales";
 
-        if (!payload || !payload.Mediciones || payload.Mediciones.length === 0) {
-            resultado.innerHTML = `<div style="color: #facc15; font-size: 0.8rem;">La estación respondió pero no devolvió mediciones válidas.</div>`;
-            logBox.innerHTML += `<br>⚠ Estructura de mediciones vacía.`;
-            return;
-        }
+        const response = await fetch(
 
-        let html = "";
-        payload.Mediciones.forEach(m => {
-            html += `
-                <div class="item">
-                    <div class="item-titulo">${m.NombreCodigo}</div>
-                    <div class="valor">${m.Valor}</div>
-                </div>
-            `;
-        });
-        resultado.innerHTML = html;
-        logBox.innerHTML += `<br>🎉 ¡Datos obtenidos y listados con éxito!`;
+            "https://corsproxy.io/?"
+            + encodeURIComponent(endpoint),
 
-    } catch(error) {
-        console.error(error);
-        resultado.innerHTML = `<div style="color: #ef4444; font-size: 0.8rem;">Error al conectar con el proxy o servidor.</div>`;
-        logBox.innerHTML += `<br><span style="color:#ef4444;">❌ Error: ${error.message}</span>`;
+            {
+                method: "POST",
+                headers:{
+                    "Content-Type":
+                    "application/json; charset=utf-8"
+                },
+                body: JSON.stringify({
+                    estacion:
+                    document.getElementById("estacion").value
+                })
+            }
+        );
+
+        const texto =
+            await response.text();
+
+        salida.textContent = texto;
+
+        console.log(texto);
+
+    }
+    catch(err){
+
+        console.error(err);
+
+        salida.textContent =
+            "ERROR:\n\n" + err;
     }
 }
+
 </script>
 
 </body>
