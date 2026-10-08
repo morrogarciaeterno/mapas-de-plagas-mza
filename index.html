@@ -66,7 +66,7 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     #map {
-        height: 550px;
+        height: 680px; /* <--- MAPA MÁS GRANDE Y CÓMODO */
         border-radius: 12px;
         border: 1px solid var(--border);
         z-index: 1;
@@ -179,7 +179,7 @@
     </header>
 
     <div class="layout-grid">
-        <!-- COLUMNA IZQUIERDA: MAPA -->
+        <!-- COLUMNA IZQUIERDA: MAPA AMPLIADO -->
         <div class="panel">
             <h3 style="font-size: 0.85rem; margin-bottom: 10px; color: var(--text-main);">📍 Mapa de Estaciones y Cuencas</h3>
             <div id="map"></div>
@@ -227,16 +227,42 @@
 <script>
 const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
+// Puntos base distribuidos por las principales cuencas de Mendoza
 const estacionesDefault = {
+    // Cuenca Río Mendoza y Alta Montaña
     "1413": { nombre: "Estación 1413 - Guido", red: "Río Mendoza, Mendoza", coords: [-32.83, -69.30] },
     "1507": { nombre: "Estación 1507 - Cerro Polleras", red: "Río Plomo, Mendoza", coords: [-32.60, -69.80] },
+    "1421": { nombre: "Estación 1421 - Potrerillos", red: "Río Mendoza, Mendoza", coords: [-32.96, -69.18] },
+    "1425": { nombre: "Estación 1425 - Uspallata", red: "Río Mendoza, Mendoza", coords: [-32.71, -69.35] },
+    "1411": { nombre: "Estación 1411 - Punta de Vacas", red: "Río Mendoza, Mendoza", coords: [-32.85, -69.75] },
+    "1412": { nombre: "Estación 1412 - Las Cuevas", red: "Río Mendoza, Mendoza", coords: [-32.82, -69.90] },
+    
+    // Valle de Uco y Río Tunuyán
     "1419": { nombre: "Estación 1419 - Valle de Uco", red: "Red Hidrológica Nacional, Mendoza", coords: [-33.60, -69.15] },
+    "1417": { nombre: "Estación 1417 - Tunuyán Inferior", red: "Río Tunuyán, Mendoza", coords: [-33.58, -69.01] },
+    "1418": { nombre: "Estación 1418 - El Carrizal", red: "Río Tunuyán, Mendoza", coords: [-33.30, -68.65] },
+    "1422": { nombre: "Estación 1422 - Manzano Histórico", red: "Río Tunuyán Superior, Mendoza", coords: [-33.55, -69.40] },
+
+    // Cuenca Sur: Río Diamante y Río Atuel
     "1437": { nombre: "Estación 1437 - El Nihuil", red: "Río Atuel, Mendoza", coords: [-35.03, -68.32] },
     "1435": { nombre: "Estación 1435 - Loma Negra", red: "Río Atuel, Mendoza", coords: [-34.80, -68.50] },
-    "19104": { nombre: "Estación 19104 - Paso Pehuenche", red: "Río Grande, Provincia de Mendoza", coords: [-35.95, -70.38] }
+    "1442": { nombre: "Estación 1442 - San Rafael", red: "Cuenca Atuel-Diamante, Mendoza", coords: [-34.61, -68.33] },
+    "1430": { nombre: "Estación 1430 - Dique Agua del Toro", red: "Río Diamante, Mendoza", coords: [-34.65, -68.85] },
+    "1432": { nombre: "Estación 1432 - Los Reyunos", red: "Río Diamante, Mendoza", coords: [-34.58, -68.55] },
+    "1438": { nombre: "Estación 1438 - Alvear Oeste", red: "Cuenca Atuel, Mendoza", coords: [-35.02, -67.75] },
+
+    // Cuenca Sur Extrema: Río Grande y Malargüe
+    "19104": { nombre: "Estación 19104 - Paso Pehuenche", red: "Río Grande, Provincia de Mendoza", coords: [-35.95, -70.38] },
+    "1445": { nombre: "Estación 1445 - Bardas Blancas", red: "Río Grande, Mendoza", coords: [-35.80, -69.70] },
+    "1448": { nombre: "Estación 1448 - Malargüe", red: "Cuenca Malargüe, Mendoza", coords: [-35.47, -69.58] },
+    "1450": { nombre: "Estación 1450 - La Payunia", red: "Zona Sur, Mendoza", coords: [-36.40, -68.80] },
+
+    // Zona Norte y Oasis
+    "1405": { nombre: "Estación 1405 - Lavalle", red: "Zona Norte, Mendoza", coords: [-32.75, -68.60] },
+    "1408": { nombre: "Estación 1408 - Lagunas de Guanacache", red: "Sistema Desaguadero, Mendoza", coords: [-32.30, -68.20] }
 };
 
-// Limpieza automática si el almacenamiento local está vacío o corrupto
+// Limpieza y carga de persistencia local
 let savedData = JSON.parse(localStorage.getItem("territoria_estaciones"));
 let estacionesData = (!savedData || Object.keys(savedData).length === 0) ? estacionesDefault : savedData;
 
