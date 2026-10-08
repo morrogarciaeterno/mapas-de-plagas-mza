@@ -71,7 +71,6 @@
         border: 1px solid var(--border);
         z-index: 1;
         cursor: crosshair;
-        background: #111;
     }
     .search-box{
         display: flex;
@@ -180,7 +179,7 @@
     </header>
 
     <div class="layout-grid">
-        <!-- COLUMNA IZQUIERDA: MAPA OSCURO LIBRE -->
+        <!-- COLUMNA IZQUIERDA: MAPA LIBRE -->
         <div class="panel">
             <h3 style="font-size: 0.85rem; margin-bottom: 10px; color: var(--text-main);">📍 Mapa de Estaciones y Cuencas</h3>
             <div id="map"></div>
@@ -274,13 +273,13 @@ const iconosMetricas = {
     "Altura E.A.N. en Snow Pillow": "❄️"
 };
 
-// Inicializar el mapa centrado en la provincia de Mendoza
+// Inicializar el mapa centrado en Mendoza
 const map = L.map('map').setView([-33.8, -68.8], 7);
 
-// Usamos capa oscura libre basada en CartoDB sin restricciones de key
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+// Usamos OpenStreetMap estándar (sin restricciones ni claves)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
-    attribution: '&copy; OpenStreetMap contributors & CARTO'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 let markersLayer = L.layerGroup().addTo(map);
@@ -435,46 +434,4 @@ async function consultar(){
         const mediciones = data.d && data.d.Mediciones ? data.d.Mediciones : [];
 
         if(mediciones.length === 0) {
-            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted); text-align: center;">No hay mediciones activas para esta estación.</div>';
-            return;
-        }
-
-        mediciones.forEach(m => {
-            let valor = m.Valor;
-            if(valor === -999 || valor === "-999"){
-                valor = "N/D";
-            } else {
-                let num = Number(valor);
-                valor = isNaN(num) ? valor : num.toFixed(2);
-            }
-            
-            const unidad = unidades[m.NombreCodigo] || "";
-            const icono = iconosMetricas[m.NombreCodigo] || "📊";
-
-            resultado.innerHTML += `
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <div class="nombre">${m.NombreCodigo}</div>
-                        <div style="font-size: 1.1rem;">${icono}</div>
-                    </div>
-                    <div class="valor">${valor}</div>
-                    <div class="unidad">${unidad}</div>
-                </div>
-            `;
-        });
-
-    } catch(error){
-        resultado.innerHTML = `
-            <div class="card" style="grid-column: 1 / -1; border-color: #ef4444;">
-                <div style="color: #ef4444; font-weight: bold;">Error de conexión.</div>
-            </div>
-        `;
-        console.error(error);
-    }
-}
-
-actualizarSelectYMapa();
-consultar();
-</script>
-</body>
-</html>
+            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted
