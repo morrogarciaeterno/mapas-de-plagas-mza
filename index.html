@@ -3,208 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hidrometría Mendoza</title>
+<title>Territoria - Hidrometría SNIH</title>
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-body{
-    font-family: "Segoe UI", sans-serif;
-    background:#eef3f9;
-    color:#333;
-}
-header{
-    background:linear-gradient(135deg,#0066cc,#0099ff);
-    color:white;
-    padding:30px;
-    text-align:center;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
-}
-header h1{
-    font-size:32px;
-}
-header p{
-    opacity:.9;
-    margin-top:8px;
-}
-.container{
-    max-width:1200px;
-    margin:auto;
-    padding:30px;
-}
-.search-box{
-    background:white;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
-    display:flex;
-    gap:10px;
-    margin-bottom:25px;
-}
-input{
-    flex:1;
-    padding:14px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    font-size:16px;
-}
-button{
-    padding:14px 24px;
-    border:none;
-    border-radius:10px;
-    background:#0066cc;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-}
-button:hover{
-    background:#0051a8;
-}
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-}
-.card{
-    background:white;
-    border-radius:18px;
-    padding:22px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    transition:.2s;
-}
-.card:hover{
-    transform:translateY(-3px);
-}
-.nombre{
-    color:#777;
-    font-size:14px;
-    margin-bottom:10px;
-}
-.valor{
-    font-size:38px;
-    font-weight:700;
-    color:#0066cc;
-}
-.unidad{
-    color:#999;
-    margin-top:4px;
-}
-.json-box{
-    margin-top:25px;
-    background:#111827;
-    color:#00ff88;
-    border-radius:15px;
-    padding:20px;
-    overflow:auto;
-    max-height:300px;
-}
-.loading{
-    text-align:center;
-    font-size:18px;
-    padding:30px;
-}
+    :root {
+        --bg: #070a14;
+        --card-bg: #0e1526;
+        --card-inner: #162035;
+        --accent: #38bdf8;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #1e293b;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body{
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text-main);
+        padding: 20px;
+    }
+    header{
+        background: linear-gradient(135deg, #0e1526 0%, #0d2137 100%);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        padding: 24px;
+        text-align: center;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        margin-bottom: 25px;
+    }
+    header h1{
+        font-size: 1.4rem;
+        color: var(--text-main);
+        font-weight: 800;
+    }
+    header p{
+        color: var(--accent);
+        font-size: 0.8rem;
+        margin-top: 6px;
+    }
+    .container{
+        max-width: 1200px;
+        margin: auto;
+    }
+    .search-box{
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    input{
+        flex: 1;
+        padding: 12px 14px;
+        background: var(--card-inner);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        outline: none;
+    }
+    input:focus {
+        border-color: var(--accent);
+    }
+    button{
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #000;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: opacity 0.2s;
+    }
+    button:hover{
+        opacity: 0.9;
+    }
+    .cards{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 15px;
+    }
+    .card{
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover{
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+    .nombre{
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .valor{
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+    .unidad{
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        margin-top: 4px;
+    }
+    .json-box{
+        margin-top: 25px;
+        background: #02040a;
+        border: 1px solid var(--border);
+        color: #22c55e;
+        border-radius: 14px;
+        padding: 20px;
+        overflow: auto;
+        max-height: 250px;
+        font-family: monospace;
+        font-size: 0.75rem;
+    }
+    .loading{
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--accent);
+        padding: 30px;
+        grid-column: 1 / -1;
+    }
 </style>
 </head>
 <body>
-<header>
-    <h1>🌊 Hidrometría Mendoza</h1>
-    <p>Monitoreo en tiempo real desde SNIH</p>
-</header>
 <div class="container">
-    <div class="search-box">
-        <input
-            id="id"
-            value="11453"
-            placeholder="ID de estación">
-        <button onclick="consultar()">
-            Consultar
-        </button>
-    </div>
-    <div id="resultado" class="cards">
-    </div>
-    <div class="json-box">
-        <pre id="json"></pre>
-    </div>
+    <header>
+        <h1>🌊 Territoria - Monitoreo Hídrico SNIH</h1>
+        <p>Red Hidrológica Nacional en Tiempo Real</p>
+    </header>
+
+    <div class="search-box">
+        <input id="id" value="1413" placeholder="ID de estación (ej: 1413 Guido)">
+        <button onclick="consultar()">Consultar Estación</button>
+    </div>
+
+    <div id="resultado" class="cards">
+        <!-- Las tarjetas se generan dinámicamente -->
+    </div>
+
+    <div class="json-box">
+        <pre id="json">// Respuesta JSON del servidor...</pre>
+    </div>
 </div>
+
 <script>
-const WORKER =
-"https://snih-proxy.elexpreso17.workers.dev";
+const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
+
 const unidades = {
-    "Altura":"m",
-    "Precipitación":"mm",
-    "Precipitación acumulada diaria":"mm",
-    "Precipitación acumulada mensual":"mm",
-    "Conductividad Eléctrica":"µS/cm",
-    "Temperatura Bulbo Seco":"°C",
-    "Temperatura":"°C",
-    "Humedad":"%",
-    "Velocidad del Viento":"km/h",
-    "Presión Atmosférica [mBar]":"mBar",
-    "Radiacion Solar":"W/m²"
+    "Altura": "m",
+    "Precipitación": "mm",
+    "Precipitación acumulada diaria": "mm",
+    "Precipitación acumulada mensual": "mm",
+    "Conductividad Eléctrica": "µS/cm",
+    "Temperatura Bulbo Seco": "°C",
+    "Temperatura": "°C",
+    "Humedad": "%",
+    "Velocidad del Viento": "km/h",
+    "Presión Atmosférica [mBar]": "mBar",
+    "Radiacion Solar": "W/m²"
 };
+
 async function consultar(){
-    const resultado =
-        document.getElementById("resultado");
-    resultado.innerHTML =
-        '<div class="loading">Consultando estación...</div>';
-    try{
-        const response =
-            await fetch(
-                WORKER,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":"application/json"
-                    },
-                    body:JSON.stringify({
-                        estacion:
-                        document.getElementById("id").value
-                    })
-                }
-            );
-        const data =
-            await response.json();
-        document.getElementById("json")
-            .textContent =
-            JSON.stringify(data,null,2);
-        resultado.innerHTML = "";
-        const mediciones =
-            data.d.Mediciones || [];
-        mediciones.forEach(m => {
-            let valor = m.Valor;
-            if(valor === -999){
-                valor = "N/D";
-            }
-            else{
-                valor = Number(valor).toFixed(2);
-            }
-            const unidad =
-                unidades[m.NombreCodigo] || "";
-            resultado.innerHTML += `
-                <div class="card">
-                    <div class="nombre">
-                        ${m.NombreCodigo}
-                    </div>
-                    <div class="valor">
-                        ${valor}
-                    </div>
-                    <div class="unidad">
-                        ${unidad}
-                    </div>
-                </div>
-            `;
-        });
-    }catch(error){
-        resultado.innerHTML = `
-            <div class="card">
-                Error al consultar la estación.
-            </div>
-        `;
-        console.error(error);
-    }
+    const estacionId = document.getElementById("id").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = '<div class="loading">Consultando red nacional a través del proxy...</div>';
+
+    try{
+        const response = await fetch(WORKER, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                estacion: estacionId
+            })
+        });
+
+        const data = await response.json();
+        
+        document.getElementById("json").textContent = JSON.stringify(data, null, 2);
+        resultado.innerHTML = "";
+
+        const mediciones = data.d && data.d.Mediciones ? data.d.Mediciones : [];
+
+        if(mediciones.length === 0) {
+            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted); text-align: center;">No se encontraron mediciones activas para la estación ' + estacionId + '.</div>';
+            return;
+        }
+
+        mediciones.forEach(m => {
+            let valor = m.Valor;
+            if(valor === -999 || valor === "-999"){
+                valor = "N/D";
+            } else {
+                let num = Number(valor);
+                valor = isNaN(num) ? valor : num.toFixed(2);
+            }
+            
+            const unidad = unidades[m.NombreCodigo] || "";
+
+            resultado.innerHTML += `
+                <div class="card">
+                    <div class="nombre">${m.NombreCodigo}</div>
+                    <div class="valor">${valor}</div>
+                    <div class="unidad">${unidad}</div>
+                </div>
+            `;
+        });
+
+    } catch(error){
+        resultado.innerHTML = `
+            <div class="card" style="grid-column: 1 / -1; border-color: #ef4444;">
+                <div style="color: #ef4444; font-weight: bold;">Error al consultar la estación.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Verifique la conexión o el ID de la estación.</div>
+            </div>
+        `;
+        console.error(error);
+    }
 }
+
+// Consulta automática al cargar con la estación Guido por defecto
 consultar();
 </script>
 </body>
