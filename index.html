@@ -2,148 +2,105 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SNIH Mendoza</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidrometría Mendoza</title>
 
 <style>
+
 body{
-    font-family:Arial,sans-serif;
-    max-width:900px;
-    margin:40px auto;
+    margin:0;
+    font-family:Segoe UI, Arial, sans-serif;
+    background:#f4f7fb;
+}
+
+header{
+    background:#0b63ce;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
     padding:20px;
 }
 
-.card{
-    border:1px solid #ddd;
-    border-radius:10px;
-    padding:20px;
+.toolbar{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
 }
 
 input{
-    padding:8px;
-    width:120px;
+    padding:10px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:8px;
 }
 
 button{
-    padding:8px 20px;
+    background:#0b63ce;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 20px;
     cursor:pointer;
+}
+
+button:hover{
+    background:#084da3;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+.nombre{
+    color:#555;
+    font-size:14px;
+    margin-bottom:10px;
 }
 
 .valor{
     font-size:32px;
     font-weight:bold;
     color:#0b63ce;
-    margin-top:15px;
+}
+
+.fecha{
+    margin-top:10px;
+    font-size:12px;
+    color:#777;
 }
 
 pre{
     background:#111;
-    color:#00ff66;
+    color:#00ff88;
     padding:15px;
+    border-radius:10px;
     overflow:auto;
+    margin-top:20px;
 }
+
 </style>
 </head>
 <body>
 
-<div class="card">
+<header>
+    <h1>🌊 Hidrometría Argentina</h1>
+    <p>Datos en tiempo real desde SNIH</p>
+</header>
 
-<h2>SNIH Mendoza</h2>
+<div class="container">
 
-<p>ID Estación:</p>
-
-<input id="id" value="11424">
-
-<button onclick="consultar()">
-Consultar
-</button>
-
-<div id="resultado"></div>
-
-<h3>JSON</h3>
-
-<pre id="json"></pre>
-
-</div>
-
-<script>
-
-const WORKER =
-"https://snih-proxy.elexpreso17.workers.dev";
-
-async function consultar(){
-
-    const resultado =
-        document.getElementById("resultado");
-
-    const jsonBox =
-        document.getElementById("json");
-
-    resultado.innerHTML =
-        "Consultando...";
-
-    try{
-
-        const response =
-            await fetch(
-                WORKER,
-                {
-                    method:"POST",
-                    headers:{
-                        "Content-Type":
-                        "application/json"
-                    },
-                    body:JSON.stringify({
-                        estacion:
-                        document.getElementById("id").value
-                    })
-                }
-            );
-
-        const data =
-            await response.json();
-
-        jsonBox.textContent =
-            JSON.stringify(data,null,2);
-
-        if(
-            !data.d ||
-            !data.d.Mediciones ||
-            !data.d.Mediciones.length
-        ){
-            resultado.innerHTML =
-                "<p>Sin mediciones.</p>";
-            return;
-        }
-
-        const m =
-            data.d.Mediciones[0];
-
-        let valor =
-            m.Valor;
-
-        if(valor === -999){
-            valor = "Sin dato";
-        }
-
-        resultado.innerHTML = `
-            <h3>${m.NombreCodigo}</h3>
-            <div class="valor">${valor}</div>
-        `;
-
-    }
-    catch(error){
-
-        resultado.innerHTML =
-            "<p>Error al consultar.</p>";
-
-        console.error(error);
-
-    }
-
-}
-
-</script>
-
-</body>
-</html>
+    <div
