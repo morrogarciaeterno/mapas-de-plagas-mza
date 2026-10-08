@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Territoria - Mapa e Hidrometría SNIH</title>
-<!-- Leaflet CSS para el mapa -->
+<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     :root {
@@ -222,7 +222,7 @@
 <script>
 const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
-// Base inicial de estaciones con sus coordenadas en el mapa [lat, lng, nombre, infoRed]
+// Base inicial de estaciones
 let estacionesData = {
     "1413": { nombre: "Estación 1413 - Guido", red: "Río Mendoza, Mendoza", coords: [-32.83, -69.30] },
     "1507": { nombre: "Estación 1507 - Cerro Polleras", red: "Río Plomo, Mendoza", coords: [-32.60, -69.80] },
@@ -250,10 +250,10 @@ const iconosMetricas = {
 // Inicializar el Mapa centrado en Mendoza
 const map = L.map('map').setView([-33.5, -68.8], 8);
 
-// Capa de mapa oscura alineada con Territoria
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{z}.png', {
+// Usamos OpenStreetMap estándar sin restricciones de API Key
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 18,
-    attribution: '&copy; OpenStreetMap & CARTO'
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 let markersLayer = L.layerGroup().addTo(map);
@@ -264,18 +264,16 @@ function actualizarSelectYMapa() {
     markersLayer.clearLayers();
 
     for (const [id, info] of Object.entries(estacionesData)) {
-        // Llenar el selector
         const option = document.createElement("option");
         option.value = id;
         option.textContent = `${id} - ${info.nombre}`;
         select.appendChild(option);
 
-        // Dibujar marcador celeste en el mapa
         if (info.coords) {
             const customIcon = L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="background: #38bdf8; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #000; box-shadow: 0 0 10px #38bdf8;"></div>`,
-                iconSize: [14, 14]
+                html: `<div style="background: #38bdf8; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #000; box-shadow: 0 0 10px #38bdf8; cursor: pointer;"></div>`,
+                iconSize: [16, 16]
             });
 
             const marker = L.marker(info.coords, { icon: customIcon }).addTo(markersLayer);
@@ -298,7 +296,6 @@ function agregarEstacionManual() {
         return;
     }
 
-    // Ubicación por defecto en el centro del mapa si es nueva
     estacionesData[id] = {
         nombre: `Estación ${id} - ${nombre}`,
         red: red || "Red Hidrológica Nacional, Mendoza",
@@ -308,7 +305,6 @@ function agregarEstacionManual() {
     actualizarSelectYMapa();
     document.getElementById("id").value = id;
     
-    // Limpiar inputs
     document.getElementById("nuevoId").value = "";
     document.getElementById("nuevoNombre").value = "";
     document.getElementById("nuevaRed").value = "";
@@ -385,7 +381,6 @@ async function consultar(){
     }
 }
 
-// Inicializar al cargar la página
 actualizarSelectYMapa();
 consultar();
 </script>
