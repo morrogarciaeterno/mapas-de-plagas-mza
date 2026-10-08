@@ -112,18 +112,27 @@
         padding: 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         transition: transform 0.2s, border-color 0.2s;
+        position: relative;
     }
     .card:hover{
         transform: translateY(-2px);
         border-color: var(--accent);
     }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
     .nombre{
         color: var(--text-muted);
         font-size: 0.75rem;
         font-weight: 700;
-        margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+    .icon-metric {
+        font-size: 1.3rem;
     }
     .valor{
         font-size: 2rem;
@@ -136,7 +145,7 @@
         margin-top: 4px;
     }
     .json-box{
-        display: none; /* Oculto por defecto */
+        display: none;
         margin-top: 15px;
         background: #02040a;
         border: 1px solid var(--border);
@@ -196,6 +205,23 @@ const unidades = {
     "Radiacion Solar": "W/m²"
 };
 
+// Diccionario de iconos representativos para cada métrica
+const iconosMetricas = {
+    "Altura": "📏",
+    "Precipitación": "🌧️",
+    "Precipitación acumulada diaria": "🌧️",
+    "Precipitación acumulada mensual": "🌧️",
+    "Precipitación instantánea": "🌦️",
+    "Conductividad Eléctrica": "⚡",
+    "Temperatura Bulbo Seco": "🌡️",
+    "Temperatura": "🌡️",
+    "Humedad": "💧",
+    "Velocidad del Viento": "💨",
+    "Dirección del Viento": "🧭",
+    "Presión Atmosférica [mBar]": "⏱️",
+    "Radiacion Solar": "☀️"
+};
+
 function toggleJson() {
     const box = document.getElementById("jsonContainer");
     box.style.display = box.style.display === "block" ? "none" : "block";
@@ -239,10 +265,14 @@ async function consultar(){
             }
             
             const unidad = unidades[m.NombreCodigo] || "";
+            const icono = iconosMetricas[m.NombreCodigo] || "📊";
 
             resultado.innerHTML += `
                 <div class="card">
-                    <div class="nombre">${m.NombreCodigo}</div>
+                    <div class="card-header">
+                        <div class="nombre">${m.NombreCodigo}</div>
+                        <div class="icon-metric">${icono}</div>
+                    </div>
                     <div class="valor">${valor}</div>
                     <div class="unidad">${unidad}</div>
                 </div>
