@@ -66,7 +66,7 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     #map {
-        height: 400px;
+        height: 550px; /* <--- MAPA AMPLIADO A 550px */
         border-radius: 12px;
         border: 1px solid var(--border);
         z-index: 1;
@@ -179,7 +179,7 @@
     </header>
 
     <div class="layout-grid">
-        <!-- COLUMNA IZQUIERDA: MAPA Y FORMULARIO -->
+        <!-- COLUMNA IZQUIERDA: MAPA AMPLIADO Y FORMULARIO -->
         <div class="panel">
             <h3 style="font-size: 0.85rem; margin-bottom: 10px; color: var(--text-main);">📍 Mapa de Estaciones (Precordillera y Cuencas)</h3>
             <div id="map"></div>
@@ -322,12 +322,10 @@ map.on('click', function(e) {
     const latlng = e.latlng;
     const { id, nombre, red } = datosPendientes;
 
-    // Si estábamos editando y cambió el ID, borramos el viejo
     if (idEditandoOriginal && idEditandoOriginal !== id) {
         delete estacionesData[idEditandoOriginal];
     }
 
-    // Guardar con formato limpio en el nombre
     let nombreLimpio = nombre.replace(/^Estación \d+ - /, '');
 
     estacionesData[id] = {
@@ -363,8 +361,6 @@ function cargarEstacionParaEditar() {
     if(!info) return;
 
     idEditandoOriginal = idSeleccionado;
-    
-    // Extraer solo el nombre limpio sin el prefijo "Estación XXX -"
     let nombreLimpio = info.nombre.replace(/^Estación \d+ - /, '');
 
     document.getElementById("nuevoId").value = idSeleccionado;
