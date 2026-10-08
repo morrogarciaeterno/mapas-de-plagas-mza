@@ -66,7 +66,7 @@
         box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     #map {
-        height: 550px; /* <--- MAPA AMPLIADO A 550px */
+        height: 550px;
         border-radius: 12px;
         border: 1px solid var(--border);
         z-index: 1;
@@ -233,7 +233,10 @@ const estacionesDefault = {
     "1419": { nombre: "Estación 1419 - Valle de Uco", red: "Red Hidrológica Nacional, Mendoza", coords: [-33.60, -69.15] },
     "1437": { nombre: "Estación 1437 - El Nihuil", red: "Río Atuel, Mendoza", coords: [-35.03, -68.32] },
     "1435": { nombre: "Estación 1435 - Loma Negra", red: "Río Atuel, Mendoza", coords: [-34.80, -68.50] },
-    "19104": { nombre: "Estación 19104 - Paso Pehuenche", red: "Río Grande, Provincia de Mendoza", coords: [-35.95, -70.38] }
+    "19104": { nombre: "Estación 19104 - Paso Pehuenche", red: "Río Grande, Provincia de Mendoza", coords: [-35.95, -70.38] },
+    "1421": { nombre: "Estación 1421 - Potrerillos", red: "Río Mendoza, Mendoza", coords: [-32.96, -69.18] },
+    "1425": { nombre: "Estación 1425 - Uspallata", red: "Río Mendoza, Mendoza", coords: [-32.71, -69.35] },
+    "1442": { nombre: "Estación 1442 - San Rafael", red: "Cuenca Atuel-Diamante, Mendoza", coords: [-34.61, -68.33] }
 };
 
 let estacionesData = JSON.parse(localStorage.getItem("territoria_estaciones")) || estacionesDefault;
