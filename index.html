@@ -58,9 +58,8 @@
         display: flex;
         gap: 10px;
         margin-bottom: 25px;
-        flex-wrap: wrap;
     }
-    select{
+    input{
         flex: 1;
         padding: 12px 14px;
         background: var(--card-inner);
@@ -69,9 +68,8 @@
         color: var(--text-main);
         font-size: 0.9rem;
         outline: none;
-        cursor: pointer;
     }
-    select:focus {
+    input:focus {
         border-color: var(--accent);
     }
     button{
@@ -171,16 +169,12 @@
 <body>
 <div class="container">
     <header>
-        <h1 id="tituloEstacion">🌊 Territoria - Monitoreo Hídrico SNIH</h1>
+        <h1>🌊 Territoria - Monitoreo Hídrico SNIH</h1>
         <p>Red Hidrológica Nacional en Tiempo Real</p>
     </header>
 
     <div class="search-box">
-        <select id="id">
-            <option value="1413">Estación 1413 - Guido (Río Mendoza)</option>
-            <option value="11424">Estación 11424 - Precordillera</option>
-            <option value="11453">Estación 11453 - Cuenca Alta</option>
-        </select>
+        <input id="id" value="1413" placeholder="ID de estación (ej: 1413 Guido)">
         <button onclick="consultar()">Consultar Estación</button>
     </div>
 
@@ -197,28 +191,21 @@
 <script>
 const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
-const nombresEstaciones = {
-    "1413": "Estación 1413 - Guido (Río Mendoza)",
-    "11424": "Estación 11424 - Precordillera",
-    "11453": "Estación 11453 - Cuenca Alta"
-};
-
 const unidades = {
     "Altura": "m",
     "Precipitación": "mm",
     "Precipitación acumulada diaria": "mm",
     "Precipitación acumulada mensual": "mm",
-    "Precipitación instantánea": "mm",
     "Conductividad Eléctrica": "µS/cm",
     "Temperatura Bulbo Seco": "°C",
     "Temperatura": "°C",
     "Humedad": "%",
     "Velocidad del Viento": "km/h",
-    "Dirección del Viento": "°",
     "Presión Atmosférica [mBar]": "mBar",
     "Radiacion Solar": "W/m²"
 };
 
+// Diccionario de iconos representativos para cada métrica
 const iconosMetricas = {
     "Altura": "📏",
     "Precipitación": "🌧️",
@@ -241,13 +228,8 @@ function toggleJson() {
 }
 
 async function consultar(){
-    const selectElem = document.getElementById("id");
-    const estacionId = selectElem.value;
+    const estacionId = document.getElementById("id").value.trim();
     const resultado = document.getElementById("resultado");
-    
-    const nombreReal = nombresEstaciones[estacionId] || `Estación ID: ${estacionId}`;
-    document.getElementById("tituloEstacion").textContent = `🌊 Territoria - ${nombreReal}`;
-    
     resultado.innerHTML = '<div class="loading">Consultando red nacional a través del proxy...</div>';
 
     try{
@@ -269,7 +251,7 @@ async function consultar(){
         const mediciones = data.d && data.d.Mediciones ? data.d.Mediciones : [];
 
         if(mediciones.length === 0) {
-            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted); text-align: center;">No se encontraron mediciones activas para esta estación.</div>';
+            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted); text-align: center;">No se encontraron mediciones activas para la estación ' + estacionId + '.</div>';
             return;
         }
 
@@ -301,14 +283,14 @@ async function consultar(){
         resultado.innerHTML = `
             <div class="card" style="grid-column: 1 / -1; border-color: #ef4444;">
                 <div style="color: #ef4444; font-weight: bold;">Error al consultar la estación.</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Verifique la conexión con el servidor.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Verifique la conexión o el ID de la estación.</div>
             </div>
         `;
         console.error(error);
     }
 }
 
-// Carga inicial automática
+// Consulta automática al cargar con la estación Guido por defecto
 consultar();
 </script>
 </body>
