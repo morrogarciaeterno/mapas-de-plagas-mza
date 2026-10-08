@@ -1,56 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 <meta charset="utf-8">
-<title>SNIH Test</title>
+<title>SNIH Proxy Test</title>
 </head>
 <body>
 
+<h2>SNIH - Estación</h2>
+
 <input id="id" value="11424">
-<button onclick="test()">Consultar</button>
+<button onclick="consultar()">Consultar</button>
 
 <pre id="out"></pre>
 
 <script>
 
-async function test(){
+async function consultar(){
 
     const out =
         document.getElementById("out");
 
+    out.textContent = "Consultando...";
+
     try{
 
-        const endpoint =
-            "https://snih.hidricosargentina.gob.ar/MuestraDatos.aspx/LeerDatosActuales";
-
-        const res = await fetch(
-            "https://cors.eu.org/" + endpoint,
+        const response = await fetch(
+            "https://snih-proxy.elexpreso17.workers.dev",
             {
-                method:"POST",
+                method: "POST",
                 headers:{
-                    "Content-Type":
-                    "application/json; charset=utf-8"
+                    "Content-Type":"application/json"
                 },
-                body:JSON.stringify({
+                body: JSON.stringify({
                     estacion:
                     document.getElementById("id").value
                 })
             }
         );
 
-        const txt = await res.text();
+        const texto = await response.text();
 
-        out.textContent = txt;
+        out.textContent = texto;
 
     }
-    catch(e){
+    catch(err){
+
+        console.error(err);
 
         out.textContent =
-            e.toString();
-
-        console.error(e);
+            "ERROR:\n" + err;
 
     }
+
 }
 
 </script>
