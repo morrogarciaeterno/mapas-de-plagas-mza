@@ -110,6 +110,12 @@
         border: 1px solid var(--border);
         border-radius: 12px;
         padding: 14px;
+        transition: all 0.3s ease;
+    }
+    /* Estilos de alerta para tarjetas individuales */
+    .card.alerta-roja {
+        border-color: #ef4444;
+        background: linear-gradient(135deg, #1f1115 0%, #162035 100%);
     }
     .nombre{
         color: var(--text-muted);
@@ -128,7 +134,7 @@
         font-size: 0.68rem;
         margin-top: 2px;
     }
-    /* Panel Resumen para Caudal */
+    /* Panel Resumen para Caudal con Alarma */
     .resumen-caudal {
         margin-top: 15px;
         margin-bottom: 15px;
@@ -136,6 +142,11 @@
         border: 1px solid #0284c7;
         border-radius: 12px;
         padding: 14px;
+        transition: all 0.3s ease;
+    }
+    .resumen-caudal.alerta-activa {
+        border-color: #ef4444;
+        background: linear-gradient(135deg, #2a0f15 0%, #111e38 100%);
     }
     .resumen-caudal h4 {
         color: #38bdf8;
@@ -159,6 +170,12 @@
     }
     .ind-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; }
     .ind-val { font-size: 1rem; font-weight: 800; color: #fff; margin-top: 2px; }
+
+    .tendencia {
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-top: 4px;
+    }
 
     .form-manual {
         margin-top: 15px;
@@ -232,13 +249,14 @@
                     Información de la red y ubicación...
                 </div>
 
-                <!-- PANEL RESUMEN ESPECÍFICO PARA CONTROL DE CAUDAL -->
-                <div class="resumen-caudal">
-                    <h4><span>💧 Resumen Crítico (Caudal / Aforo)</span> <span id="estadoCaudalBadge" style="font-size: 0.62rem; background: #64748b; padding: 2px 6px; border-radius: 4px; color: #fff;">Sin datos</span></h4>
+                <!-- PANEL RESUMEN ESPECÍFICO CON TENDENCIA Y ALARMAS -->
+                <div id="panelResumenCaudal" class="resumen-caudal">
+                    <h4><span>💧 Resumen Crítico & Tendencia</span> <span id="estadoCaudalBadge" style="font-size: 0.62rem; background: #64748b; padding: 2px 6px; border-radius: 4px; color: #fff;">Sin datos</span></h4>
                     <div class="indicadores-grid">
                         <div class="ind-box">
                             <div class="ind-label">Nivel / Altura</div>
                             <div class="ind-val" id="resumenAltura">--</div>
+                            <div class="tendencia" id="tendenciaAltura">--</div>
                         </div>
                         <div class="ind-box">
                             <div class="ind-label">Precipitación</div>
@@ -311,6 +329,9 @@ const estacionesDefault = {
 let savedData = JSON.parse(localStorage.getItem("territoria_estaciones"));
 let estacionesData = (!savedData || Object.keys(savedData).length === 0) ? estacionesDefault : savedData;
 
+// Objeto para almacenar el historial previo en memoria durante la sesión
+let historialLecturas = JSON.parse(localStorage.getItem("territoria_historial")) || {};
+
 const unidades = {
     "Altura": "m", "Precipitación": "mm", "Precipitación acumulada diaria": "mm",
     "Precipitación acumulada mensual": "mm", "Precipitación instantánea": "mm",
@@ -361,7 +382,6 @@ function actualizarSelectYMapa() {
             });
 
             const marker = L.marker(info.coords, { icon: customIcon, draggable: true }).addTo(markersLayer);
-            
             marker.bindPopup(`<b style="color:#000;">${info.nombre}</b><br><span style="color:#333;">ID: ${id}</span><br><small>💡 Arrastrá el punto para reubicarlo</small>`);
             
             marker.on('click', () => {
@@ -483,10 +503,12 @@ async function consultar(){
     
     // Resetear panel resumen de caudal
     document.getElementById("resumenAltura").textContent = "--";
+    document.getElementById("tendenciaAltura").textContent = "--";
     document.getElementById("resumenPrecipitacion").textContent = "--";
     document.getElementById("resumenTemperatura").textContent = "--";
     document.getElementById("estadoCaudalBadge").textContent = "Sin datos";
     document.getElementById("estadoCaudalBadge").style.background = "#64748b";
+    document.getElementById("panelResumenCaudal").classList.remove("alerta-activa");
 
     const resultado = document.getElementById("resultado");
     resultado.innerHTML = '<div class="loading">Consultando red nacional...</div>';
@@ -509,20 +531,58 @@ async function consultar(){
             return;
         }
 
-        let alturaVal = "--";
+        let alturaValNum = null;
+        let alturaValStr = "--";
         let precipVal = "--";
         let tempVal = "--";
 
+        // Buscar valor actual de Altura en la respuesta
+        mediciones.forEach(m => {
+            if(m.NombreCodigo === "Altura" && m.Valor !== -999 && m.Valor !== "-999") {
+                alturaValNum = Number(m.Valor);
+            }
+        });
+
+        // Obtener lectura anterior guardada para esta estación
+        let anteriorAltura = historialLecturas[estacionId] !== undefined ? historialLecturas[estacionId] : null;
+        let tendenciaTexto = "➖ Sin historial previo";
+        let tendenciaColor = "#94a3b8";
+
+        if(alturaValNum !== null && anteriorAltura !== null) {
+            let diferencia = alturaValNum - anteriorAltura;
+            if(diferencia > 0.01) {
+                tendenciaTexto = `📈 Subió (+${diferencia.toFixed(2)} m)`;
+                tendenciaColor = "#ef4444"; // Alerta subida
+            } else if(diferencia < -0.01) {
+                tendenciaTexto = `📉 Bajó (${diferencia.toFixed(2)} m)`;
+                tendenciaColor = "#38bdf8"; // Descenso
+            } else {
+                tendenciaTexto = `➖ Estable`;
+                tendenciaColor = "#22c55e"; // Estable
+            }
+        }
+
+        // Guardar la lectura actual en el historial y localStorage
+        if(alturaValNum !== null) {
+            historialLecturas[estacionId] = alturaValNum;
+            localStorage.setItem("territoria_historial", JSON.stringify(historialLecturas));
+        }
+
         mediciones.forEach(m => {
             let valor = m.Valor;
+            let esAlertaTarjeta = false;
+
             if(valor === -999 || valor === "-999"){
                 valor = "N/D";
             } else {
                 let num = Number(valor);
                 valor = isNaN(num) ? valor : num.toFixed(2);
 
-                // Extraer valores clave para el resumen de aforo / caudal
-                if(m.NombreCodigo === "Altura" && !isNaN(num)) alturaVal = num.toFixed(2) + " m";
+                if(m.NombreCodigo === "Altura" && !isNaN(num)) {
+                    alturaValStr = num.toFixed(2) + " m";
+                    // Umbral crítico de ejemplo: si supera 2.5 metros se marca en rojo
+                    if(num > 2.5) esAlertaTarjeta = true; 
+                }
                 if(m.NombreCodigo.includes("Precipitación") && !isNaN(num)) precipVal = num.toFixed(1) + " mm";
                 if(m.NombreCodigo.includes("Temperatura") && !isNaN(num)) tempVal = num.toFixed(1) + " °C";
             }
@@ -530,8 +590,10 @@ async function consultar(){
             const unidad = unidades[m.NombreCodigo] || "";
             const icono = iconosMetricas[m.NombreCodigo] || "📊";
 
+            let claseAlertaCard = esAlertaTarjeta ? "alerta-roja" : "";
+
             resultado.innerHTML += `
-                <div class="card">
+                <div class="card ${claseAlertaCard}">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                         <div class="nombre">${m.NombreCodigo}</div>
                         <div style="font-size: 1.1rem;">${icono}</div>
@@ -542,12 +604,27 @@ async function consultar(){
             `;
         });
 
-        // Actualizar el panel resumen de caudal
-        document.getElementById("resumenAltura").textContent = alturaVal;
+        // Actualizar panel resumen de caudal
+        document.getElementById("resumenAltura").textContent = alturaValStr;
+        let tendElem = document.getElementById("tendenciaAltura");
+        tendElem.textContent = tendenciaTexto;
+        tendElem.style.color = tendenciaColor;
+
         document.getElementById("resumenPrecipitacion").textContent = precipVal;
         document.getElementById("resumenTemperatura").textContent = tempVal;
-        document.getElementById("estadoCaudalBadge").textContent = "Monitoreando";
-        document.getElementById("estadoCaudalBadge").style.background = "#22c55e";
+
+        // Activar alarma general si subió o si supera nivel de alerta
+        let badge = document.getElementById("estadoCaudalBadge");
+        let panelResumen = document.getElementById("panelResumenCaudal");
+
+        if(alturaValNum !== null && alturaValNum > 2.5) {
+            badge.textContent = "⚠️ ¡ALERTA CRECIDA!";
+            badge.style.background = "#ef4444";
+            panelResumen.classList.add("alerta-activa");
+        } else {
+            badge.textContent = "Monitoreando";
+            badge.style.background = "#22c55e";
+        }
 
     } catch(error){
         resultado.innerHTML = `
