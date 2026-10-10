@@ -1,313 +1,206 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Territoria - Mapa e Hidrometría SNIH</title>
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-    :root {
-        --bg: #070a14;
-        --card-bg: #0e1526;
-        --card-inner: #162035;
-        --accent: #38bdf8;
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --border: #1e293b;
-    }
-    *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    body{
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        background: var(--bg);
-        color: var(--text-main);
-        padding: 20px;
-    }
-    header{
-        background: linear-gradient(135deg, #0e1526 0%, #0d2137 100%);
-        border: 1px solid var(--border);
-        color: var(--text-main);
-        padding: 20px;
-        text-align: center;
-        border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-        margin-bottom: 20px;
-    }
-    header h1{
-        font-size: 1.3rem;
-        font-weight: 800;
-    }
-    header p{
-        color: var(--accent);
-        font-size: 0.75rem;
-        margin-top: 4px;
-    }
-    .container{
-        max-width: 1350px;
-        margin: auto;
-    }
-    .layout-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr;
-        gap: 20px;
-    }
-    @media(max-width: 900px) {
-        .layout-grid { grid-template-columns: 1fr; }
-    }
-    .panel {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    #map {
-        height: 750px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        z-index: 1;
-        cursor: crosshair;
-    }
-    .search-box{
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-    select, input {
-        flex: 1;
-        padding: 10px 12px;
-        background: var(--card-inner);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: var(--text-main);
-        font-size: 0.85rem;
-        outline: none;
-    }
-    select:focus, input:focus { border-color: var(--accent); }
-    button{
-        padding: 10px 16px;
-        border: none;
-        border-radius: 10px;
-        background: var(--accent);
-        color: #000;
-        font-weight: 800;
-        cursor: pointer;
-        font-size: 0.8rem;
-    }
-    button:hover{ opacity: 0.9; }
-    .cards{
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 10px;
-        margin-top: 15px;
-    }
-    .card{
-        background: var(--card-inner);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 14px;
-        transition: all 0.3s ease;
-    }
-    /* Estilos de alerta para tarjetas individuales */
-    .card.alerta-roja {
-        border-color: #ef4444;
-        background: linear-gradient(135deg, #1f1115 0%, #162035 100%);
-    }
-    .nombre{
-        color: var(--text-muted);
-        font-size: 0.68rem;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .valor{
-        font-size: 1.4rem;
-        font-weight: 800;
-        color: var(--accent);
-        margin-top: 4px;
-    }
-    .unidad{
-        color: var(--text-muted);
-        font-size: 0.68rem;
-        margin-top: 2px;
-    }
-    /* Panel Resumen para Caudal con Alarma */
-    .resumen-caudal {
-        margin-top: 15px;
-        margin-bottom: 15px;
-        background: linear-gradient(135deg, #091325 0%, #111e38 100%);
-        border: 1px solid #0284c7;
-        border-radius: 12px;
-        padding: 14px;
-        transition: all 0.3s ease;
-    }
-    .resumen-caudal.alerta-activa {
-        border-color: #ef4444;
-        background: linear-gradient(135deg, #2a0f15 0%, #111e38 100%);
-    }
-    .resumen-caudal h4 {
-        color: #38bdf8;
-        font-size: 0.8rem;
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .indicadores-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        text-align: center;
-    }
-    .ind-box {
-        background: rgba(0,0,0,0.3);
-        border: 1px solid var(--border);
-        padding: 8px;
-        border-radius: 8px;
-    }
-    .ind-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; }
-    .ind-val { font-size: 1rem; font-weight: 800; color: #fff; margin-top: 2px; }
+body{
+    margin:0;
+    padding:10px;
+    background:#f4f6f9;
+    font-family:Arial,sans-serif;
+}
 
-    .tendencia {
-        font-size: 0.72rem;
-        font-weight: bold;
-        margin-top: 4px;
-    }
+#estado{
+    text-align:center;
+    color:#666;
+    padding:10px;
+    font-size:12px;
+}
 
-    .form-manual {
-        margin-top: 15px;
-        background: var(--card-inner);
-        padding: 14px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-    }
-    .form-manual h4 { font-size: 0.8rem; color: var(--accent); margin-bottom: 8px; }
-    .form-manual input { width: 100%; margin-bottom: 8px; }
-    .btn-secundario {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        padding: 8px 14px;
-        margin-top: 15px;
-        border-radius: 8px;
-        cursor: pointer;
-        width: 100%;
-    }
-    .btn-secundario:hover { border-color: var(--accent); color: var(--accent); }
-    .json-box{
-        display: none;
-        margin-top: 15px;
-        background: #02040a;
-        border: 1px solid var(--border);
-        color: #22c55e;
-        border-radius: 12px;
-        padding: 15px;
-        overflow: auto;
-        max-height: 150px;
-        font-family: monospace;
-        font-size: 0.7rem;
-    }
-    .loading{
-        text-align: center;
-        font-size: 0.8rem;
-        color: var(--accent);
-        padding: 20px;
-        grid-column: 1 / -1;
-    }
+.sismo{
+    background:#fff;
+    border-radius:10px;
+    padding:12px;
+    margin-bottom:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,.1);
+    border-left:5px solid #2563eb;
+}
+
+.sismo.mendoza{
+    border-left-color:#dc2626;
+    background:#fff5f5;
+}
+
+.encabezado{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+}
+
+.provincia{
+    font-size:16px;
+    font-weight:bold;
+}
+
+.magnitud{
+    background:#2563eb;
+    color:#fff;
+    padding:4px 10px;
+    border-radius:6px;
+    font-weight:bold;
+}
+
+.mendoza .magnitud{
+    background:#dc2626;
+}
+
+.dato{
+    margin-top:4px;
+    color:#555;
+    font-size:13px;
+}
+
+a{
+    color:#2563eb;
+    text-decoration:none;
+}
 </style>
+
 </head>
+
 <body>
-<div class="container">
-    <header>
-        <h1 id="tituloEstacion">🌊 Territoria - Mapa y Monitoreo Hídrico</h1>
-        <p id="instruccionMapa">Hacé clic o arrastrá los puntos celestes en el mapa, o cargá una estación nueva a la derecha.</p>
-    </header>
 
-    <div class="layout-grid">
-        <!-- COLUMNA IZQUIERDA: MAPA GIGANTE -->
-        <div class="panel">
-            <h3 style="font-size: 0.85rem; margin-bottom: 10px; color: var(--text-main);">📍 Mapa de Estaciones y Cuencas (Mendoza)</h3>
-            <div id="map"></div>
-        </div>
+<div id="estado">Cargando sismos...</div>
 
-        <!-- COLUMNA DERECHA: FORMULARIO, SELECTOR Y RESULTADOS -->
-        <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
-           <div>
-                <div class="search-box">
-                    <select id="id" onchange="consultar()">
-                        <!-- Se llena dinámicamente -->
-                    </select>
-                    <button onclick="consultar()">Actualizar</button>
-                    <button onclick="cargarEstacionParaEditar()" style="background: #eab308; color: #000;" title="Editar estación seleccionada">✏️ Editar</button>
-                </div>
+<div id="contenedor"></div>
 
-                <div id="infoDetalle" style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
-                    Información de la red y ubicación...
-                </div>
-
-                <!-- PANEL RESUMEN ESPECÍFICO CON TENDENCIA Y ALARMAS DE ALTA SENSIBILIDAD -->
-                <div id="panelResumenCaudal" class="resumen-caudal">
-                    <h4><span>💧 Resumen Crítico & Tendencia</span> <span id="estadoCaudalBadge" style="font-size: 0.62rem; background: #64748b; padding: 2px 6px; border-radius: 4px; color: #fff;">Sin datos</span></h4>
-                    <div class="indicadores-grid">
-                        <div class="ind-box">
-                            <div class="ind-label">Nivel / Altura</div>
-                            <div class="ind-val" id="resumenAltura">--</div>
-                            <div class="tendencia" id="tendenciaAltura">--</div>
-                        </div>
-                        <div class="ind-box">
-                            <div class="ind-label">Precipitación</div>
-                            <div class="ind-val" id="resumenPrecipitacion">--</div>
-                        </div>
-                        <div class="ind-box">
-                            <div class="ind-label">Temperatura</div>
-                            <div class="ind-val" id="resumenTemperatura">--</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FORMULARIO A LA DERECHA -->
-                <div class="form-manual">
-                    <h4 id="formTitulo">➕ Cargar Estación Interactiva</h4>
-                    <input id="nuevoId" placeholder="ID (ej: 19104)">
-                    <input id="nuevoNombre" placeholder="Nombre (ej: Paso Pehuenche)">
-                    <input id="nuevaRed" placeholder="Ubicación / Red (ej: Río Grande, Mendoza)">
-                    <div style="display: flex; gap: 8px;">
-                        <button onclick="prepararModoUbicacion()" style="flex: 2; background: #22c55e; color: #000;">1. Guardar y Ubicar en Mapa</button>
-                        <button onclick="cancelarEdicion()" id="btnCancelar" style="flex: 1; background: #ef4444; color: #fff; display:none;">Cancelar</button>
-                    </div>
-                </div>
-
-                <div id="resultado" class="cards">
-                    <div class="loading">Seleccioná una estación del mapa o del selector.</div>
-                </div>
-            </div>
-
-            <div>
-                <button class="btn-secundario" onclick="toggleJson()">Ver / Ocultar Depuración JSON</button>
-                <div id="jsonContainer" class="json-box">
-                    <pre id="json">// Respuesta JSON...</pre>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
 
-const estacionesDefault = {
-    "1413": { nombre: "Estación 1413 - Guido", red: "Río Mendoza, Mendoza", coords: [-32.83, -69.30] },
-    "1507": { nombre: "Estación 1507 - Cerro Polleras", red: "Río Plomo, Mendoza", coords: [-32.60, -69.80] },
-    "1421": { nombre: "Estación 1421 - Potrerillos", red: "Río Mendoza, Mendoza", coords: [-32.96, -69.18] },
-    "1425": { nombre: "Estación 1425 - Uspallata", red: "Río Mendoza, Mendoza", coords: [-32.71, -69.35] },
-    "1411": { nombre: "Estación 1411 - Punta de Vacas", red: "Río Mendoza, Mendoza", coords: [-32.85, -69.75] },
-    "1412": { nombre: "Estación 1412 - Las Cuevas", red: "Río Mendoza, Mendoza", coords: [-32.82, -69.90] },
-    "1419": { nombre: "Estación 1419 - Valle de Uco", red: "Red Hidrológica Nacional, Mendoza", coords: [-33.60, -69.15] },
-    "1417": { nombre: "Estación 1417 - Tunuyán Inferior", red: "Río Tunuyán, Mendoza", coords: [-33.58, -69.01] },
-    "1418": { nombre: "Estación 1418 - El Carrizal", red: "Río Tunuyán, Mendoza", coords: [-33.30, -68.65] },
+const API_URL =
+[
+  "https://",
+  "inpres-proxy",
+  ".elexpreso17.workers.dev"
+].join("");
+
+async function cargarSismos() {
+
+    try {
+
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+
+        const xmlText = await response.text();
+
+        const parser = new DOMParser();
+
+        const xml = parser.parseFromString(
+            xmlText,
+            "text/xml"
+        );
+
+        const items = xml.querySelectorAll("item");
+
+        let html = "";
+
+        items.forEach(item => {
+
+            const provincia =
+                item.querySelector("prov")?.textContent || "";
+
+            const fecha =
+                item.querySelector("fecha")?.textContent || "";
+
+            const hora =
+                item.querySelector("hora")?.textContent || "";
+
+            const magnitud =
+                item.querySelector("mg")?.textContent || "";
+
+            const profundidad =
+                item.querySelector("prof")?.textContent || "";
+
+            const latitud =
+                item.querySelector("latitud")?.textContent || "";
+
+            const longitud =
+                item.querySelector("longitud")?.textContent || "";
+
+            const id =
+                item.querySelector("idSismo")?.textContent || "";
+
+            const clase =
+                provincia === "MENDOZA"
+                ? "sismo mendoza"
+                : "sismo";
+
+            html += `
+                <div class="${clase}">
+
+                    <div class="encabezado">
+
+                        <div class="provincia">
+                            ${provincia}
+                        </div>
+
+                        <div class="magnitud">
+                            M ${magnitud}
+                        </div>
+
+                    </div>
+
+                    <div class="dato">
+                        📅 ${fecha} ${hora}
+                    </div>
+
+                    <div class="dato">
+                        📏 Profundidad: ${profundidad} km
+                    </div>
+
+                    <div class="dato">
+                        📍 ${latitud}, ${longitud}
+                    </div>
+
+                    <div class="dato">
+                        ID: ${id}
+                    </div>
+
+                </div>
+            `;
+        });
+
+        document.getElementById("contenedor").innerHTML = html;
+
+        document.getElementById("estado").innerHTML =
+            "Actualizado: " +
+            new Date().toLocaleString("es-AR");
+
+    } catch(error) {
+
+        console.error(error);
+
+        document.getElementById("estado").innerHTML =
+            "Error al cargar datos";
+
+        document.getElementById("contenedor").innerHTML =
+            "<div class='sismo'>No fue posible conectar con el servicio.<br><br>" +
+            error +
+            "</div>";
+    }
+}
+
+cargarSismos();
+
+setInterval(cargarSismos, 300000);
+
+</script>
+
+</body>
+</html>
