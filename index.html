@@ -1,204 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Sismos Geolocalizados</title>
 
 <style>
 body{
-    margin:0;
-    padding:10px;
-    background:#f4f6f9;
     font-family:Arial,sans-serif;
-}
-
-#estado{
-    text-align:center;
-    color:#666;
+    background:#f5f5f5;
     padding:10px;
-    font-size:12px;
 }
 
-.sismo{
-    background:#fff;
+.card{
+    background:white;
     border-radius:10px;
     padding:12px;
     margin-bottom:10px;
     box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.mendoza{
+    border-left:5px solid #dc2626;
+}
+
+.otro{
     border-left:5px solid #2563eb;
 }
 
-.sismo.mendoza{
-    border-left-color:#dc2626;
-    background:#fff5f5;
-}
-
-.encabezado{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:8px;
-}
-
-.provincia{
+.nombre{
     font-size:16px;
     font-weight:bold;
 }
 
-.magnitud{
-    background:#2563eb;
-    color:#fff;
-    padding:4px 10px;
-    border-radius:6px;
-    font-weight:bold;
-}
-
-.mendoza .magnitud{
-    background:#dc2626;
-}
-
 .dato{
     margin-top:4px;
-    color:#555;
-    font-size:13px;
-}
-
-a{
-    color:#2563eb;
-    text-decoration:none;
+    color:#444;
 }
 </style>
-
 </head>
-
 <body>
 
-<div id="estado">Cargando sismos...</div>
+<h2>Sismos INPRES Geolocalizados</h2>
 
-<div id="contenedor"></div>
+<div id="contenido">
+Cargando...
+</div>
 
 <script>
 
-const API_URL =
+const API =
 [
-  "https://",
-  "inpres-proxy",
-  ".elexpreso17.workers.dev"
+ "https://",
+ "inpres-proxy",
+ ".elexpreso17.workers.dev"
 ].join("");
 
-async function cargarSismos() {
+async function obtenerLugar(lat, lon){
 
-    try {
+    try{
 
-        const response = await fetch(API_URL);
+        const url =
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
 
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
+        const r = await fetch(url);
 
-        const xmlText = await response.text();
+        const data = await r.json();
 
-        const parser = new DOMParser();
+        return data.display_name || "Ubicación desconocida";
 
-        const xml = parser.parseFromString(
-            xmlText,
-            "text/xml"
-        );
+    }
+    catch{
 
-        const items = xml.querySelectorAll("item");
-
-        let html = "";
-
-        items.forEach(item => {
-
-            const provincia =
-                item.querySelector("prov")?.textContent || "";
-
-            const fecha =
-                item.querySelector("fecha")?.textContent || "";
-
-            const hora =
-                item.querySelector("hora")?.textContent || "";
-
-            const magnitud =
-                item.querySelector("mg")?.textContent || "";
-
-            const profundidad =
-                item.querySelector("prof")?.textContent || "";
-
-            const latitud =
-                item.querySelector("latitud")?.textContent || "";
-
-            const longitud =
-                item.querySelector("longitud")?.textContent || "";
-
-            const id =
-                item.querySelector("idSismo")?.textContent || "";
-
-            const clase =
-                provincia === "MENDOZA"
-                ? "sismo mendoza"
-                : "sismo";
-
-            html += `
-                <div class="${clase}">
-
-                    <div class="encabezado">
-
-                        <div class="provincia">
-                            ${provincia}
-                        </div>
-
-                        <div class="magnitud">
-                            M ${magnitud}
-                        </div>
-
-                    </div>
-
-                    <div class="dato">
-                        📅 ${fecha} ${hora}
-                    </div>
-
-                    <div class="dato">
-                        📏 Profundidad: ${profundidad} km
-                    </div>
-
-                    <div class="dato">
-                        📍 ${latitud}, ${longitud}
-                    </div>
-
-                    <div class="dato">
-                        ID: ${id}
-                    </div>
-
-                </div>
-            `;
-        });
-
-        document.getElementById("contenedor").innerHTML = html;
-
-        document.getElementById("estado").innerHTML =
-            "Actualizado: " +
-            new Date().toLocaleString("es-AR");
-
-    } catch(error) {
-
-        console.error(error);
-
-        document.getElementById("estado").innerHTML =
-            "Error al cargar datos";
-
-        document.getElementById("contenedor").innerHTML =
-            "<div class='sismo'>No fue posible conectar con el servicio.<br><br>" +
-            error +
-            "</div>";
+        return "Ubicación no disponible";
     }
 }
 
-cargarSismos();
+async function cargar(){
 
-setInterval(cargarSismos, 300000);
+    const resp = await fetch(API);
+
+    const xmlText = await resp.text();
+
+    const xml =
+    new DOMParser()
+    .parseFromString(xmlText,"text/xml");
+
+    const items =
+    xml.querySelectorAll("item");
+
+    let html = "";
+
+    for(let i=0;i<Math.min(items.length,10);i++){
+
+        const item = items[i];
+
+        const prov =
+        item.querySelector("prov").textContent;
+
+        const lat =
+        item.querySelector("latitud").textContent;
+
+        const lon =
+        item.querySelector("longitud").textContent;
+
+        const mag =
+        item.querySelector("mg").textContent;
+
+        const prof =
+        item.querySelector("prof").textContent;
+
+        const fecha =
+        item.querySelector("fecha").textContent;
+
+        const hora =
+        item.querySelector("hora").textContent;
+
+        const lugar =
+        await obtenerLugar(lat,lon);
+
+        const clase =
+        prov === "MENDOZA"
+        ? "card mendoza"
+        : "card otro";
+
+        html += `
+        <div class="${clase}">
+            <div class="nombre">
+                ${prov}
+            </div>
+
+            <div class="dato">
+                📍 ${lugar}
+            </div>
+
+            <div class="dato">
+                🌎 ${lat}, ${lon}
+            </div>
+
+            <div class="dato">
+                📈 Magnitud ${mag}
+            </div>
+
+            <div class="dato">
+                📉 Profundidad ${prof} km
+            </div>
+
+            <div class="dato">
+                🕒 ${fecha} ${hora}
+            </div>
+        </div>
+        `;
+    }
+
+    document.getElementById("contenido").innerHTML =
+    html;
+}
+
+cargar();
 
 </script>
 
