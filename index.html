@@ -1,13 +1,15 @@
-&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-&lt;meta charset="utf-8"&gt;
-&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-&lt;link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"&gt;
+<title>Mapa Pasos Internacionales</title>
 
-&lt;style&gt;
+<link rel="stylesheet"
+href="httpsst/leaflet.css
+
+<style>
 
 html,body{
     margin:0;
@@ -20,40 +22,38 @@ html,body{
     height:100vh;
 }
 
-.info{
+.panel{
     position:absolute;
     top:10px;
     left:10px;
     z-index:9999;
     background:white;
     padding:10px;
-    border-radius:8px;
-    font-family:Arial;
+    border-radius:10px;
+    font-family:Arial,sans-serif;
     box-shadow:0 2px 10px rgba(0,0,0,.3);
 }
 
-&lt;/style&gt;
+</style>
 
-&lt;/head&gt;
-&lt;body&gt;
+</head>
+<body>
 
-&lt;div class="info"&gt;
-    &lt;b&gt;Pasos Internacionales&lt;/b&gt;&lt;br&gt;
-    &lt;span id="estado"&gt;Cargando...&lt;/span&gt;
-&lt;/div&gt;
+<div class="panel">
+    <b>Pasos Internacionales</b><br>
+    <span id="estado">Cargando...</span>
+</div>
 
-&lt;div id="map"&gt;&lt;/div&gt;
+<div id="map"></div>
 
-&lt;script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"&gt;&lt;/script&gt;
+https://unpkg.com/leaflet@1.9.4/dist/leaflet.jsscript>
 
-&lt;script&gt;
+<script>
 
 const API =
-[
-  "https://",
-  "pasos-proxy",
-  ".elexpreso17.workers.dev"
-].join("");
+"https://" +
+"pasos-proxy" +
+".elexpreso17.workers.dev";
 
 const map = L.map("map").setView(
     [-38,-65],
@@ -61,9 +61,10 @@ const map = L.map("map").setView(
 );
 
 L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
-      attribution:"OpenStreetMap"
+        maxZoom: 18,
+        attribution: "OpenStreetMap"
     }
 ).addTo(map);
 
@@ -76,34 +77,34 @@ async function cargarPasos(){
         const pasos = await response.json();
 
         document.getElementById("estado").innerHTML =
-        pasos.length + " pasos encontrados";
+            pasos.length + " pasos cargados";
 
-        pasos.forEach(paso =&gt; {
+        pasos.forEach(paso => {
 
             const color =
-            paso.estado_prioridad === "ABIERTO"
-            ? "#16a34a"
-            : "#dc2626";
+                paso.estado_prioridad === "ABIERTO"
+                ? "#22c55e"
+                : "#ef4444";
 
             L.circleMarker(
-                [paso.latitud,paso.longitud],
+                [paso.latitud, paso.longitud],
                 {
-                    radius:7,
-                    color:color,
-                    fillColor:color,
-                    fillOpacity:0.8,
-                    weight:2
+                    radius: 7,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.8,
+                    weight: 2
                 }
             )
             .addTo(map)
-            .bindPopup(`
-                &lt;b&gt;${paso.nombre_paso}&lt;/b&gt;&lt;br&gt;
-                Estado: ${paso.estado_prioridad}&lt;br&gt;
-                Provincia: ${paso.provincia}&lt;br&gt;
-                País: ${paso.pais}&lt;br&gt;
-                Latitud: ${paso.latitud}&lt;br&gt;
-                Longitud: ${paso.longitud}
-            `);
+            .bindPopup(
+                "<b>" + paso.nombre_paso + "</b><br>" +
+                "Estado: " + paso.estado_prioridad + "<br>" +
+                "Provincia: " + paso.provincia + "<br>" +
+                "País: " + paso.pais + "<br>" +
+                "Latitud: " + paso.latitud + "<br>" +
+                "Longitud: " + paso.longitud
+            );
 
         });
 
@@ -111,7 +112,7 @@ async function cargarPasos(){
     catch(error){
 
         document.getElementById("estado").innerHTML =
-        "Error al cargar";
+            "Error al cargar";
 
         console.error(error);
 
@@ -121,7 +122,7 @@ async function cargarPasos(){
 
 cargarPasos();
 
-&lt;/script&gt;
+</script>
 
-&lt;/body&gt;
-&lt;/html&gt;
+</body>
+</html>
