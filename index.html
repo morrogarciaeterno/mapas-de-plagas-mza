@@ -1,37 +1,297 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
- <title>Mapa de Riesgo de Plagas - Mendoza</title>
- <meta charset="utf-8" />
- <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
- <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
- <script src="https://unpkg.com/papaparse/papaparse.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Territoria - Hidrometría SNIH</title>
+<style>
+    :root {
+        --bg: #070a14;
+        --card-bg: #0e1526;
+        --card-inner: #162035;
+        --accent: #38bdf8;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #1e293b;
+    }
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body{
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text-main);
+        padding: 20px;
+    }
+    header{
+        background: linear-gradient(135deg, #0e1526 0%, #0d2137 100%);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        padding: 24px;
+        text-align: center;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        margin-bottom: 25px;
+    }
+    header h1{
+        font-size: 1.4rem;
+        color: var(--text-main);
+        font-weight: 800;
+    }
+    header p{
+        color: var(--accent);
+        font-size: 0.8rem;
+        margin-top: 6px;
+    }
+    .container{
+        max-width: 1200px;
+        margin: auto;
+    }
+    .search-box{
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    input{
+        flex: 1;
+        padding: 12px 14px;
+        background: var(--card-inner);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-main);
+        font-size: 0.9rem;
+        outline: none;
+    }
+    input:focus {
+        border-color: var(--accent);
+    }
+    button{
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #000;
+        font-weight: 800;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: opacity 0.2s;
+    }
+    button:hover{
+        opacity: 0.9;
+    }
+    .btn-secundario {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        padding: 8px 14px;
+        margin-top: 20px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .btn-secundario:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+    .cards{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 15px;
+    }
+    .card{
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: transform 0.2s, border-color 0.2s;
+        position: relative;
+    }
+    .card:hover{
+        transform: translateY(-2px);
+        border-color: var(--accent);
+    }
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .nombre{
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .icon-metric {
+        font-size: 1.3rem;
+    }
+    .valor{
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--accent);
+    }
+    .unidad{
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        margin-top: 4px;
+    }
+    .json-box{
+        display: none;
+        margin-top: 15px;
+        background: #02040a;
+        border: 1px solid var(--border);
+        color: #22c55e;
+        border-radius: 14px;
+        padding: 20px;
+        overflow: auto;
+        max-height: 250px;
+        font-family: monospace;
+        font-size: 0.75rem;
+    }
+    .loading{
+        text-align: center;
+        font-size: 0.85rem;
+        color: var(--accent);
+        padding: 30px;
+        grid-column: 1 / -1;
+    }
+</style>
 </head>
 <body>
- <h2>Mapa de Riesgo de Plagas - Mendoza</h2>
- <div id="map" style="height:600px;"></div>
-  
- <script>
- // Crear mapa centrado en Mendoza
- var map = L.map('map').setView([-32.889, -68.845], 8);
-  
- // Capa base
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
- maxZoom: 18
- }).addTo(map);
-  
- // Leer CSV exportado desde GEE
- Papa.parse("NDVI_Clima_Mendoza.csv", {
- download: true,
- header: true,
- complete: function(results) {
- var data = results.data[0]; // primera fila del CSV
- var ndvi = data.NDVI;
- var temp = data.mean_2m_air_temperature;
- var hum = data.mean_2m_relative_humidity;
- // Continuar lógica...
- }
- });
- </script>
+<div class="container">
+    <header>
+        <h1>🌊 Territoria - Monitoreo Hídrico SNIH</h1>
+        <p>Red Hidrológica Nacional en Tiempo Real</p>
+    </header>
+
+    <div class="search-box">
+        <input id="id" value="1413" placeholder="ID de estación (ej: 1413 Guido)">
+        <button onclick="consultar()">Consultar Estación</button>
+    </div>
+
+    <div id="resultado" class="cards">
+        <!-- Las tarjetas se generan dinámicamente -->
+    </div>
+
+    <button class="btn-secundario" onclick="toggleJson()">Ver / Ocultar Depuración JSON</button>
+    <div id="jsonContainer" class="json-box">
+        <pre id="json">// Respuesta JSON del servidor...</pre>
+    </div>
+</div>
+
+<script>
+const WORKER = "https://snih-proxy.elexpreso17.workers.dev";
+
+const unidades = {
+    "Altura": "m",
+    "Precipitación": "mm",
+    "Precipitación acumulada diaria": "mm",
+    "Precipitación acumulada mensual": "mm",
+    "Conductividad Eléctrica": "µS/cm",
+    "Temperatura Bulbo Seco": "°C",
+    "Temperatura": "°C",
+    "Humedad": "%",
+    "Velocidad del Viento": "km/h",
+    "Presión Atmosférica [mBar]": "mBar",
+    "Radiacion Solar": "W/m²"
+};
+
+// Diccionario de iconos representativos para cada métrica
+const iconosMetricas = {
+    "Altura": "📏",
+    "Precipitación": "🌧️",
+    "Precipitación acumulada diaria": "🌧️",
+    "Precipitación acumulada mensual": "🌧️",
+    "Precipitación instantánea": "🌦️",
+    "Conductividad Eléctrica": "⚡",
+    "Temperatura Bulbo Seco": "🌡️",
+    "Temperatura": "🌡️",
+    "Humedad": "💧",
+    "Velocidad del Viento": "💨",
+    "Dirección del Viento": "🧭",
+    "Presión Atmosférica [mBar]": "⏱️",
+    "Radiacion Solar": "☀️"
+};
+
+function toggleJson() {
+    const box = document.getElementById("jsonContainer");
+    box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+async function consultar(){
+    const estacionId = document.getElementById("id").value.trim();
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = '<div class="loading">Consultando red nacional a través del proxy...</div>';
+
+    try{
+        const response = await fetch(WORKER, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                estacion: estacionId
+            })
+        });
+
+        const data = await response.json();
+        
+        document.getElementById("json").textContent = JSON.stringify(data, null, 2);
+        resultado.innerHTML = "";
+
+        const mediciones = data.d && data.d.Mediciones ? data.d.Mediciones : [];
+
+        if(mediciones.length === 0) {
+            resultado.innerHTML = '<div class="card" style="grid-column: 1 / -1; color: var(--text-muted); text-align: center;">No se encontraron mediciones activas para la estación ' + estacionId + '.</div>';
+            return;
+        }
+
+        mediciones.forEach(m => {
+            let valor = m.Valor;
+            if(valor === -999 || valor === "-999"){
+                valor = "N/D";
+            } else {
+                let num = Number(valor);
+                valor = isNaN(num) ? valor : num.toFixed(2);
+            }
+            
+            const unidad = unidades[m.NombreCodigo] || "";
+            const icono = iconosMetricas[m.NombreCodigo] || "📊";
+
+            resultado.innerHTML += `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="nombre">${m.NombreCodigo}</div>
+                        <div class="icon-metric">${icono}</div>
+                    </div>
+                    <div class="valor">${valor}</div>
+                    <div class="unidad">${unidad}</div>
+                </div>
+            `;
+        });
+
+    } catch(error){
+        resultado.innerHTML = `
+            <div class="card" style="grid-column: 1 / -1; border-color: #ef4444;">
+                <div style="color: #ef4444; font-weight: bold;">Error al consultar la estación.</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Verifique la conexión o el ID de la estación.</div>
+            </div>
+        `;
+        console.error(error);
+    }
+}
+
+// Consulta automática al cargar con la estación Guido por defecto
+consultar();
+</script>
 </body>
 </html>
