@@ -1,152 +1,109 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+[!DOCTYPE html]
+[html lang="es"]
+[head]
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIIRS NASA - Sin Líneas</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-html, body { margin: 0; padding: 0; height: 100%; }
-#map { width: 100%; height: 100vh; }
-.panel { position: absolute; top: 10px; left: 10px; z-index: 1000; display: flex; gap: 8px; align-items: center; background: rgba(14, 21, 38, 0.9); padding: 8px; border-radius: 10px; border: 1px solid #1e293b; }
-button { padding: 8px 12px; background: #0d6efd; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; }
-button.active { background: #198754; }
-button.gps { background: #38bdf8; color: #000; }
-.slider-container { display: none; align-items: center; gap: 6px; color: #fff; font-size: 0.7rem; font-family: sans-serif; }
-.slider-container input { cursor: pointer; }
+<title>Nubes VIIRS NASA</title>
 
-/* ESTO ELIMINA LAS LÍNEAS / CUADRÍCULA DE LOS MOSAICOS SATELITALES */
-.leaflet-tile-pane {
-    image-rendering: auto;
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+html,body{
+margin:0;
+padding:0;
+height:100%;
 }
-.viirs-sin-lineas img {
-    outline: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    /* Un pequeño difuminado de contraste fusiona los bordes de los tiles */
-    filter: contrast(1.02) brightness(1.02);
+
+#map{
+height:100vh;
+width:100%;
+}
+
+.panel{
+position:absolute;
+top:10px;
+left:10px;
+z-index:9999;
+background:rgba(0,0,0,.8);
+padding:8px;
+border-radius:8px;
+}
+
+button{
+background:#0d6efd;
+color:#fff;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
 }
 </style>
-</head>
-<body>
+
+[/head]
+
+[body]
 
 <div class="panel">
-    <button id="btn">🛰️ Satélite VIIRS</button>
-    <div class="slider-container" id="sliderBox">
-        <span>Opacidad:</span>
-        <input type="range" id="opacityRange" min="0.1" max="1.0" step="0.1" value="0.7" oninput="cambiarOpacidad(this.value)">
-    </div>
-    <button class="gps" onclick="centrarUbicacion()">📍 GPS</button>
+<button id="btnVIIRS">🛰️ VIIRS</button>
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script>
-// Crear mapa
-const map = L.map('map', {
-    maxBounds: [[-90, -180], [90, 180]],
-    maxBoundsViscosity: 1.0
-}).setView([-32.89, -68.84], 12);
 
-// Base OSM
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 18,
-    noWrap: true
-}).addTo(map);
+const map = L.map('map').setView([-32.89,-68.84],6);
 
-let capaVIIRS = null;
-let marcadorGps = null;
-let circuloGps = null;
-const btn = document.getElementById('btn');
-const sliderBox = document.getElementById('sliderBox');
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+attribution:'© OpenStreetMap'
+}
+).addTo(map);
 
-// Botón VIIRS
-btn.onclick = () => {
-    if (capaVIIRS) {
-        map.removeLayer(capaVIIRS);
-        capaVIIRS = null;
-        btn.classList.remove('active');
-        btn.innerText = '🛰️ Satélite VIIRS';
-        sliderBox.style.display = 'none';
-        return;
-    }
+let viirs = null;
 
-    const fechaAyer = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+document.getElementById('btnVIIRS').onclick = () => {
 
-    capaVIIRS = L.tileLayer(
-        `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${fechaAyer}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-        {
-            maxZoom: 18,
-            maxNativeZoom: 9,
-            opacity: 0.7,
-            noWrap: true,
-            bounds: [[-90, -180], [90, 180]],
-            className: 'viirs-sin-lineas' // Aplica la clase CSS para limpiar los bordes
-        }
-    );
-
-    capaVIIRS.addTo(map);
-    btn.classList.add('active');
-    btn.innerText = '🛰️ Ocultar VIIRS';
-    sliderBox.style.display = 'flex';
-};
-
-function cambiarOpacidad(val) {
-    if (capaVIIRS) {
-        capaVIIRS.setOpacity(parseFloat(val));
-    }
+if(viirs){
+map.removeLayer(viirs);
+viirs = null;
+return;
 }
 
-// Función de Geolocalización con punto azul
-function centrarUbicacion() {
-    if (!navigator.geolocation) {
-        alert("La geolocalización no está soportada en tu navegador.");
-        return;
-    }
+const fecha = new Date(
+Date.now() - (2 * 24 * 60 * 60 * 1000)
+).toISOString().split('T')[0];
 
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
-
-            if (marcadorGps) map.removeLayer(marcadorGps);
-            if (circuloGps) map.removeLayer(circuloGps);
-
-            const iconoAzul = L.divIcon({
-                className: '',
-                html: '<div style="background-color: #38bdf8; width: 20px; height: 20px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 15px rgba(56, 189, 248, 0.9);"></div>',
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-
-            circuloGps = L.circle([lat, lon], {
-                radius: accuracy / 2,
-                color: '#38bdf8',
-                fillColor: '#38bdf8',
-                fillOpacity: 0.2,
-                weight: 1
-            }).addTo(map);
-
-            marcadorGps = L.marker([lat, lon], { icon: iconoAzul })
-                .addTo(map)
-                .bindPopup("<b>Estás aquí</b><br>Precisión: " + Math.round(accuracy) + " metros")
-                .openPopup();
-
-            map.setView([lat, lon], 15);
-        },
-        (error) => {
-            alert("No se pudo obtener tu ubicación.");
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
+viirs = L.tileLayer(
+`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${fecha}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
+{
+opacity:0.75,
+maxZoom:9
 }
+);
 
-window.onload = () => {
-    centrarUbicacion();
+viirs.addTo(map);
+
 };
+
+navigator.geolocation.getCurrentPosition(
+(pos)=>{
+map.setView(
+[pos.coords.latitude,pos.coords.longitude],
+8
+);
+
+L.marker([
+pos.coords.latitude,
+pos.coords.longitude
+]).addTo(map);
+}
+);
+
 </script>
 
-</body>
-</html>
+[/body]
+[/html]
