@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIIRS NASA + Opacidad + GPS</title>
+<title>VIIRS NASA - Sin Líneas</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 html, body { margin: 0; padding: 0; height: 100%; }
@@ -14,6 +14,18 @@ button.active { background: #198754; }
 button.gps { background: #38bdf8; color: #000; }
 .slider-container { display: none; align-items: center; gap: 6px; color: #fff; font-size: 0.7rem; font-family: sans-serif; }
 .slider-container input { cursor: pointer; }
+
+/* ESTO ELIMINA LAS LÍNEAS / CUADRÍCULA DE LOS MOSAICOS SATELITALES */
+.leaflet-tile-pane {
+    image-rendering: auto;
+}
+.viirs-sin-lineas img {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* Un pequeño difuminado de contraste fusiona los bordes de los tiles */
+    filter: contrast(1.02) brightness(1.02);
+}
 </style>
 </head>
 <body>
@@ -69,7 +81,8 @@ btn.onclick = () => {
             maxNativeZoom: 9,
             opacity: 0.7,
             noWrap: true,
-            bounds: [[-90, -180], [90, 180]]
+            bounds: [[-90, -180], [90, 180]],
+            className: 'viirs-sin-lineas' // Aplica la clase CSS para limpiar los bordes
         }
     );
 
