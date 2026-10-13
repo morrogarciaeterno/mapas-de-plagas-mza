@@ -3,42 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NASA VIIRS</title>
+
+<title>VIIRS NASA</title>
 
 <link rel="stylesheet"
-href="https://unpkg.com/leafletle>
-html,body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    font-family:Arial,Helvetica,sans-serif;
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
-#map{
-    width:100%;
-    height:100vh;
+#map {
+    width: 100%;
+    height: 100vh;
 }
 
 .panel{
     position:absolute;
     top:10px;
     left:10px;
-    z-index:9999;
+    z-index:1000;
 }
 
-.btn{
-    background:#0078ff;
+button{
+    padding:10px 15px;
+    background:#0d6efd;
     color:white;
     border:none;
-    padding:10px 15px;
     border-radius:8px;
     cursor:pointer;
-    font-weight:bold;
-}
-
-.btn:hover{
-    background:#005fd1;
 }
 </style>
 </head>
@@ -46,78 +42,35 @@ html,body{
 <body>
 
 <div class="panel">
-    <button class="btn" onclick="toggleVIIRS()">
-        🛰️ Satélite VIIRS
-    </button>
+    <button id="btn">🛰️ Satélite VIIRS</button>
 </div>
 
 <div id="map"></div>
 
-<script src="https://unpkg.com//dist/leaflet.jsscript>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 
 // Crear mapa
-const map = L.map("map").setView([-34.6,-68.5],5);
+const map = L.map('map').setView([-34.6,-68.5],5);
 
-// OpenStreetMap
+// Base OSM
 L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution: "&copy; OpenStreetMap"
-    }
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+    attribution:'© OpenStreetMap'
+}
 ).addTo(map);
 
-// Capa VIIRS
-let viirsLayer = null;
+// Marca Mendoza
+L.marker([-32.89,-68.84])
+.addTo(map)
+.bindPopup('Mendoza')
+.openPopup();
 
-function toggleVIIRS(){
-
-    if(viirsLayer){
-        map.removeLayer(viirsLayer);
-        viirsLayer = null;
-        return;
-    }
-
-    const fecha = new Date().toISOString().split('T')[0];
-
-    viirsLayer = L.tileLayer(
-        `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/${fecha}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-        {
-            attribution:'NASA GIBS',
-            opacity:0.85,
-            maxZoom:9
-        }
-    );
-
-    viirsLayer.addTo(map);
-}
-
-// GPS
-if(navigator.geolocation){
-
-    navigator.geolocation.getCurrentPosition(
-
-        function(pos){
-
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-
-            map.setView([lat,lon],8);
-
-            L.marker([lat,lon])
-             .addTo(map)
-             .bindPopup("📍 Tu ubicación")
-             .openPopup();
-        },
-
-        function(error){
-            console.log(error);
-        }
-
-    );
-
-}
+document.getElementById('btn').onclick = () => {
+    alert('Leaflet funciona correctamente');
+};
 
 </script>
 
