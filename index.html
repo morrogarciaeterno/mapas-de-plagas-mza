@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Satelital y Nubosidad</title>
+<title>Monitor Satelital - Nubes y Luces</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 html,body{
@@ -44,10 +44,11 @@ input{
     width:220px;
 }
 .nubes{background:#2563eb;}
+.luces{background:#ca8a04;}
 .gps{background:#16a34a;}
 .buscar{background:#7c3aed;}
 
-/* Panel flotante de estado del cielo y nubes */
+/* Panel flotante de clima */
 .info-clima {
     position: absolute;
     top: 70px;
@@ -66,13 +67,14 @@ input{
 <body>
 
 <div class="panel">
-    <button id="btnNubes" class="nubes">☁️ Capa Nubes</button>
+    <button id="btnNubes" class="nubes">☁️ Nubes</button>
+    <button id="btnLuces" class="luces">🌃 Luces</button>
     <button id="btnGPS" class="gps">📍 GPS</button>
     <input id="direccion" type="text" placeholder="Dirección o localidad">
     <button id="btnBuscar" class="buscar">🔍 Buscar</button>
 </div>
 
-<!-- Cuadro con la información de la API del clima y nubes -->
+<!-- Cuadro con la información de la API del clima -->
 <div id="infoClima" class="info-clima">☁️ Consultando estado del cielo...</div>
 
 <div id="map"></div>
@@ -82,23 +84,49 @@ input{
 <script>
 const map = L.map('map').setView([-32.89,-68.84], 6);
 
-// Mapa base claro
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+// Capas base para Día y Noche
+const mapBaseDia = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
-}).addTo(map);
+});
 
-// Fecha para la capa de la NASA
+const mapBaseNoche = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© CartoDB'
+});
+
+// Evaluar si es de día (6:00 AM a 8:30 PM)
+function esDeDia() {
+    const ahora = new Date();
+    const tiempoDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
+    return tiempoDecimal >= 6 && tiempoDecimal < 20.5;
+}
+
+if (esDeDia()) {
+    mapBaseDia.addTo(map);
+} else {
+    mapBaseNoche.addTo(map);
+}
+
+// Fechas para las capas de la NASA
 const fechaNubes = new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
 
 const nubes = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' + fechaNubes + '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg', {
     opacity: 0.65, maxNativeZoom: 9, maxZoom: 18
 });
 
+// Capa VIIRS Black Marble (Luces nocturnas)
+const luces = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
+    opacity: 0.75, maxNativeZoom: 8, maxZoom: 18
+});
+
 document.getElementById("btnNubes").onclick = () => {
     if(map.hasLayer(nubes)) map.removeLayer(nubes); else nubes.addTo(map);
 };
 
-// Función simple de API para consultar nubosidad y viento real
+document.getElementById("btnLuces").onclick = () => {
+    if(map.hasLayer(luces)) map.removeLayer(luces); else luces.addTo(map);
+};
+
+// Función de consulta API de clima
 async function consultarClimaAPI(lat, lon) {
     const caja = document.getElementById("infoClima");
     caja.innerHTML = "☁️ Consultando API de clima...";
@@ -136,7 +164,7 @@ function ubicarUsuario(){
         
         consultarClimaAPI(lat, lon);
     }, (err)=>{
-        consultarClimaAPI(-32.89, -68.84); // Default Mendoza
+        consultarClimaAPI(-32.89, -68.84);
     });
 }
 document.getElementById("btnGPS").onclick = ubicarUsuario;
