@@ -227,3 +227,15 @@ document.getElementById("btnBuscar").onclick = async ()=>{
 
     }catch(error){
         console.error(error);
+        alert("Error al buscar dirección");
+    }
+};
+
+window.onload = ()=>{
+    ubicarUsuario();
+    nubes.addTo(map);
+};
+</script>
+
+</body>
+</html>
