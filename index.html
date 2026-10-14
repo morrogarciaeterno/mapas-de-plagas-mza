@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,6 +13,7 @@ html,body{
     margin:0;
     padding:0;
     height:100%;
+    background: #f0f0f0;
 }
 
 #map{
@@ -56,6 +56,21 @@ input{
 .fuego{background:#dc2626;}
 .gps{background:#16a34a;}
 .buscar{background:#7c3aed;}
+
+/* Estilo para el indicador de última actualización */
+.info-actualizacion {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: sans-serif;
+    pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -69,30 +84,59 @@ input{
     <button id="btnBuscar" class="buscar">🔍 Buscar</button>
 </div>
 
+<!-- Etiqueta de última actualización -->
+<div id="infoActualizacion" class="info-actualizacion">Actualizando hora...</div>
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-
 const map = L.map('map').setView([-32.89,-68.84],6);
 
-/* SIEMPRE MAPA CLARO */
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-    attribution:'© OpenStreetMap',
-    maxZoom:19
-}
-).addTo(map);
+// Definimos los mapas base
+const mapBaseDia = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution:'© OpenStreetMap' }
+);
 
-/* FECHAS NASA */
+const mapBaseNoche = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    { attribution:'© OpenStreetMap & CartoDB' }
+);
+
+// Función para evaluar si es de día (de 6:00 AM a 8:30 PM)
+function esDeDia() {
+    const hora = new Date().getHours();
+    const minutos = new Date().getMinutes();
+    const tiempoDecimal = hora + (minutos / 60);
+    return tiempoDecimal >= 6 && tiempoDecimal < 20.5;
+}
+
+// Aplicar el mapa base correspondiente según la hora actual
+if (esDeDia()) {
+    mapBaseDia.addTo(map);
+} else {
+    mapBaseNoche.addTo(map);
+}
+
+// Función para mostrar la hora actual de la última actualización
+function mostrarUltimaActualizacion() {
+    const ahora = new Date();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    
+    document.getElementById("infoActualizacion").innerText = `🕒 Actualizado: ${horas}:${minutos}:${segundos}`;
+}
+
+// Fechas para capas de la NASA
 const fechaNubes = new Date(
-Date.now() - (3 * 24 * 60 * 60 * 1000)
+    Date.now() - (3 * 24 * 60 * 60 * 1000)
 ).toISOString().split('T')[0];
 
 const fechaFuego = new Date(
-Date.now() - 86400000
+    Date.now() - 86400000
 ).toISOString().split('T')[0];
 
 /* NUBES */
@@ -103,7 +147,8 @@ fechaNubes +
 {
     opacity:0.65,
     maxNativeZoom:9,
-    maxZoom:18
+    maxZoom:18,
+    bounds: [[-90, -180], [90, 180]]
 }
 );
 
@@ -129,7 +174,7 @@ fechaFuego +
 }
 );
 
-document.getElementById("btnNubes").onclick=()=>{
+document.getElementById("btnNubes").onclick = ()=>{
     if(map.hasLayer(nubes)){
         map.removeLayer(nubes);
     }else{
@@ -137,7 +182,7 @@ document.getElementById("btnNubes").onclick=()=>{
     }
 };
 
-document.getElementById("btnLuces").onclick=()=>{
+document.getElementById("btnLuces").onclick = ()=>{
     if(map.hasLayer(luces)){
         map.removeLayer(luces);
     }else{
@@ -145,7 +190,7 @@ document.getElementById("btnLuces").onclick=()=>{
     }
 };
 
-document.getElementById("btnFuego").onclick=()=>{
+document.getElementById("btnFuego").onclick = ()=>{
     if(map.hasLayer(fuego)){
         map.removeLayer(fuego);
     }else{
@@ -154,104 +199,89 @@ document.getElementById("btnFuego").onclick=()=>{
 };
 
 /* GPS */
-
 let marcadorGPS;
 
 function ubicarUsuario(){
+    navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
 
-navigator.geolocation.getCurrentPosition(
+            map.flyTo([lat,lon],10,{
+                duration:2
+            });
 
-(pos)=>{
+            if(marcadorGPS){
+                map.removeLayer(marcadorGPS);
+            }
 
-const lat=pos.coords.latitude;
-const lon=pos.coords.longitude;
-
-map.flyTo([lat,lon],10,{
-duration:2
-});
-
-if(marcadorGPS){
-map.removeLayer(marcadorGPS);
+            marcadorGPS = L.marker([lat,lon])
+            .addTo(map)
+            .bindPopup("📍 Tu ubicación")
+            .openPopup();
+        },
+        (err)=>{
+            console.log(err);
+        }
+    );
 }
 
-marcadorGPS=L.marker([lat,lon])
-.addTo(map)
-.bindPopup("📍 Tu ubicación")
-.openPopup();
-
-},
-
-(error)=>{
-alert("No se pudo obtener la ubicación");
-}
-
-);
-
-}
-
-document.getElementById("btnGPS").onclick=ubicarUsuario;
+document.getElementById("btnGPS").onclick = ubicarUsuario;
 
 /* BUSCADOR */
+let marcadorBusqueda = null;
 
-let marcadorBusqueda;
+document.getElementById("btnBuscar").onclick = async ()=>{
+    const texto = document.getElementById("direccion").value.trim();
 
-document.getElementById("btnBuscar").onclick=async()=>{
+    if(!texto){
+        alert("Ingrese una dirección");
+        return;
+    }
 
-const texto=document.getElementById("direccion").value.trim();
+    try{
+        const respuesta = await fetch(
+            'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+            encodeURIComponent(texto)
+        );
 
-if(!texto){
-alert("Ingrese una dirección");
-return;
-}
+        const datos = await respuesta.json();
 
-try{
+        if(datos.length===0){
+            alert("No encontrada");
+            return;
+        }
 
-const respuesta=await fetch(
-'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
-encodeURIComponent(texto)
-);
+        const lat = parseFloat(datos[0].lat);
+        const lon = parseFloat(datos[0].lon);
 
-const datos=await respuesta.json();
+        map.flyTo(
+            [lat,lon],
+            13,
+            {
+                duration:2
+            }
+        );
 
-if(datos.length===0){
-alert("No encontrada");
-return;
-}
+        if(marcadorBusqueda){
+            map.removeLayer(marcadorBusqueda);
+        }
 
-const lat=parseFloat(datos[0].lat);
-const lon=parseFloat(datos[0].lon);
+        marcadorBusqueda = L.marker([lat,lon])
+        .addTo(map)
+        .bindPopup(datos[0].display_name)
+        .openPopup();
 
-map.flyTo([lat,lon],13,{
-duration:2
-});
-
-if(marcadorBusqueda){
-map.removeLayer(marcadorBusqueda);
-}
-
-marcadorBusqueda=L.marker([lat,lon])
-.addTo(map)
-.bindPopup(datos[0].display_name)
-.openPopup();
-
-}catch(e){
-
-alert("Error al buscar dirección");
-
-}
-
+    }catch(error){
+        console.error(error);
+        alert("Error al buscar dirección");
+    }
 };
 
-window.onload=()=>{
-
-setTimeout(()=>{
-map.invalidateSize();
-},300);
-
-ubicarUsuario();
-
+window.onload = ()=>{
+    ubicarUsuario();
+    mostrarUltimaActualizacion();
 };
-
 </script>
 
 </body>
