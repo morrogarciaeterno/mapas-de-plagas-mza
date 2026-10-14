@@ -94,14 +94,14 @@ const fechaFuego = new Date(
     Date.now() - 86400000
 ).toISOString().split('T')[0];
 
-/* NUBES (Capa de Vapor de Agua / Humedad atmosférica global continua sin franjas) */
+/* NUBES (Capa MODIS Terra global corregida para Sudamérica) */
 const nubes = L.tileLayer(
-'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOESEast_Conus_Water_Vapor/default/' +
+'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/' +
 fechaNubes +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
 {
     opacity:0.65,
-    maxNativeZoom:6,
+    maxNativeZoom:9,
     maxZoom:18,
     noWrap: true
 }
@@ -127,8 +127,7 @@ fechaFuego +
     opacity:0.90,
     maxNativeZoom:9,
     maxZoom:18,
-    noWrap: true,
-    transparent: true
+    noWrap: true
 }
 );
 
