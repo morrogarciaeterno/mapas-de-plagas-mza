@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Satelital - Alerta de Granizo</title>
+<title>Monitor Satelital - Alerta de Lluvia</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 html,body{
@@ -63,8 +63,8 @@ input{
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
-/* Alerta de Granizo / Tormenta Severa */
-.alerta-granizo {
+/* Alerta de Lluvia Intensa (Cinta roja llamativa) */
+.alerta-lluvia {
     position: absolute;
     top: 175px;
     left: 10px;
@@ -93,8 +93,8 @@ input{
     <button id="btnBuscar" class="buscar">🔍 Buscar</button>
 </div>
 
-<!-- Cuadro de Alerta de Granizo -->
-<div id="alertaGranizo" class="alerta-granizo">⚠️ Monitoreando riesgo de granizo...</div>
+<!-- Cuadro de Alerta de Lluvia -->
+<div id="alertaLluvia" class="alerta-lluvia">⚠️ Verificando estado de precipitaciones...</div>
 
 <!-- Cuadro con la información de la API del clima -->
 <div id="infoClima" class="info-clima">☁️ Consultando estado del cielo...</div>
@@ -146,40 +146,37 @@ document.getElementById("btnLuces").onclick = () => {
     if(map.hasLayer(luces)) map.removeLayer(luces); else luces.addTo(map);
 };
 
-// Función de consulta API de clima con detección de granizo/tormenta
+// Función de consulta API de clima con alerta sensible de lluvia
 async function consultarClimaAPI(lat, lon) {
     const cajaClima = document.getElementById("infoClima");
-    const cajaAlerta = document.getElementById("alertaGranizo");
+    const cajaAlerta = document.getElementById("alertaLluvia");
     cajaClima.innerHTML = "☁️ Consultando API de clima...";
     
     try {
-        // Solicitamos también el 'weather_code' para identificar tormentas y granizo
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m,weather_code,precipitation`);
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m,precipitation,weather_code`);
         const data = await res.json();
 
         if(data && data.current) {
             const temp = data.current.temperature_2m;
             const nubesPct = data.current.cloud_cover;
             const viento = data.current.wind_speed_10m;
-            const codigoClima = data.current.weather_code;
             const precipitacion = data.current.precipitation;
+            const codigoClima = data.current.weather_code;
 
             cajaClima.innerHTML = `
                 <b>📊 Estado Actual:</b><br>
                 🌡️ Temperatura: ${temp}°C<br>
                 ☁️ Nubosidad: <b>${nubesPct}%</b><br>
+                🌧️ Lluvia: ${precipitacion} mm<br>
                 💨 Viento: ${viento} km/h
             `;
 
-            // Códigos WMO de tormentas con granizo: 96 y 99 (también advertimos código 95 para tormentas eléctricas fuertes)
-            if (codigoClima === 96 || codigoClima === 99) {
-                cajaAlerta.innerHTML = `🧊 <b>¡ALERTA DE GRANIZO!</b><br>Se detectan nubes de tormenta severa con reporte de granizo en la zona.`;
-                cajaAlerta.style.display = "block";
-            } else if (codigoClima === 95) {
-                cajaAlerta.innerHTML = `⚡ <b>¡Tormenta Eléctrica!</b><br>Precaución por actividad eléctrica y lluvias intensas.`;
+            // Condición optimizada: Si llueve (preciptación > 0) o el código WMO indica lluvia/tormenta (códigos 51 al 99)
+            if (precipitacion > 0 || (codigoClima >= 51 && codigoClima <= 99)) {
+                cajaAlerta.innerHTML = `⛈️ <b>¡ALERTA: TREMENDA LLUVIA!</b><br>Precipitaciones activas detectadas en la zona (${precipitacion} mm).`;
                 cajaAlerta.style.display = "block";
             } else {
-                cajaAlerta.style.display = "none"; // Sin alertas de granizo
+                cajaAlerta.style.display = "none"; // Oculta si no hay lluvia
             }
         }
     } catch(e) {
@@ -199,7 +196,7 @@ function ubicarUsuario(){
         
         consultarClimaAPI(lat, lon);
     }, (err)=>{
-        consultarClimaAPI(-32.89, -68.84);
+        consultarClimalAPI(-32.89, -68.84);
     });
 }
 document.getElementById("btnGPS").onclick = ubicarUsuario;
