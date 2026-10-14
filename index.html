@@ -73,37 +73,27 @@ input{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-const map = L.map('map', {
-    maxBounds: [[-90, -180], [90, 180]],
-    maxBoundsViscosity: 1.0
-}).setView([-32.89,-68.84],6);
+const map = L.map('map').setView([-32.89,-68.84],6);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {
-    attribution:'© OpenStreetMap',
-    noWrap: true
+    attribution:'© OpenStreetMap'
 }
 ).addTo(map);
 
-const fechaNubes = new Date(
+const fecha = new Date(
     Date.now() - (2 * 24 * 60 * 60 * 1000)
 ).toISOString().split('T')[0];
 
-const fechaFuego = new Date(
-    Date.now() - 86400000
-).toISOString().split('T')[0];
-
-/* NUBES (VIIRS con maxNativeZoom 8 para mejor expansión visual) */
+/* NUBES (Con el ajuste exacto de tu ejemplo) */
 const nubes = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' +
-fechaNubes +
+fecha +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
 {
     opacity:0.75,
-    maxNativeZoom:8,
-    maxZoom:18,
-    noWrap: true
+    maxZoom:9
 }
 );
 
@@ -113,21 +103,19 @@ const luces = L.tileLayer(
 {
     opacity:0.75,
     maxNativeZoom:8,
-    maxZoom:18,
-    noWrap: true
+    maxZoom:18
 }
 );
 
 /* FUEGO */
 const fuego = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/' +
-fechaFuego +
+fecha +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png',
 {
     opacity:0.90,
     maxNativeZoom:9,
-    maxZoom:18,
-    noWrap: true
+    maxZoom:18
 }
 );
 
