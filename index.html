@@ -94,14 +94,14 @@ const fechaFuego = new Date(
     Date.now() - 86400000
 ).toISOString().split('T')[0];
 
-/* NUBES (Capa MODIS Terra global corregida para Sudamérica) */
+/* NUBES (VIIRS con maxNativeZoom 8 para mejor expansión visual) */
 const nubes = L.tileLayer(
-'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/' +
+'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' +
 fechaNubes +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
 {
-    opacity:0.65,
-    maxNativeZoom:9,
+    opacity:0.75,
+    maxNativeZoom:8,
     maxZoom:18,
     noWrap: true
 }
