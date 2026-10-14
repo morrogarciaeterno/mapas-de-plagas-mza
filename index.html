@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <style>
-
 html,body{
     margin:0;
     padding:0;
@@ -56,39 +55,17 @@ input{
 .fuego{background:#dc2626;}
 .gps{background:#16a34a;}
 .buscar{background:#7c3aed;}
-
 </style>
-
 </head>
 <body>
 
 <div class="panel">
-
-    <button id="btnNubes" class="nubes">
-        ☁️ Nubes
-    </button>
-
-    <button id="btnLuces" class="luces">
-        🌃 Luces
-    </button>
-
-    <button id="btnFuego" class="fuego">
-        🔥 Fuego
-    </button>
-
-    <button id="btnGPS" class="gps">
-        📍 GPS
-    </button>
-
-    <input
-        id="direccion"
-        type="text"
-        placeholder="Dirección o localidad">
-
-    <button id="btnBuscar" class="buscar">
-        🔍 Buscar
-    </button>
-
+    <button id="btnNubes" class="nubes">☁️ Nubes</button>
+    <button id="btnLuces" class="luces">🌃 Luces</button>
+    <button id="btnFuego" class="fuego">🔥 Fuego</button>
+    <button id="btnGPS" class="gps">📍 GPS</button>
+    <input id="direccion" type="text" placeholder="Dirección o localidad">
+    <button id="btnBuscar" class="buscar">🔍 Buscar</button>
 </div>
 
 <div id="map"></div>
@@ -96,7 +73,6 @@ input{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-
 const map = L.map('map').setView([-32.89,-68.84],6);
 
 L.tileLayer(
@@ -106,17 +82,16 @@ L.tileLayer(
 }
 ).addTo(map);
 
-// Usamos 2 días atrás para asegurar disponibilidad en el servidor GIBS de la NASA
+// Usamos 3 días atrás para asegurar que la NASA ya haya cerrado y publicado el mosaico completo
 const fechaNubes = new Date(
-    Date.now() - (2 * 24 * 60 * 60 * 1000)
+    Date.now() - (3 * 24 * 60 * 60 * 1000)
 ).toISOString().split('T')[0];
 
 const fechaFuego = new Date(
     Date.now() - 86400000
 ).toISOString().split('T')[0];
 
-/* NUBES */
-
+/* NUBES (Corregido con endpoint estable de la NASA GIBS) */
 const nubes = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' +
 fechaNubes +
@@ -124,12 +99,12 @@ fechaNubes +
 {
     opacity:0.65,
     maxNativeZoom:9,
-    maxZoom:18
+    maxZoom:18,
+    bounds: [[-90, -180], [90, 180]]
 }
 );
 
 /* LUCES */
-
 const luces = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
 {
@@ -140,7 +115,6 @@ const luces = L.tileLayer(
 );
 
 /* FUEGO */
-
 const fuego = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_Thermal_Anomalies_375m_All/default/' +
 fechaFuego +
@@ -153,143 +127,113 @@ fechaFuego +
 );
 
 document.getElementById("btnNubes").onclick = ()=>{
-
     if(map.hasLayer(nubes)){
         map.removeLayer(nubes);
     }else{
         nubes.addTo(map);
     }
-
 };
 
 document.getElementById("btnLuces").onclick = ()=>{
-
     if(map.hasLayer(luces)){
         map.removeLayer(luces);
     }else{
         luces.addTo(map);
     }
-
 };
 
 document.getElementById("btnFuego").onclick = ()=>{
-
     if(map.hasLayer(fuego)){
         map.removeLayer(fuego);
     }else{
         fuego.addTo(map);
     }
-
 };
 
 /* GPS */
-
 let marcadorGPS;
 
 function ubicarUsuario(){
+    navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
 
-navigator.geolocation.getCurrentPosition(
+            map.flyTo([lat,lon],10,{
+                duration:2
+            });
 
-(pos)=>{
+            if(marcadorGPS){
+                map.removeLayer(marcadorGPS);
+            }
 
-const lat = pos.coords.latitude;
-const lon = pos.coords.longitude;
-
-map.flyTo([lat,lon],10,{
-duration:2
-});
-
-if(marcadorGPS){
-map.removeLayer(marcadorGPS);
-}
-
-marcadorGPS = L.marker([lat,lon])
-.addTo(map)
-.bindPopup("📍 Tu ubicación")
-.openPopup();
-
-},
-
-(err)=>{
-console.log(err);
-}
-
-);
-
+            marcadorGPS = L.marker([lat,lon])
+            .addTo(map)
+            .bindPopup("📍 Tu ubicación")
+            .openPopup();
+        },
+        (err)=>{
+            console.log(err);
+        }
+    );
 }
 
 document.getElementById("btnGPS").onclick = ubicarUsuario;
 
 /* BUSCADOR */
-
 let marcadorBusqueda = null;
 
 document.getElementById("btnBuscar").onclick = async ()=>{
+    const texto = document.getElementById("direccion").value.trim();
 
-const texto =
-document.getElementById("direccion").value.trim();
+    if(!texto){
+        alert("Ingrese una dirección");
+        return;
+    }
 
-if(!texto){
-alert("Ingrese una dirección");
-return;
-}
+    try{
+        const respuesta = await fetch(
+            'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
+            encodeURIComponent(texto)
+        );
 
-try{
+        const datos = await respuesta.json();
 
-const respuesta = await fetch(
-'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' +
-encodeURIComponent(texto)
-);
+        if(datos.length===0){
+            alert("No encontrada");
+            return;
+        }
 
-const datos = await respuesta.json();
+        const lat = parseFloat(datos[0].lat);
+        const lon = parseFloat(datos[0].lon);
 
-if(datos.length===0){
+        map.flyTo(
+            [lat,lon],
+            13,
+            {
+                duration:2
+            }
+        );
 
-alert("No encontrada");
-return;
+        if(marcadorBusqueda){
+            map.removeLayer(marcadorBusqueda);
+        }
 
-}
+        marcadorBusqueda = L.marker([lat,lon])
+        .addTo(map)
+        .bindPopup(datos[0].display_name)
+        .openPopup();
 
-const lat = parseFloat(datos[0].lat);
-const lon = parseFloat(datos[0].lon);
-
-map.flyTo(
-[lat,lon],
-13,
-{
-duration:2
-}
-);
-
-if(marcadorBusqueda){
-map.removeLayer(marcadorBusqueda);
-}
-
-marcadorBusqueda = L.marker([lat,lon])
-.addTo(map)
-.bindPopup(datos[0].display_name)
-.openPopup();
-
-}
-catch(error){
-
-console.error(error);
-
-alert("Error al buscar dirección");
-
-}
-
+    }catch(error){
+        console.error(error);
+        alert("Error al buscar dirección");
+    }
 };
 
 window.onload = ()=>{
-
-ubicarUsuario();
-
-/* Activa nubes al iniciar */
-nubes.addTo(map);
-
+    ubicarUsuario();
+    nubes.addTo(map);
 };
-
 </script>
 
 </body>
