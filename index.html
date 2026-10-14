@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Satelital - Nubes y Luces</title>
+<title>Monitor Satelital - Alerta de Granizo</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 html,body{
@@ -62,6 +62,25 @@ input{
     font-family: sans-serif;
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
+
+/* Alerta de Granizo / Tormenta Severa */
+.alerta-granizo {
+    position: absolute;
+    top: 175px;
+    left: 10px;
+    z-index: 9999;
+    background: rgba(220, 38, 38, 0.95);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: sans-serif;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    display: none;
+    max-width: 280px;
+    border-left: 5px solid #ffeb3b;
+}
 </style>
 </head>
 <body>
@@ -74,6 +93,9 @@ input{
     <button id="btnBuscar" class="buscar">🔍 Buscar</button>
 </div>
 
+<!-- Cuadro de Alerta de Granizo -->
+<div id="alertaGranizo" class="alerta-granizo">⚠️ Monitoreando riesgo de granizo...</div>
+
 <!-- Cuadro con la información de la API del clima -->
 <div id="infoClima" class="info-clima">☁️ Consultando estado del cielo...</div>
 
@@ -84,7 +106,7 @@ input{
 <script>
 const map = L.map('map').setView([-32.89,-68.84], 6);
 
-// Capas base para Día y Noche
+// Capas base Día y Noche
 const mapBaseDia = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
 });
@@ -93,7 +115,6 @@ const mapBaseNoche = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}
     attribution: '© CartoDB'
 });
 
-// Evaluar si es de día (6:00 AM a 8:30 PM)
 function esDeDia() {
     const ahora = new Date();
     const tiempoDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
@@ -113,7 +134,6 @@ const nubes = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VI
     opacity: 0.65, maxNativeZoom: 9, maxZoom: 18
 });
 
-// Capa VIIRS Black Marble (Luces nocturnas)
 const luces = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
     opacity: 0.75, maxNativeZoom: 8, maxZoom: 18
 });
@@ -126,29 +146,44 @@ document.getElementById("btnLuces").onclick = () => {
     if(map.hasLayer(luces)) map.removeLayer(luces); else luces.addTo(map);
 };
 
-// Función de consulta API de clima
+// Función de consulta API de clima con detección de granizo/tormenta
 async function consultarClimaAPI(lat, lon) {
-    const caja = document.getElementById("infoClima");
-    caja.innerHTML = "☁️ Consultando API de clima...";
+    const cajaClima = document.getElementById("infoClima");
+    const cajaAlerta = document.getElementById("alertaGranizo");
+    cajaClima.innerHTML = "☁️ Consultando API de clima...";
     
     try {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m`);
+        // Solicitamos también el 'weather_code' para identificar tormentas y granizo
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m,weather_code,precipitation`);
         const data = await res.json();
 
         if(data && data.current) {
             const temp = data.current.temperature_2m;
             const nubesPct = data.current.cloud_cover;
             const viento = data.current.wind_speed_10m;
+            const codigoClima = data.current.weather_code;
+            const precipitacion = data.current.precipitation;
 
-            caja.innerHTML = `
+            cajaClima.innerHTML = `
                 <b>📊 Estado Actual:</b><br>
                 🌡️ Temperatura: ${temp}°C<br>
                 ☁️ Nubosidad: <b>${nubesPct}%</b><br>
                 💨 Viento: ${viento} km/h
             `;
+
+            // Códigos WMO de tormentas con granizo: 96 y 99 (también advertimos código 95 para tormentas eléctricas fuertes)
+            if (codigoClima === 96 || codigoClima === 99) {
+                cajaAlerta.innerHTML = `🧊 <b>¡ALERTA DE GRANIZO!</b><br>Se detectan nubes de tormenta severa con reporte de granizo en la zona.`;
+                cajaAlerta.style.display = "block";
+            } else if (codigoClima === 95) {
+                cajaAlerta.innerHTML = `⚡ <b>¡Tormenta Eléctrica!</b><br>Precaución por actividad eléctrica y lluvias intensas.`;
+                cajaAlerta.style.display = "block";
+            } else {
+                cajaAlerta.style.display = "none"; // Sin alertas de granizo
+            }
         }
     } catch(e) {
-        caja.innerHTML = "⚠️ Error al consultar clima";
+        cajaClima.innerHTML = "⚠️ Error al consultar clima";
         console.error(e);
     }
 }
