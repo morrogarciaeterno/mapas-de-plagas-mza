@@ -73,12 +73,16 @@ input{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-const map = L.map('map').setView([-32.89,-68.84],6);
+const map = L.map('map', {
+    maxBounds: [[-90, -180], [90, 180]],
+    maxBoundsViscosity: 1.0
+}).setView([-32.89,-68.84],6);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {
-    attribution:'© OpenStreetMap'
+    attribution:'© OpenStreetMap',
+    noWrap: true
 }
 ).addTo(map);
 
@@ -86,14 +90,16 @@ const fecha = new Date(
     Date.now() - (2 * 24 * 60 * 60 * 1000)
 ).toISOString().split('T')[0];
 
-/* NUBES (Con el ajuste exacto de tu ejemplo) */
+/* NUBES (Con noWrap: true y maxNativeZoom para evitar duplicación y pantalla negra) */
 const nubes = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' +
 fecha +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
 {
-    opacity:0.75,
-    maxZoom:9
+    opacity: 0.75,
+    maxNativeZoom: 9,
+    maxZoom: 18,
+    noWrap: true
 }
 );
 
@@ -101,9 +107,10 @@ fecha +
 const luces = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png',
 {
-    opacity:0.75,
-    maxNativeZoom:8,
-    maxZoom:18
+    opacity: 0.75,
+    maxNativeZoom: 8,
+    maxZoom: 18,
+    noWrap: true
 }
 );
 
@@ -113,9 +120,10 @@ const fuego = L.tileLayer(
 fecha +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png',
 {
-    opacity:0.90,
-    maxNativeZoom:9,
-    maxZoom:18
+    opacity: 0.90,
+    maxNativeZoom: 9,
+    maxZoom: 18,
+    noWrap: true
 }
 );
 
@@ -219,15 +227,3 @@ document.getElementById("btnBuscar").onclick = async ()=>{
 
     }catch(error){
         console.error(error);
-        alert("Error al buscar dirección");
-    }
-};
-
-window.onload = ()=>{
-    ubicarUsuario();
-    nubes.addTo(map);
-};
-</script>
-
-</body>
-</html>
