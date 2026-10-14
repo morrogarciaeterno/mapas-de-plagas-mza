@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -75,14 +76,31 @@ input{
 <script>
 const map = L.map('map').setView([-32.89,-68.84],6);
 
-L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-    attribution:'© OpenStreetMap'
-}
-).addTo(map);
+// Definimos los mapas base para Día y Noche
+const mapBaseDia = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution:'© OpenStreetMap' }
+);
 
-// Usamos 3 días atrás para asegurar que la NASA ya haya cerrado y publicado el mosaico completo
+const mapBaseNoche = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    { attribution:'© OpenStreetMap & CartoDB' }
+);
+
+// Función para evaluar si es de día (de 6:00 AM a 7:00 PM) o de noche
+function esDeDia() {
+    const hora = new Date().getHours();
+    return hora >= 6 && hora < 19;
+}
+
+// Aplicar el mapa base correspondiente según la hora actual
+if (esDeDia()) {
+    mapBaseDia.addTo(map);
+} else {
+    mapBaseNoche.addTo(map);
+}
+
+// Fechas para capas de la NASA
 const fechaNubes = new Date(
     Date.now() - (3 * 24 * 60 * 60 * 1000)
 ).toISOString().split('T')[0];
@@ -91,7 +109,7 @@ const fechaFuego = new Date(
     Date.now() - 86400000
 ).toISOString().split('T')[0];
 
-/* NUBES (Corregido con endpoint estable de la NASA GIBS) */
+/* NUBES */
 const nubes = L.tileLayer(
 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' +
 fechaNubes +
@@ -232,7 +250,7 @@ document.getElementById("btnBuscar").onclick = async ()=>{
 
 window.onload = ()=>{
     ubicarUsuario();
-    nubes.addTo(map);
+    // Ya no se cargan las nubes automáticamente al iniciar para que mande el mapa base diurno/nocturno
 };
 </script>
 
