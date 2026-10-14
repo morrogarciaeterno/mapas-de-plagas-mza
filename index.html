@@ -268,4 +268,29 @@ map.removeLayer(marcadorBusqueda);
 marcadorBusqueda = L.marker([lat,lon])
 .addTo(map)
 .bindPopup(datos[0].display_name)
-.openPopup()
+.openPopup();
+
+}
+catch(error){
+
+console.error(error);
+
+alert("Error al buscar dirección");
+
+}
+
+};
+
+window.onload = ()=>{
+
+ubicarUsuario();
+
+/* Activa nubes al iniciar */
+nubes.addTo(map);
+
+};
+
+</script>
+
+</body>
+</html>
