@@ -73,12 +73,16 @@ input{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-const map = L.map('map').setView([-32.89,-68.84],6);
+const map = L.map('map', {
+    maxBounds: [[-90, -180], [90, 180]],
+    maxBoundsViscosity: 1.0
+}).setView([-32.89,-68.84],6);
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {
-    attribution:'© OpenStreetMap'
+    attribution:'© OpenStreetMap',
+    noWrap: true
 }
 ).addTo(map);
 
@@ -90,14 +94,14 @@ const fechaFuego = new Date(
     Date.now() - 86400000
 ).toISOString().split('T')[0];
 
-/* NUBES (Capa corregida para cobertura global diurna/nocturna sin franjas oscuras vacías) */
+/* NUBES (Capa de Vapor de Agua / Humedad atmosférica global continua sin franjas) */
 const nubes = L.tileLayer(
-'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Aqua_CorrectedReflectance_TrueColor/default/' +
+'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOESEast_Conus_Water_Vapor/default/' +
 fechaNubes +
 '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
 {
     opacity:0.65,
-    maxNativeZoom:9,
+    maxNativeZoom:6,
     maxZoom:18,
     noWrap: true
 }
@@ -123,7 +127,8 @@ fechaFuego +
     opacity:0.90,
     maxNativeZoom:9,
     maxZoom:18,
-    noWrap: true
+    noWrap: true,
+    transparent: true
 }
 );
 
