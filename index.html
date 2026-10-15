@@ -16,6 +16,39 @@ body{
 
 h2{
     color: #1565c0;
+    margin-bottom: 5px;
+}
+
+/* Banner de Alerta General superior */
+#banner-alerta {
+    background: #e2e8f0;
+    color: #333;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.12);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+#banner-alerta.alerta-verde { background: #d4edda; color: #155724; border-left: 6px solid #28a745; }
+#banner-alerta.alerta-amarillo { background: #fff3cd; color: #856404; border-left: 6px solid #ffc107; }
+#banner-alerta.alerta-rojo { background: #f8d7da; color: #721c24; border-left: 6px solid #dc3545; }
+
+.banner-icono {
+    font-size: 32px;
+}
+
+.banner-texto h4 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+}
+
+.banner-texto p {
+    margin: 0;
+    font-size: 14px;
 }
 
 .card{
@@ -70,6 +103,15 @@ canvas{
 
 <h2>🌎 Territoria Meteo</h2>
 
+<!-- Banner inteligente superior de advertencia -->
+<div id="banner-alerta" class="alerta-verde">
+    <div class="banner-icono" id="banner-icono">✅</div>
+    <div class="banner-texto">
+        <h4 id="banner-titulo">Condiciones Estables</h4>
+        <p id="banner-desc">Analizando variables meteorológicas de la zona...</p>
+    </div>
+</div>
+
 <div class="card">
 <h3>📍 Ubicación</h3>
 <div class="valor" id="ubicacion" style="font-size: 18px;">
@@ -93,8 +135,8 @@ Buscando ubicación...
 </div>
 
 <div class="card">
-<h3>🌬️ Viento</h3>
-<div class="valor" id="viento">--</div>
+<h3>🌬️ Viento y Dirección</h3>
+<div class="valor" id="viento" style="font-size: 20px;">--</div>
 </div>
 
 <div class="card">
@@ -170,8 +212,48 @@ function mostrarRiesgoConCirculo(id, valor){
     `;
 }
 
+function convertirGradosAcardinal(grados) {
+    const val = Math.floor((grados / 22.5) + 0.5);
+    const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+    return arr[(val % 16)];
+}
+
+function actualizarBannerAlerta(riesgos) {
+    const banner = document.getElementById("banner-alerta");
+    const icono = document.getElementById("banner-icono");
+    const titulo = document.getElementById("banner-titulo");
+    const desc = document.getElementById("banner-desc");
+
+    // Encontrar el riesgo máximo detectado
+    let maxRiesgo = 0;
+    let tipoCritico = "Estable";
+
+    for(let r in riesgos){
+        if(riesgos[r].valor > maxRiesgo){
+            maxRiesgo = riesgos[r].valor;
+            tipoCritico = riesgos[r].nombre;
+        }
+    }
+
+    if(maxRiesgo >= 70){
+        banner.className = "alerta-rojo";
+        icono.innerHTML = "⚠️";
+        titulo.innerHTML = `ALERTA ALTA: Riesgo de ${tipoCritico} (${maxRiesgo}%)`;
+        desc.innerHTML = "Condiciones atmosféricas críticas. Se recomienda extremar precauciones en la zona.";
+    } else if(maxRiesgo >= 30){
+        banner.className = "alerta-amarillo";
+        icono.innerHTML = "⚡";
+        titulo.innerHTML = `Atención: Posible inestabilidad por ${tipoCritico} (${maxRiesgo}%)`;
+        desc.innerHTML = "Variables meteorológicas moderadas. Monitorear cambios bruscos de presión o viento.";
+    } else {
+        banner.className = "alerta-verde";
+        icono.innerHTML = "✅";
+        titulo.innerHTML = "Condiciones Estables";
+        desc.innerHTML = "No se detectan alertas críticas en los indicadores actuales.";
+    }
+}
+
 function guardarPresion(valor){
-    // Evitar duplicar el mismo valor consecutivo exacto seguido
     const ultimo = historialPresion[historialPresion.length - 1];
     if(!ultimo || ultimo.presion !== valor){
         historialPresion.push({
@@ -191,8 +273,6 @@ function guardarPresion(valor){
 function dibujarGrafico(){
     const canvas = document.getElementById("grafico");
     const ctx = canvas.getContext("2d");
-    
-    // Ajustar resolución interna para que se vea nítido en pantallas retina
     const w = canvas.width;
     const h = canvas.height;
 
@@ -214,7 +294,6 @@ function dibujarGrafico(){
     const maxGraf = max + margenExtra;
     const rango = maxGraf - minGraf;
 
-    // Dibujar líneas de guía horizontales de fondo
     ctx.strokeStyle = "#edf2f7";
     ctx.lineWidth = 1;
     for(let i = 1; i <= 3; i++){
@@ -225,19 +304,16 @@ function dibujarGrafico(){
         ctx.stroke();
     }
 
-    // Coordenadas de los puntos
     const puntos = historialPresion.map((dato, i) => {
         const x = 50 + (i / (historialPresion.length - 1)) * (w - 70);
         const y = h - 25 - (((dato.presion - minGraf) / rango) * (h - 50));
         return { x, y, presion: dato.presion, hora: dato.hora };
     });
 
-    // Crear degradado para el área bajo la curva
     const gradiente = ctx.createLinearGradient(0, 0, 0, h);
     gradiente.addColorStop(0, "rgba(21, 101, 192, 0.25)");
     gradiente.addColorStop(1, "rgba(21, 101, 192, 0.0)");
 
-    // Dibujar área sombreada
     ctx.beginPath();
     ctx.moveTo(puntos[0].x, h - 20);
     puntos.forEach(p => ctx.lineTo(p.x, p.y));
@@ -245,7 +321,6 @@ function dibujarGrafico(){
     ctx.fillStyle = gradiente;
     ctx.fill();
 
-    // Dibujar línea principal suave
     ctx.beginPath();
     puntos.forEach((p, i) => {
         if(i === 0) ctx.moveTo(p.x, p.y);
@@ -255,9 +330,7 @@ function dibujarGrafico(){
     ctx.lineWidth = 3;
     ctx.stroke();
 
-    // Dibujar puntos y etiquetas de valores extremos
     puntos.forEach((p, i) => {
-        // Círculo en cada punto
         ctx.beginPath();
         ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
@@ -266,7 +339,6 @@ function dibujarGrafico(){
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Mostrar hora y valor solo en el primer y último punto para no ensuciar visualmente
         if(i === 0 || i === puntos.length - 1){
             ctx.font = "10px Arial";
             ctx.fillStyle = "#555";
@@ -299,7 +371,8 @@ async function cargarClima(lat, lon){
         document.getElementById("ubicacion").innerHTML = "📍 Ubicación detectada";
     }
 
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,cloud_cover`;
+    // Solicitamos también wind_direction_10m a Open-Meteo
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,cloud_cover`;
     
     const r = await fetch(url);
     const d = await r.json();
@@ -308,12 +381,12 @@ async function cargarClima(lat, lon){
     const h = d.current.relative_humidity_2m;
     const p = d.current.surface_pressure;
     const v = d.current.wind_speed_10m;
+    const dirGrados = d.current.wind_direction_10m;
     const n = d.current.cloud_cover;
 
-    // Cálculo del Punto de Rocío (Fórmula aproximada de Magnus-Tetens simplificada)
     const rocio = (t - ((100 - h) / 5)).toFixed(1);
+    const dirCardinal = convertirGradosAcardinal(dirGrados);
 
-    // Tendencia de presión basada en el histórico previo
     let tendenciaHTML = p + " hPa";
     if(historialPresion.length > 0){
         const ultimaPresion = historialPresion[historialPresion.length - 1].presion;
@@ -326,11 +399,11 @@ async function cargarClima(lat, lon){
     document.getElementById("temp").innerHTML = t + " °C";
     document.getElementById("humedad").innerHTML = h + " %";
     document.getElementById("rocio").innerHTML = rocio + " °C";
-    document.getElementById("viento").innerHTML = v + " km/h";
+    document.getElementById("viento").innerHTML = `${v} km/h (${dirCardinal})`;
     document.getElementById("presion").innerHTML = tendenciaHTML;
     document.getElementById("nubes").innerHTML = n + " %";
 
-    // --- CÁLCULO DE RIESGOS E ÍNDICES ---
+    // --- CÁLCULO DE RIESGOS ---
 
     let helada = 0;
     if(t < 8) helada += 40;
@@ -381,6 +454,15 @@ async function cargarClima(lat, lon){
     mostrarRiesgoConCirculo("incendio", incendio);
     mostrarRiesgoConCirculo("zonda", zonda);
     mostrarRiesgoConCirculo("polen", polen);
+
+    // Actualizar el Banner Superior con un objeto resumen
+    actualizarBannerAlerta({
+        helada: { nombre: "Helada", valor: helada },
+        tormenta: { nombre: "Tormenta", valor: tormenta },
+        granizo: { nombre: "Granizo", valor: granizo },
+        incendio: { nombre: "Incendio", valor: incendio },
+        zonda: { nombre: "Zonda", valor: zonda }
+    });
 
     guardarPresion(p);
 }
