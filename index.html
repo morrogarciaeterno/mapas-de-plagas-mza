@@ -121,6 +121,11 @@ Buscando ubicación...
 </div>
 
 <div class="card">
+<h3>🌿 Índice de Alergias / Polen</h3>
+<div class="valor" id="polen">--</div>
+</div>
+
+<div class="card">
 <h3>📈 Histórico de Presión</h3>
 <canvas id="grafico" width="450" height="120"></canvas>
 </div>
@@ -192,7 +197,6 @@ function dibujarGrafico(){
 
 async function cargarClima(lat, lon){
     try{
-        // Geolocalización inversa con Nominatim (con User-Agent obligatorio)
         const geo = await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
             { headers: { 'User-Agent': 'TerritoriaMeteoApp/1.0' } }
@@ -213,7 +217,6 @@ async function cargarClima(lat, lon){
         document.getElementById("ubicacion").innerHTML = "📍 Ubicación detectada";
     }
 
-    // Datos de Open-Meteo
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,cloud_cover`;
     
     const r = await fetch(url);
@@ -231,7 +234,7 @@ async function cargarClima(lat, lon){
     document.getElementById("presion").innerHTML = p + " hPa";
     document.getElementById("nubes").innerHTML = n + " %";
 
-    // --- CÁLCULO DE RIESGOS ---
+    // --- CÁLCULO DE RIESGOS E ÍNDICES ---
 
     // 1. HELADA
     let helada = 0;
@@ -261,24 +264,33 @@ async function cargarClima(lat, lon){
     if(h < 25) incendio += 30;
     if(v > 20) incendio += 30;
 
-    // 5. ZONDA (Temperatura alta, humedad muy baja y vientos fuertes)
+    // 5. ZONDA
     let zonda = 0;
     if(t > 22) zonda += 30;
     if(t > 28) zonda += 20;
     if(h < 30) zonda += 30;
     if(v > 15) zonda += 20;
 
+    // 6. POLEN / ALERGIAS
+    let polen = 0;
+    if(t > 15) polen += 30;
+    if(t > 22) polen += 20;
+    if(h < 50) polen += 30;
+    if(v > 10) polen += 20;
+
     helada = Math.min(100, helada);
     tormenta = Math.min(100, tormenta);
     granizo = Math.min(100, granizo);
     incendio = Math.min(100, incendio);
     zonda = Math.min(100, zonda);
+    polen = Math.min(100, polen);
 
     mostrarRiesgoConCirculo("helada", helada);
     mostrarRiesgoConCirculo("tormenta", tormenta);
     mostrarRiesgoConCirculo("granizo", granizo);
     mostrarRiesgoConCirculo("incendio", incendio);
     mostrarRiesgoConCirculo("zonda", zonda);
+    mostrarRiesgoConCirculo("polen", polen);
 
     guardarPresion(p);
 }
@@ -294,7 +306,6 @@ function iniciar(){
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
             
-            // Guardamos lat/lon en variables globales o las reutilizamos en el timer
             window.userLat = lat;
             window.userLon = lon;
 
@@ -310,7 +321,6 @@ function iniciar(){
 window.onload = function(){
     iniciar();
 
-    // El timer actualiza cada 5 minutos usando la última ubicación guardada sin volver a pedir permisos molestos al GPS
     setInterval(function(){
         if(window.userLat && window.userLon){
             cargarClima(window.userLat, window.userLon);
