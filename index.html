@@ -1,3 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Territoria Meteo</title>
+
+<style>
+
+body{
+font-family:Arial,sans-serif;
+background:#f4f6f9;
+padding:10px;
+margin:0;
+}
+
+h2{
+color:#1565c0;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:10px;
+border-radius:12px;
+box-shadow:0 2px 5px rgba(0,0,0,.10);
+}
+
+.valor{
+font-size:24px;
+font-weight:bold;
+}
+
+.verde{color:#2e7d32;}
+.amarillo{color:#f9a825;}
+.rojo{color:#c62828;}
+
+canvas{
+    width:100%;
+    max-width:300px;   /* ancho máximo */
+    height:120px;      /* alto fijo */
+    display:block;
+    margin:auto;
+    background:white;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>🌎 Territoria Meteo</h2>
+
+<div class="card">
+<h3>📍 Ubicación</h3>
+<div class="valor" id="ubicacion">
+Buscando ubicación...
+</div>
+</div>
+
+<div class="card">
+<h3>🌡️ Temperatura</h3>
+<div class="valor" id="temp">--</div>
+</div>
+
+<div class="card">
+<h3>💧 Humedad</h3>
+<div class="valor" id="humedad">--</div>
+</div>
+
+<div class="card">
+<h3>🌬️ Viento</h3>
+<div class="valor" id="viento">--</div>
+</div>
+
+<div class="card">
+<h3>☁️ Nubosidad</h3>
+<div class="valor" id="nubes">--</div>
+</div>
+
+<div class="card">
+<h3>📊 Presión</h3>
+<div class="valor" id="presion">--</div>
+</div>
+
+<div class="card">
+<h3>❄️ Helada</h3>
+<div class="valor" id="helada">--</div>
+</div>
+
+<div class="card">
+<h3>⛈️ Tormenta</h3>
+<div class="valor" id="tormenta">--</div>
+</div>
+
+<div class="card">
+<h3>🧊 Granizo</h3>
+<div class="valor" id="granizo">--</div>
+</div>
+
+<div class="card">
+<h3>🔥 Incendio</h3>
+<div class="valor" id="incendio">--</div>
+</div>
+
+<div class="card">
+<h3>📈 Histórico de Presión</h3>
+<canvas id="grafico" width="450" height="120"></canvas>
+</div>
+
+<script>
+
+let historialPresion =
+JSON.parse(
+localStorage.getItem("historialPresion")
+) || [];
+
+function claseColor(valor){
+
+if(valor < 30) return "verde";
+if(valor < 70) return "amarillo";
+return "rojo";
+
+}
+
+function mostrarRiesgo(id,valor){
+
+document.getElementById(id).innerHTML =
+'<span class="' +
+claseColor(valor) +
+'">' +
+valor +
+'%</span>';
+
+}
+
+function guardarPresion(valor){
+
+historialPresion.push({
+hora:new Date().toLocaleTimeString(),
+presion:valor
+});
+
+if(historialPresion.length > 50){
+historialPresion.shift();
+}
+
+localStorage.setItem(
+"historialPresion",
+JSON.stringify(historialPresion)
+);
+
+dibujarGrafico();
+
+}
+
+function dibujarGrafico(){
+
+const canvas =
+document.getElementById("grafico");
+
+const ctx =
+canvas.getContext("2d");
+
+const w = canvas.width;
+const h = canvas.height;
+
+ctx.clearRect(0,0,w,h);
+
+if(historialPresion.length < 2){
+
+ctx.font = "14px Arial";
+ctx.fillStyle = "#666";
 ctx.fillText(
 "Esperando más mediciones...",
 20,
