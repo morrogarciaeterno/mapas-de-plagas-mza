@@ -1,220 +1,221 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Satelital - Clima en Marcador</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<style>
-html,body{
-    margin:0;
-    padding:0;
-    height:100%;
-    background: #f0f0f0;
-}
-#map{
-    width:100%;
-    height:100vh;
-}
-.panel{
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:9999;
-    background:rgba(0,0,0,.85);
-    padding:10px;
-    border-radius:12px;
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-    max-width:95%;
-}
-button{
-    border:none;
-    border-radius:6px;
-    padding:8px 12px;
-    cursor:pointer;
-    color:#fff;
-    font-weight:bold;
-}
-input{
-    padding:8px;
-    border-radius:6px;
-    border:none;
-    width:220px;
-}
-.nubes{background:#2563eb;}
-.luces{background:#ca8a04;}
-.gps{background:#16a34a;}
-.buscar{background:#7c3aed;}
+ctx.fillText(
+"Esperando más mediciones...",
+20,
+40
+);
 
-/* Estilo personalizado para el contenido del popup del marcador */
-.popup-clima {
-    font-family: sans-serif;
-    font-size: 13px;
-    line-height: 1.4;
+return;
+
 }
-.popup-clima b {
-    color: #1d4ed8;
-}
-.alerta-popup {
-    margin-top: 6px;
-    padding: 6px;
-    background: #fee2e2;
-    color: #b91c1c;
-    border-radius: 6px;
-    font-weight: bold;
-    border-left: 4px solid #dc2626;
-}
-</style>
-</head>
-<body>
 
-<div class="panel">
-    <button id="btnNubes" class="nubes">☁️ Nubes</button>
-    <button id="btnLuces" class="luces">🌃 Luces</button>
-    <button id="btnGPS" class="gps">📍 GPS</button>
-    <input id="direccion" type="text" placeholder="Dirección o localidad">
-    <button id="btnBuscar" class="buscar">🔍 Buscar</button>
-</div>
+const valores =
+historialPresion.map(x=>x.presion);
 
-<div id="map"></div>
+const min =
+Math.min(...valores);
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+const max =
+Math.max(...valores);
 
-<script>
-const map = L.map('map').setView([-32.89,-68.84], 6);
+const rango =
+(max-min) || 1;
 
-// Capas base Día y Noche
-const mapBaseDia = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+ctx.beginPath();
+
+historialPresion.forEach((dato,i)=>{
+
+const x =
+(i/(historialPresion.length-1))*w;
+
+const y =
+h -
+(((dato.presion-min)/rango)*(h-40))
+-15;
+
+if(i===0)
+ctx.moveTo(x,y);
+else
+ctx.lineTo(x,y);
+
 });
 
-const mapBaseNoche = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© CartoDB'
-});
+ctx.strokeStyle="#1565c0";
+ctx.lineWidth=3;
+ctx.stroke();
 
-function esDeDia() {
-    const ahora = new Date();
-    const tiempoDecimal = ahora.getHours() + (ahora.getMinutes() / 60);
-    return tiempoDecimal >= 6 && tiempoDecimal < 20.5;
 }
 
-if (esDeDia()) {
-    mapBaseDia.addTo(map);
-} else {
-    mapBaseNoche.addTo(map);
+async function iniciar(){
+
+if(!navigator.geolocation){
+
+document.getElementById("ubicacion").innerHTML =
+"GPS no soportado";
+
+return;
+
 }
 
-// Fechas para las capas de la NASA
-const fechaNubes = new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0];
+navigator.geolocation.getCurrentPosition(
 
-const nubes = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/' + fechaNubes + '/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg', {
-    opacity: 0.65, maxNativeZoom: 9, maxZoom: 18
-});
+async function(pos){
 
-const satelite = L.tileLayer(
-'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/' +
-fechaNubes +
-'/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
+const lat = pos.coords.latitude;
+const lon = pos.coords.longitude;
+
+try{
+
+const geo = await fetch(
+"https://nominatim.openstreetmap.org/reverse?format=json&lat="
++ lat +
+"&lon="
++ lon
+);
+
+const lugar = await geo.json();
+
+const localidad =
+lugar.address.city ||
+lugar.address.town ||
+lugar.address.village ||
+lugar.address.suburb ||
+lugar.address.county ||
+"Ubicación detectada";
+
+const provincia =
+lugar.address.state || "";
+
+document.getElementById("ubicacion").innerHTML =
+"📍 " +
+localidad +
+", " +
+provincia;
+
+}catch(e){
+
+document.getElementById("ubicacion").innerHTML =
+"📍 Ubicación detectada";
+
+}
+
+const url =
+"https://api.open-meteo.com/v1/forecast?latitude="
++ lat +
+"&longitude="
++ lon +
+"&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,cloud_cover";
+
+const r = await fetch(url);
+const d = await r.json();
+
+const t =
+d.current.temperature_2m;
+
+const h =
+d.current.relative_humidity_2m;
+
+const p =
+d.current.surface_pressure;
+
+const v =
+d.current.wind_speed_10m;
+
+const n =
+d.current.cloud_cover;
+
+document.getElementById("temp").innerHTML =
+t + " °C";
+
+document.getElementById("humedad").innerHTML =
+h + " %";
+
+document.getElementById("viento").innerHTML =
+v + " km/h";
+
+document.getElementById("presion").innerHTML =
+p + " hPa";
+
+document.getElementById("nubes").innerHTML =
+n + " %";
+
+/* HELADA */
+
+let helada = 0;
+
+if(t < 8) helada += 40;
+if(t < 4) helada += 40;
+if(v < 10) helada += 20;
+
+/* TORMENTA */
+
+let tormenta = 0;
+
+if(h > 60) tormenta += 20;
+if(h > 80) tormenta += 20;
+if(n > 50) tormenta += 20;
+if(n > 80) tormenta += 20;
+if(v > 20) tormenta += 20;
+
+/* GRANIZO */
+
+let granizo = 0;
+
+if(h > 70) granizo += 20;
+if(h > 85) granizo += 20;
+if(n > 60) granizo += 20;
+if(n > 80) granizo += 20;
+if(t > 20) granizo += 20;
+
+/* INCENDIO */
+
+let incendio = 0;
+
+if(h < 40) incendio += 40;
+if(h < 25) incendio += 30;
+if(v > 20) incendio += 30;
+
+helada = Math.min(100,helada);
+tormenta = Math.min(100,tormenta);
+granizo = Math.min(100,granizo);
+incendio = Math.min(100,incendio);
+
+mostrarRiesgo("helada",helada);
+mostrarRiesgo("tormenta",tormenta);
+mostrarRiesgo("granizo",granizo);
+mostrarRiesgo("incendio",incendio);
+
+guardarPresion(p);
+
+},
+
+function(error){
+
+document.getElementById("ubicacion").innerHTML =
+"Error GPS: " + error.code;
+
+},
+
 {
-    opacity: 0.80,
-    maxNativeZoom: 9,
-    maxZoom: 18
-});
-
-document.getElementById("btnNubes").onclick = () => {
-    if(map.hasLayer(nubes)) map.removeLayer(nubes); else nubes.addTo(map);
-};
-
-document.getElementById("btnLuces").onclick = () => {
-    if(map.hasLayer(satelite))
-        map.removeLayer(satelite);
-    else
-        satelite.addTo(map);
-};
-
-let marcadorUbicacion = null;
-
-// Función para consultar la API y mostrar los datos dentro del popup del marcador
-async function colocarMarcadorConClima(lat, lon, tituloPopup) {
-    // Si ya existe el marcador, lo movemos o lo recreamos
-    if(marcadorUbicacion) {
-        map.removeLayer(marcadorUbicacion);
-    }
-
-    // Creamos el marcador con un mensaje temporal de carga en el popup
-    marcadorUbicacion = L.marker([lat, lon]).addTo(map);
-    marcadorUbicacion.bindPopup(`<b>${tituloPopup}</b><br>☁️ Consultando clima...`).openPopup();
-
-    try {
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,cloud_cover,wind_speed_10m,precipitation,weather_code`);
-        const data = await res.json();
-
-        if(data && data.current) {
-            const temp = data.current.temperature_2m;
-            const nubesPct = data.current.cloud_cover;
-            const viento = data.current.wind_speed_10m;
-            const precipitacion = data.current.precipitation;
-            const codigoClima = data.current.weather_code;
-
-            let contenidoHTML = `
-                <div class="popup-clima">
-                    <b>📍 ${tituloPopup}</b><br>
-                    🌡️ Temperatura: ${temp}°C<br>
-                    ☁️ Nubosidad: <b>${nubesPct}%</b><br>
-                    🌧️ Lluvia: ${precipitacion} mm<br>
-                    💨 Viento: ${viento} km/h
-            `;
-
-            // Alerta si hay lluvia o tormenta
-            if (precipitacion > 0 || (codigoClima >= 51 && codigoClima <= 99)) {
-                contenidoHTML += `<div class="alerta-popup">⛈️ ¡TREMENDA LLUVIA!<br>Precipitaciones: ${precipitacion} mm</div>`;
-            }
-
-            contenidoHTML += `</div>`;
-            
-            marcadorUbicacion.setPopupContent(contenidoHTML);
-        }
-    } catch(e) {
-        marcadorUbicacion.setPopupContent(`<b>${tituloPopup}</b><br>⚠️ Error al cargar clima`);
-        console.error(e);
-    }
+enableHighAccuracy:true,
+timeout:15000,
+maximumAge:0
 }
 
-// GPS
-function ubicarUsuario(){
-    navigator.geolocation.getCurrentPosition((pos)=>{
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        map.flyTo([lat, lon], 12, { duration: 2 });
-        
-        colocarMarcadorConClima(lat, lon, "Tu ubicación");
-    }, (err)=>{
-        colocarMarcadorConClima(-32.89, -68.84, "Mendoza (Por defecto)");
-    });
+);
+
 }
-document.getElementById("btnGPS").onclick = ubicarUsuario;
 
-// Buscador
-document.getElementById("btnBuscar").onclick = async ()=>{
-    const texto = document.getElementById("direccion").value.trim();
-    if(!texto) return alert("Ingrese una dirección");
-    try{
-        const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(texto));
-        const datos = await res.json();
-        if(datos.length === 0) return alert("No encontrada");
-        const lat = parseFloat(datos[0].lat);
-        const lon = parseFloat(datos[0].lon);
-        
-        map.flyTo([lat, lon], 13, { duration: 2 });
-        colocarMarcadorConClima(lat, lon, datos[0].display_name);
-    }catch(e){ console.error(e); }
+window.onload = function(){
+
+iniciar();
+
+setInterval(
+iniciar,
+300000
+);
+
 };
 
-window.onload = ()=>{
-    ubicarUsuario();
-};
 </script>
 
 </body>
