@@ -88,18 +88,6 @@ h2{
     margin-top: 2px;
 }
 
-/* Sugerencias agronómicas y de proyección */
-.sugerencia-agronomicia {
-    font-size: 12px;
-    color: #333;
-    background: #f8f9fa;
-    border-left: 3px solid #1565c0;
-    padding: 8px 10px;
-    margin-top: 8px;
-    border-radius: 4px;
-    line-height: 1.4;
-}
-
 .proyeccion-caja {
     font-size: 13px;
     color: #2c3e50;
@@ -204,7 +192,6 @@ Buscando ubicación...
 <div class="card">
 <h3>❄️ Probabilidad de Helada</h3>
 <div class="valor" id="helada">--</div>
-<div id="sugerencia-helada"></div>
 </div>
 
 <div class="card">
@@ -433,7 +420,6 @@ async function cargarClima(lat, lon){
         document.getElementById("ubicacion").innerHTML = "📍 Ubicación detectada";
     }
 
-    // Solicitamos datos actuales y también datos horarios (hourly) para la predicción de las próximas horas
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m`;
     
     const r = await fetch(url);
@@ -466,14 +452,12 @@ async function cargarClima(lat, lon){
     document.getElementById("nubes").innerHTML = n + " %";
     document.getElementById("presion").innerHTML = tendenciaHTML;
 
-    // Lluvia actual
     let lluviaTexto = precipitacionActual > 0 ? `${precipitacionActual} mm (Lloviendo ahora)` : "0 mm (Sin precipitaciones)";
     document.getElementById("lluvia").innerHTML = lluviaTexto;
 
-    // --- PROYECCIÓN / PREDICCIÓN HORARIA PRÓXIMAS 6 A 12 HORAS ---
     if(d.hourly && d.hourly.time){
         const ahoraIndex = new Date().getHours();
-        let temperaturasFuturas = d.hourly.temperature_2m.slice(ahoraIndex + 1, ahoraIndex + 7); // Próximas 6 horas
+        let temperaturasFuturas = d.hourly.temperature_2m.slice(ahoraIndex + 1, ahoraIndex + 7);
         let probabilidadesLluvia = d.hourly.precipitation_probability.slice(ahoraIndex + 1, ahoraIndex + 7);
         let vientosFuturos = d.hourly.wind_speed_10m.slice(ahoraIndex + 1, ahoraIndex + 7);
 
@@ -496,11 +480,10 @@ async function cargarClima(lat, lon){
         document.getElementById("bloque-proyeccion").innerHTML = mensajeProyeccion;
     }
 
-    // --- CÁLCULO DE RIESGOS Y HELADAS ESPECÍFICAS ---
+    // --- CÁLCULO DE RIESGOS ---
 
     let helada = 0;
     let infoHelada = null;
-    let sugerenciaHeladaTexto = "";
 
     if(t < 8) helada += 40;
     if(t < 4) helada += 40;
@@ -511,16 +494,12 @@ async function cargarClima(lat, lon){
             tipo: "Helada por Irradiación (Noche Calma)",
             actionBanner: "Noche sin viento y despejada. <b>Se recomienda encender fuego en tachos/estufas de biomasa</b> entre las hileras de cultivos para elevar la temperatura."
         };
-        sugerenciaHeladaTexto = "🔥 <b>Acción recomendada:</b> Al no haber viento, es una helada típica de radiación. <b>Se aconseja encender fuego en tachos o estufas de biomasa</b> entre las hileras de los cultivos o activar riego por aspersión.";
     } else if(v >= 15 && t < 5) {
         helada += 30;
         infoHelada = {
             tipo: "Helada por Advección (Ingreso de Aire Frío)",
             actionBanner: "Ingreso de masa fría con viento moderado/fuerte. El calor del fuego abierto se disipa rápido; evaluar calefacción activa intensiva."
         };
-        sugerenciaHeladaTexto = "⚠️ <b>Acción recomendada:</b> Ingresa masa fría con viento. Los fuegos abiertos pierden eficiencia porque el viento se lleva el calor; evaluar métodos de calefacción activa intensiva o cortavientos.";
-    } else {
-        sugerenciaHeladaTexto = "💡 <b>Sugerencia:</b> Monitorear temperatura ambiente y punto de rocío.";
     }
 
     let tormenta = 0;
@@ -565,9 +544,8 @@ async function cargarClima(lat, lon){
     zonda = Math.min(100, zonda);
     polen = Math.min(100, polen);
 
+    // Renderizamos las tarjetas limpias con su círculo y nivel correspondiente
     mostrarRiesgoConCirculo("helada", helada);
-    document.getElementById("sugerencia-helada").innerHTML = `<div class="sugerencia-agronomicia"><b>Tipo detectado:</b> ${infoHelada ? infoHelada.tipo : 'Estándar'}<br>${sugerenciaHeladaTexto}</div>`;
-
     mostrarRiesgoConCirculo("tormenta", tormenta);
     mostrarRiesgoConCirculo("granizo", granizo);
     mostrarRiesgoConCirculo("incendio", incendio);
