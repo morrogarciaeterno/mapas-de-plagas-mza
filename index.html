@@ -34,12 +34,19 @@ h2{
     gap: 10px;
 }
 
-/* Estilo para el círculo indicador de color */
+.referencia-texto {
+    font-size: 13px;
+    font-weight: normal;
+    color: #666;
+    margin-top: 2px;
+}
+
 .circulo-estado {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: inline-block;
+    flex-shrink: 0;
 }
 
 .bg-verde{ background-color: #2e7d32; }
@@ -48,12 +55,12 @@ h2{
 
 canvas{
     width: 100%;
-    max-width: 300px;
-    height: 120px;
+    max-width: 100%;
+    height: 160px;
     display: block;
     margin: auto;
-    background: white;
-    border: 1px solid #ddd;
+    background: #fafbfc;
+    border: 1px solid #e1e4e8;
     border-radius: 10px;
 }
 </style>
@@ -81,6 +88,11 @@ Buscando ubicación...
 </div>
 
 <div class="card">
+<h3>🍃 Punto de Rocío</h3>
+<div class="valor" id="rocio" style="font-size: 20px;">--</div>
+</div>
+
+<div class="card">
 <h3>🌬️ Viento</h3>
 <div class="valor" id="viento">--</div>
 </div>
@@ -91,8 +103,8 @@ Buscando ubicación...
 </div>
 
 <div class="card">
-<h3>📊 Presión</h3>
-<div class="valor" id="presion">--</div>
+<h3>📊 Presión Atmosférica</h3>
+<div class="valor" id="presion" style="font-size: 20px;">--</div>
 </div>
 
 <div class="card">
@@ -127,7 +139,7 @@ Buscando ubicación...
 
 <div class="card">
 <h3>📈 Histórico de Presión</h3>
-<canvas id="grafico" width="450" height="120"></canvas>
+<canvas id="grafico" width="500" height="160"></canvas>
 </div>
 
 <script>
@@ -139,31 +151,48 @@ function obtenerClaseColor(valor){
     return "bg-rojo";
 }
 
+function obtenerTextoReferencia(valor){
+    if(valor < 30) return "Bajo";
+    if(valor < 70) return "Moderado";
+    return "Alto";
+}
+
 function mostrarRiesgoConCirculo(id, valor){
     const claseBg = obtenerClaseColor(valor);
+    const textoRef = obtenerTextoReferencia(valor);
+    
     document.getElementById(id).innerHTML = `
-        <span class="circulo-estado ${claseBg}"></span>
-        <span>${valor}%</span>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span class="circulo-estado ${claseBg}"></span>
+            <span>${valor}%</span>
+        </div>
+        <div class="referencia-texto">Nivel: ${textoRef}</div>
     `;
 }
 
 function guardarPresion(valor){
-    historialPresion.push({
-        hora: new Date().toLocaleTimeString(),
-        presion: valor
-    });
+    // Evitar duplicar el mismo valor consecutivo exacto seguido
+    const ultimo = historialPresion[historialPresion.length - 1];
+    if(!ultimo || ultimo.presion !== valor){
+        historialPresion.push({
+            hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            presion: valor
+        });
 
-    if(historialPresion.length > 50){
-        historialPresion.shift();
+        if(historialPresion.length > 30){
+            historialPresion.shift();
+        }
+
+        localStorage.setItem("historialPresion", JSON.stringify(historialPresion));
     }
-
-    localStorage.setItem("historialPresion", JSON.stringify(historialPresion));
     dibujarGrafico();
 }
 
 function dibujarGrafico(){
     const canvas = document.getElementById("grafico");
     const ctx = canvas.getContext("2d");
+    
+    // Ajustar resolución interna para que se vea nítido en pantallas retina
     const w = canvas.width;
     const h = canvas.height;
 
@@ -171,28 +200,81 @@ function dibujarGrafico(){
 
     if(historialPresion.length < 2){
         ctx.font = "14px Arial";
-        ctx.fillStyle = "#666";
-        ctx.fillText("Esperando más mediciones...", 20, 40);
+        ctx.fillStyle = "#888";
+        ctx.textAlign = "center";
+        ctx.fillText("Recopilando mediciones para el gráfico...", w / 2, h / 2);
         return;
     }
 
     const valores = historialPresion.map(x => x.presion);
     const min = Math.min(...valores);
     const max = Math.max(...valores);
-    const rango = (max - min) || 1;
+    const margenExtra = (max === min) ? 2 : (max - min) * 0.2;
+    const minGraf = min - margenExtra;
+    const maxGraf = max + margenExtra;
+    const rango = maxGraf - minGraf;
 
-    ctx.beginPath();
-    historialPresion.forEach((dato, i) => {
-        const x = (i / (historialPresion.length - 1)) * w;
-        const y = h - (((dato.presion - min) / rango) * (h - 40)) - 15;
+    // Dibujar líneas de guía horizontales de fondo
+    ctx.strokeStyle = "#edf2f7";
+    ctx.lineWidth = 1;
+    for(let i = 1; i <= 3; i++){
+        let yGuia = (h / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(40, yGuia);
+        ctx.lineTo(w - 20, yGuia);
+        ctx.stroke();
+    }
 
-        if(i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+    // Coordenadas de los puntos
+    const puntos = historialPresion.map((dato, i) => {
+        const x = 50 + (i / (historialPresion.length - 1)) * (w - 70);
+        const y = h - 25 - (((dato.presion - minGraf) / rango) * (h - 50));
+        return { x, y, presion: dato.presion, hora: dato.hora };
     });
 
+    // Crear degradado para el área bajo la curva
+    const gradiente = ctx.createLinearGradient(0, 0, 0, h);
+    gradiente.addColorStop(0, "rgba(21, 101, 192, 0.25)");
+    gradiente.addColorStop(1, "rgba(21, 101, 192, 0.0)");
+
+    // Dibujar área sombreada
+    ctx.beginPath();
+    ctx.moveTo(puntos[0].x, h - 20);
+    puntos.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(puntos[puntos.length - 1].x, h - 20);
+    ctx.fillStyle = gradiente;
+    ctx.fill();
+
+    // Dibujar línea principal suave
+    ctx.beginPath();
+    puntos.forEach((p, i) => {
+        if(i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+    });
     ctx.strokeStyle = "#1565c0";
     ctx.lineWidth = 3;
     ctx.stroke();
+
+    // Dibujar puntos y etiquetas de valores extremos
+    puntos.forEach((p, i) => {
+        // Círculo en cada punto
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#1565c0";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Mostrar hora y valor solo en el primer y último punto para no ensuciar visualmente
+        if(i === 0 || i === puntos.length - 1){
+            ctx.font = "10px Arial";
+            ctx.fillStyle = "#555";
+            ctx.textAlign = "center";
+            ctx.fillText(p.presion + " hPa", p.x, p.y - 10);
+            ctx.fillText(p.hora, p.x, h - 8);
+        }
+    });
 }
 
 async function cargarClima(lat, lon){
@@ -228,21 +310,33 @@ async function cargarClima(lat, lon){
     const v = d.current.wind_speed_10m;
     const n = d.current.cloud_cover;
 
+    // Cálculo del Punto de Rocío (Fórmula aproximada de Magnus-Tetens simplificada)
+    const rocio = (t - ((100 - h) / 5)).toFixed(1);
+
+    // Tendencia de presión basada en el histórico previo
+    let tendenciaHTML = p + " hPa";
+    if(historialPresion.length > 0){
+        const ultimaPresion = historialPresion[historialPresion.length - 1].presion;
+        const diferencia = (p - ultimaPresion).toFixed(1);
+        if(diferencia > 0.3) tendenciaHTML += ' <span style="color:#2e7d32; font-size:16px;">📈 (En alza)</span>';
+        else if(diferencia < -0.3) tendenciaHTML += ' <span style="color:#c62828; font-size:16px;">📉 (Cayendo)</span>';
+        else tendenciaHTML += ' <span style="color:#666; font-size:16px;">➡️ (Estable)</span>';
+    }
+
     document.getElementById("temp").innerHTML = t + " °C";
     document.getElementById("humedad").innerHTML = h + " %";
+    document.getElementById("rocio").innerHTML = rocio + " °C";
     document.getElementById("viento").innerHTML = v + " km/h";
-    document.getElementById("presion").innerHTML = p + " hPa";
+    document.getElementById("presion").innerHTML = tendenciaHTML;
     document.getElementById("nubes").innerHTML = n + " %";
 
     // --- CÁLCULO DE RIESGOS E ÍNDICES ---
 
-    // 1. HELADA
     let helada = 0;
     if(t < 8) helada += 40;
     if(t < 4) helada += 40;
     if(v < 10) helada += 20;
 
-    // 2. TORMENTA
     let tormenta = 0;
     if(h > 60) tormenta += 20;
     if(h > 80) tormenta += 20;
@@ -250,7 +344,6 @@ async function cargarClima(lat, lon){
     if(n > 80) tormenta += 20;
     if(v > 20) tormenta += 20;
 
-    // 3. GRANIZO
     let granizo = 0;
     if(h > 70) granizo += 20;
     if(h > 85) granizo += 20;
@@ -258,20 +351,17 @@ async function cargarClima(lat, lon){
     if(n > 80) granizo += 20;
     if(t > 20) granizo += 20;
 
-    // 4. INCENDIO / FUEGO
     let incendio = 0;
     if(h < 40) incendio += 40;
     if(h < 25) incendio += 30;
     if(v > 20) incendio += 30;
 
-    // 5. ZONDA
     let zonda = 0;
     if(t > 22) zonda += 30;
     if(t > 28) zonda += 20;
     if(h < 30) zonda += 30;
     if(v > 15) zonda += 20;
 
-    // 6. POLEN / ALERGIAS
     let polen = 0;
     if(t > 15) polen += 30;
     if(t > 22) polen += 20;
