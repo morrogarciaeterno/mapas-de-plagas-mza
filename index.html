@@ -113,8 +113,14 @@ const nubes = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VI
     opacity: 0.65, maxNativeZoom: 9, maxZoom: 18
 });
 
-const luces = L.tileLayer('https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_Black_Marble/default/2016-01-01/GoogleMapsCompatible_Level8/{z}/{y}/{x}.png', {
-    opacity: 0.75, maxNativeZoom: 8, maxZoom: 18
+const satelite = L.tileLayer(
+'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/' +
+fechaNubes +
+'/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg',
+{
+    opacity: 0.80,
+    maxNativeZoom: 9,
+    maxZoom: 18
 });
 
 document.getElementById("btnNubes").onclick = () => {
@@ -122,7 +128,10 @@ document.getElementById("btnNubes").onclick = () => {
 };
 
 document.getElementById("btnLuces").onclick = () => {
-    if(map.hasLayer(luces)) map.removeLayer(luces); else luces.addTo(map);
+    if(map.hasLayer(satelite))
+        map.removeLayer(satelite);
+    else
+        satelite.addTo(map);
 };
 
 let marcadorUbicacion = null;
