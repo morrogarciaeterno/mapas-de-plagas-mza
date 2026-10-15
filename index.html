@@ -14,17 +14,29 @@ body{
     margin: 0;
 }
 
-/* Contenedor del Logo */
-.logo-container {
+/* Encabezado de Marca Corporativa Limpio */
+.header-territoria {
     text-align: center;
+    background: linear-gradient(135deg, #0d3b66, #1565c0);
+    color: white;
+    padding: 18px 15px;
+    border-radius: 12px;
     margin-bottom: 15px;
-    margin-top: 5px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
 }
 
-.logo-container img {
-    max-width: 180px;
-    height: auto;
-    border-radius: 12px;
+.header-territoria h1 {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+    letter-spacing: 1px;
+}
+
+.header-territoria p {
+    margin: 0;
+    font-size: 13px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 h2{
@@ -126,9 +138,10 @@ canvas{
 
 <body>
 
-<!-- Logo de Territoria -->
-<div class="logo-container">
-    <img src="1000074181.jpg" alt="Territoria Logo">
+<!-- Encabezado Corporativo Territoria -->
+<div class="header-territoria">
+    <h1>TERRITORIA</h1>
+    <p>Plataforma Inteligente de Gestión Territorial</p>
 </div>
 
 <h2>🌎 Territoria Meteo</h2>
@@ -415,7 +428,7 @@ async function cargarClima(lat, lon){
             "Ubicación detectada";
 
         const provincia = lugar.address?.state || "";
-        document.getElementById("ubicacion").innerHTML = `📍 ${localidad}, ${provincia}`;
+        document.getElementById("ubicacion").innerHTML = `📍 ${localidad},${provincia}`;
     }catch(e){
         document.getElementById("ubicacion").innerHTML = "📍 Ubicación detectada";
     }
@@ -466,136 +479,4 @@ async function cargarClima(lat, lon){
         let maxVientoProyectado = Math.max(...vientosFuturos);
 
         let mensajeProyeccion = `🕒 <b>Próximas 6 horas en la zona:</b><br>`;
-        mensajeProyeccion += `• Temperatura mínima esperada: <b>${minTempProyectada} °C</b><br>`;
-        mensajeProyeccion += `• Probabilidad máxima de lluvia: <b>${maxLluviaProb}%</b><br>`;
-        mensajeProyeccion += `• Ráfagas estimadas de hasta: <b>${maxVientoProyectado} km/h</b>`;
-
-        if(minTempProyectada < 4){
-            mensajeProyeccion += `<br><span style="color:#c62828;">⚠️ <b>Aviso predictivo:</b> Se proyecta descenso crítico de temperatura hacia la madrugada con riesgo de helada.</span>`;
-        }
-        if(maxLluviaProb > 60){
-            mensajeProyeccion += `<br><span style="color:#c62828;">⚠️ <b>Aviso predictivo:</b> Alta probabilidad de precipitaciones en corto plazo.</span>`;
-        }
-
-        document.getElementById("bloque-proyeccion").innerHTML = mensajeProyeccion;
-    }
-
-    // --- CÁLCULO DE RIESGOS ---
-
-    let helada = 0;
-    let infoHelada = null;
-
-    if(t < 8) helada += 40;
-    if(t < 4) helada += 40;
-
-    if(v < 10) {
-        helada += 20;
-        infoHelada = {
-            tipo: "Helada por Irradiación (Noche Calma)",
-            actionBanner: "Noche sin viento y despejada. <b>Se recomienda encender fuego en tachos/estufas de biomasa</b> entre las hileras de cultivos para elevar la temperatura."
-        };
-    } else if(v >= 15 && t < 5) {
-        helada += 30;
-        infoHelada = {
-            tipo: "Helada por Advección (Ingreso de Aire Frío)",
-            actionBanner: "Ingreso de masa fría con viento moderado/fuerte. El calor del fuego abierto se disipa rápido; evaluar calefacción activa intensiva."
-        };
-    }
-
-    let tormenta = 0;
-    if(h > 60) tormenta += 20;
-    if(h > 80) tormenta += 20;
-    if(n > 50) tormenta += 20;
-    if(n > 80) tormenta += 20;
-    if(v > 20) tormenta += 20;
-
-    let granizo = 0;
-    if(h > 70) granizo += 20;
-    if(h > 85) granizo += 20;
-    if(n > 60) granizo += 20;
-    if(n > 80) granizo += 20;
-    if(t > 20) granizo += 20;
-
-    let incendio = 0;
-    if(h < 40) incendio += 40;
-    if(h < 25) incendio += 30;
-    if(v > 20) incendio += 30;
-
-    let zonda = 0;
-    if(t > 22) zonda += 30;
-    if(t > 28) zonda += 20;
-    if(h < 35 && (dirCardinal.includes("W") || dirCardinal.includes("NW"))) {
-        zonda += 40;
-    } else if(h < 30) {
-        zonda += 25;
-    }
-    if(v > 20) zonda += 20;
-
-    let polen = 0;
-    if(t > 15) polen += 30;
-    if(t > 22) polen += 20;
-    if(h < 50) polen += 30;
-    if(v > 10) polen += 20;
-
-    helada = Math.min(100, helada);
-    tormenta = Math.min(100, tormenta);
-    granizo = Math.min(100, granizo);
-    incendio = Math.min(100, incendio);
-    zonda = Math.min(100, zonda);
-    polen = Math.min(100, polen);
-
-    // Renderizamos las tarjetas limpias con su círculo y nivel correspondiente
-    mostrarRiesgoConCirculo("helada", helada);
-    mostrarRiesgoConCirculo("tormenta", tormenta);
-    mostrarRiesgoConCirculo("granizo", granizo);
-    mostrarRiesgoConCirculo("incendio", incendio);
-    mostrarRiesgoConCirculo("zonda", zonda);
-    mostrarRiesgoConCirculo("polen", polen);
-
-    actualizarBannerAlerta({
-        helada: { nombre: "Helada", valor: helada },
-        tormenta: { nombre: "Tormenta", valor: tormenta },
-        granizo: { nombre: "Granizo", valor: granizo },
-        incendio: { nombre: "Incendio", valor: incendio },
-        zonda: { nombre: "Zonda", valor: zonda }
-    }, infoHelada);
-
-    guardarPresion(p);
-}
-
-function iniciar(){
-    if(!navigator.geolocation){
-        document.getElementById("ubicacion").innerHTML = "GPS no soportado";
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        function(pos){
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            
-            window.userLat = lat;
-            window.userLon = lon;
-
-            cargarClima(lat, lon);
-        },
-        function(error){
-            document.getElementById("ubicacion").innerHTML = "Error GPS: " + error.code;
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
-}
-
-window.onload = function(){
-    iniciar();
-
-    setInterval(function(){
-        if(window.userLat && window.userLon){
-            cargarClima(window.userLat, window.userLon);
-        }
-    }, 300000);
-};
-</script>
-
-</body>
-</html>
+        mensajeProyeccion += `• Temperatura mínima esperada: 
