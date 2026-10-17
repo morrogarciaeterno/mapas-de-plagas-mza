@@ -26,7 +26,8 @@
 <div class="indicator"><div class="indicator-icon">🧊</div><div class="indicator-name">Granizo</div><strong class="indicator-value" id="hailValue">--</strong><small class="indicator-sub" id="hailLevel">Esperando modelo</small></div>
 <div class="indicator"><div class="indicator-icon">📍</div><div class="indicator-name">GPS</div><strong class="indicator-value" id="gpsValue">--</strong><small class="indicator-sub" id="gpsAccuracy">--</small></div>
 </section>
-<section class="card"><div class="week-header"><div><h3>📅 Pronóstico de 7 días</h3><small>Evolución térmica, estado del tiempo y precipitación</small></div><div class="temperature-legend"><span class="maximum-legend">● Máxima</span><span class="minimum-legend">● Mínima</span></div></div><div class="chart" id="weeklyChart"></div></section>
+<section class="card"><div class="week-header"><div><h3>📅 Pronóstico de 7 días</h3><small>Evolución térmica, estado del tiempo y precipitación</small></div><div class="temperature-legend"><span class="maximum-legend">● Máxima</span><span class="minimum-legend">● Mínima</span></div></div><div class="chart" id="weeklyChart"></div>
+<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:14px"><h3 style="margin-bottom:10px">🕒 Próximas 12 horas</h3><div class="hours" id="hourlyForecast">Cargando...</div></div></section>
 <section class="card"><h3>🔮 Índices Territoria</h3>
 <div class="metric"><div class="metric-head"><span>🌧️ Riesgo de lluvia</span><strong id="rainText">--%</strong></div><div class="bar"><div class="fill rain-fill" id="rainBar"></div></div></div>
 <div class="metric"><div class="metric-head"><span>⛈️ Riesgo de tormenta</span><strong id="stormText">--%</strong></div><div class="bar"><div class="fill storm-fill" id="stormBar"></div></div></div>
@@ -42,7 +43,6 @@
 <div class="sismos-card"><div class="sismos-header"><h3>🌋 Sismos Internacionales Recientes (USGS)</h3><span class="sismos-estado" id="usgsState">Cargando...</span></div><div class="sismos-lista-vertical" id="usgsList"><div class="sismos-vacio">Cargando sismos internacionales...</div></div></div>
 <div class="sismos-card"><div class="sismos-header"><h3>🌋 Sismos Oficiales Argentina (INPRES)</h3><span class="sismos-estado" id="inpresState">Cargando...</span></div><div class="sismos-lista-vertical" id="inpresList"><div class="sismos-vacio">Cargando sismos oficiales...</div></div></div>
 </section>
-<section class="card"><h3>🕒 Próximas 12 horas</h3><div class="hours" id="hourlyForecast">Cargando...</div></section>
 <section class="card"><h3>📋 Análisis atmosférico</h3><div class="analysis" id="analysis">Esperando datos...</div></section>
 <footer class="footer">TERRITORIA · Open-Meteo · RainViewer · OpenStreetMap · USGS · INPRES</footer>
 </div>
