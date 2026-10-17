@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
 <meta name="theme-color" content="#07111f">
 
 <title>Territoria Meteo</title>
@@ -48,7 +51,7 @@ select {
 
 .dashboard {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1350px;
   margin: auto;
 }
 
@@ -314,13 +317,14 @@ select {
 .controles {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
   margin-bottom: 10px;
 }
 
 button,
 select {
-  padding: 8px 11px;
+  padding: 9px 12px;
   border: 1px solid #3b82f6;
   border-radius: 8px;
   background: #172554;
@@ -328,60 +332,27 @@ select {
   cursor: pointer;
 }
 
-.radar-placeholder {
-  min-height: 285px;
-  padding: 25px 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+button:active {
+  transform: scale(.98);
+}
+
+#mapaRadar {
+  width: 100%;
+  height: 410px;
+  overflow: hidden;
   border: 1px solid var(--borde);
   border-radius: 12px;
-  background: radial-gradient(circle, #15253d, #0b1627);
-  text-align: center;
+  background: #0f172a;
 }
 
-.radar-placeholder-icono {
-  margin-bottom: 12px;
-  font-size: 45px;
-}
-
-.radar-placeholder strong {
-  color: #f8fafc;
-  font-size: 18px;
-}
-
-.radar-placeholder p {
-  max-width: 430px;
-  margin: 8px 0 0;
-  color: var(--secundario);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.radar-modelos {
+.cargando-mapa {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 7px;
+  place-items: center;
   width: 100%;
-  max-width: 440px;
-  margin-top: 18px;
-}
-
-.radar-modelos div {
-  padding: 8px;
-  border: 1px solid var(--borde);
-  border-radius: 8px;
-  background: rgba(23, 38, 61, .7);
-  color: #bbf7d0;
-  font-size: 11px;
-}
-
-.radar-radio {
-  margin-top: 18px;
-  color: #bae6fd;
-  font-size: 12px;
-  line-height: 1.7;
+  height: 100%;
+  padding: 20px;
+  color: var(--secundario);
+  text-align: center;
 }
 
 .leyenda {
@@ -500,6 +471,11 @@ select {
   font-size: 10px;
 }
 
+.leaflet-container {
+  background: #0f172a;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
 @media (max-width: 950px) {
   .indicadores {
     grid-template-columns: repeat(3, 1fr);
@@ -524,8 +500,11 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .leyenda,
-  .radar-modelos {
+  #mapaRadar {
+    height: 350px;
+  }
+
+  .leyenda {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -668,7 +647,10 @@ select {
       </div>
 
       <div class="barra">
-        <div class="progreso barra-lluvia" id="barraLluvia"></div>
+        <div
+          class="progreso barra-lluvia"
+          id="barraLluvia"
+        ></div>
       </div>
     </div>
 
@@ -679,7 +661,10 @@ select {
       </div>
 
       <div class="barra">
-        <div class="progreso barra-tormenta" id="barraTormenta"></div>
+        <div
+          class="progreso barra-tormenta"
+          id="barraTormenta"
+        ></div>
       </div>
     </div>
 
@@ -690,7 +675,10 @@ select {
       </div>
 
       <div class="barra">
-        <div class="progreso barra-electrico" id="barraElectrico"></div>
+        <div
+          class="progreso barra-electrico"
+          id="barraElectrico"
+        ></div>
       </div>
     </div>
 
@@ -701,7 +689,10 @@ select {
       </div>
 
       <div class="barra">
-        <div class="progreso barra-granizo" id="barraGranizo"></div>
+        <div
+          class="progreso barra-granizo"
+          id="barraGranizo"
+        ></div>
       </div>
     </div>
 
@@ -714,7 +705,10 @@ select {
 
       <h3>🧊 Análisis de Granizo</h3>
 
-      <div class="estado-granizo" id="granizoEstado">
+      <div
+        class="estado-granizo"
+        id="granizoEstado"
+      >
         Esperando variables convectivas...
       </div>
 
@@ -761,7 +755,7 @@ select {
       </div>
 
       <div class="dato">
-        <span>Radio de vigilancia</span>
+        <span>Radio radar</span>
         <strong id="radioTexto">50 km</strong>
       </div>
 
@@ -774,17 +768,34 @@ select {
 
     <h3>📡 Radar y vigilancia</h3>
 
-    <div class="alerta-radar" id="alertaRadar">
-      📡 Preparando vigilancia meteorológica...
+    <div
+      class="alerta-radar"
+      id="alertaRadar"
+    >
+      📡 Preparando mapa meteorológico...
     </div>
+
 
     <div class="controles">
 
-      <button type="button" onclick="actualizarVigilancia()">
-        🔄 Actualizar análisis
+      <button
+        type="button"
+        onclick="centrarRadar()"
+      >
+        📍 Centrar GPS
       </button>
 
-      <select id="radioRadar" onchange="cambiarRadio()">
+      <button
+        type="button"
+        onclick="cargarRadar()"
+      >
+        🔄 Actualizar radar
+      </button>
+
+      <select
+        id="radioRadar"
+        onchange="cambiarRadio()"
+      >
         <option value="20">20 km</option>
         <option value="50" selected>50 km</option>
         <option value="100">100 km</option>
@@ -793,46 +804,10 @@ select {
     </div>
 
 
-    <div class="radar-placeholder">
+    <div id="mapaRadar">
 
-      <div class="radar-placeholder-icono">
-        📡
-      </div>
-
-      <strong>
-        Sin cobertura radar disponible
-      </strong>
-
-      <p>
-        El análisis continúa utilizando las variables
-        del modelo meteorológico para la ubicación GPS.
-      </p>
-
-      <div class="radar-modelos">
-
-        <div>✅ CAPE</div>
-        <div>✅ Lifted Index</div>
-        <div>✅ Cizalladura</div>
-        <div>✅ Nivel de congelación</div>
-        <div>✅ Nubosidad</div>
-        <div>✅ Precipitación</div>
-
-      </div>
-
-      <div class="radar-radio">
-
-        📍 GPS:
-        <strong id="gpsRadarEstado">
-          esperando
-        </strong>
-
-        <br>
-
-        📡 Radio de vigilancia:
-        <strong id="radioRadarEstado">
-          50 km
-        </strong>
-
+      <div class="cargando-mapa">
+        Cargando mapa interactivo...
       </div>
 
     </div>
@@ -865,9 +840,9 @@ select {
 
     <div class="aviso">
 
-      El análisis de granizo es experimental.
-      Un valor elevado indica un ambiente favorable,
-      pero no confirma granizo en superficie.
+      El radar muestra reflectividad sobre el mapa.
+      Los colores intensos exigen vigilancia, pero no
+      confirman automáticamente granizo en superficie.
 
     </div>
 
@@ -878,7 +853,10 @@ select {
 
     <h3>🕒 Próximas 12 horas</h3>
 
-    <div class="pronostico-horas" id="pronosticoHoras">
+    <div
+      class="pronostico-horas"
+      id="pronosticoHoras"
+    >
       Cargando...
     </div>
 
@@ -889,9 +867,15 @@ select {
 
     <h3>📅 Pronóstico de 7 días</h3>
 
-    <div class="grafica" id="graficaTemperaturas"></div>
+    <div
+      class="grafica"
+      id="graficaTemperaturas"
+    ></div>
 
-    <div class="pronostico-dias" id="pronosticoDias">
+    <div
+      class="pronostico-dias"
+      id="pronosticoDias"
+    >
       Cargando...
     </div>
 
@@ -902,7 +886,10 @@ select {
 
     <h3>📋 Análisis atmosférico</h3>
 
-    <div class="analisis" id="analisis">
+    <div
+      class="analisis"
+      id="analisis"
+    >
       Esperando datos...
     </div>
 
@@ -910,7 +897,7 @@ select {
 
 
   <footer class="footer">
-    TERRITORIA · Datos meteorológicos Open-Meteo
+    TERRITORIA · Open-Meteo · RainViewer · OpenStreetMap
   </footer>
 
 </div>
@@ -925,6 +912,15 @@ const CONFIG = {
 let latitud = null;
 let longitud = null;
 let datosActuales = null;
+
+let mapa = null;
+let marcadorGps = null;
+let circuloRadio = null;
+let circuloAlerta = null;
+let capaRadar = null;
+
+let leafletDisponible = false;
+let radarActivo = false;
 let consultaEnCurso = false;
 
 const elemento = id =>
@@ -1257,6 +1253,374 @@ function obtenerClima(codigo) {
   return ["🌡️", "Variable"];
 }
 
+function cargarLeaflet() {
+  return new Promise((resolver, rechazar) => {
+    if (window.L) {
+      leafletDisponible = true;
+      resolver();
+      return;
+    }
+
+    const protocolo = "https:";
+    const dobleBarra = "//";
+
+    const cssUrl =
+      protocolo +
+      dobleBarra +
+      "unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+
+    const jsUrl =
+      protocolo +
+      dobleBarra +
+      "unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+
+    const link =
+      document.createElement("link");
+
+    link.rel = "stylesheet";
+    link.href = cssUrl;
+
+    document.head.appendChild(link);
+
+    const script =
+      document.createElement("script");
+
+    script.src = jsUrl;
+    script.async = true;
+
+    script.onload = () => {
+      leafletDisponible = true;
+      resolver();
+    };
+
+    script.onerror = () => {
+      leafletDisponible = false;
+      rechazar(
+        new Error(
+          "Leaflet no pudo cargarse."
+        )
+      );
+    };
+
+    document.head.appendChild(script);
+  });
+}
+
+function iniciarMapa() {
+  if (
+    !leafletDisponible ||
+    !window.L ||
+    latitud === null ||
+    longitud === null
+  ) {
+    return;
+  }
+
+  if (!mapa) {
+    elemento("mapaRadar").innerHTML = "";
+
+    mapa = L.map(
+      "mapaRadar",
+      {
+        zoomControl: true
+      }
+    ).setView(
+      [latitud, longitud],
+      8
+    );
+
+    const protocolo = "https:";
+    const dobleBarra = "//";
+
+    const openStreetMapUrl =
+      protocolo +
+      dobleBarra +
+      "{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    L.tileLayer(
+      openStreetMapUrl,
+      {
+        maxZoom: 19,
+        attribution:
+          "&copy; OpenStreetMap"
+      }
+    ).addTo(mapa);
+  }
+
+  if (!marcadorGps) {
+    marcadorGps =
+      L.marker(
+        [latitud, longitud]
+      )
+      .addTo(mapa)
+      .bindPopup(
+        "📍 Ubicación GPS"
+      );
+  } else {
+    marcadorGps.setLatLng(
+      [latitud, longitud]
+    );
+  }
+
+  actualizarCirculoRadar();
+
+  setTimeout(() => {
+    mapa.invalidateSize();
+  }, 300);
+}
+
+function actualizarCirculoRadar() {
+  if (
+    !mapa ||
+    !window.L ||
+    latitud === null ||
+    longitud === null
+  ) {
+    return;
+  }
+
+  if (circuloRadio) {
+    mapa.removeLayer(circuloRadio);
+  }
+
+  circuloRadio =
+    L.circle(
+      [latitud, longitud],
+      {
+        radius:
+          CONFIG.radioKm *
+          1000,
+
+        color: "#38bdf8",
+
+        fillColor: "#38bdf8",
+
+        fillOpacity: .05,
+
+        weight: 2
+      }
+    )
+    .addTo(mapa);
+
+  mapa.fitBounds(
+    circuloRadio.getBounds(),
+    {
+      padding: [20, 20]
+    }
+  );
+}
+
+function actualizarCirculoAlerta(tipo) {
+  if (
+    !mapa ||
+    !window.L ||
+    latitud === null ||
+    longitud === null
+  ) {
+    return;
+  }
+
+  if (circuloAlerta) {
+    mapa.removeLayer(circuloAlerta);
+    circuloAlerta = null;
+  }
+
+  if (
+    tipo !== "rojo" &&
+    tipo !== "violeta"
+  ) {
+    return;
+  }
+
+  const color =
+    tipo === "violeta"
+      ? "#a855f7"
+      : "#ef4444";
+
+  circuloAlerta =
+    L.circle(
+      [latitud, longitud],
+      {
+        radius:
+          CONFIG.radioKm *
+          1000,
+
+        color,
+
+        fillColor: color,
+
+        fillOpacity: .07,
+
+        weight: 4,
+
+        dashArray: "10 8"
+      }
+    )
+    .addTo(mapa);
+}
+
+function centrarRadar() {
+  if (
+    !mapa ||
+    !circuloRadio
+  ) {
+    return;
+  }
+
+  mapa.fitBounds(
+    circuloRadio.getBounds(),
+    {
+      padding: [20, 20]
+    }
+  );
+}
+
+function cambiarRadio() {
+  CONFIG.radioKm =
+    Number(
+      elemento("radioRadar").value
+    );
+
+  texto(
+    "radioTexto",
+    CONFIG.radioKm +
+    " km"
+  );
+
+  actualizarCirculoRadar();
+  actualizarAlertaRadar();
+}
+
+async function cargarRadar() {
+  if (
+    !mapa ||
+    !window.L
+  ) {
+    return;
+  }
+
+  texto(
+    "alertaRadar",
+    "📡 Consultando la última imagen radar..."
+  );
+
+  try {
+    const protocolo = "https:";
+    const dobleBarra = "//";
+
+    const apiRadar =
+      protocolo +
+      dobleBarra +
+      "api.rainviewer.com/public/weather-maps.json";
+
+    const respuesta =
+      await fetch(
+        apiRadar,
+        {
+          cache: "no-store"
+        }
+      );
+
+    if (!respuesta.ok) {
+      throw new Error(
+        "HTTP " +
+        respuesta.status
+      );
+    }
+
+    const datos =
+      await respuesta.json();
+
+    const cuadros =
+      datos.radar?.past || [];
+
+    if (!cuadros.length) {
+      throw new Error(
+        "No hay cuadros radar disponibles."
+      );
+    }
+
+    const ultimo =
+      cuadros[
+        cuadros.length - 1
+      ];
+
+    if (capaRadar) {
+      mapa.removeLayer(capaRadar);
+    }
+
+    const rutaRadar =
+      datos.host +
+      ultimo.path +
+      "/256/{z}/{x}/{y}/2/1_1.png";
+
+    capaRadar =
+      L.tileLayer(
+        rutaRadar,
+        {
+          opacity: .72,
+          zIndex: 10,
+          maxNativeZoom: 7,
+          maxZoom: 18,
+          attribution:
+            "Radar: RainViewer"
+        }
+      );
+
+    let huboErrorTesela = false;
+
+    capaRadar.on(
+      "tileerror",
+      () => {
+        huboErrorTesela = true;
+      }
+    );
+
+    capaRadar.on(
+      "load",
+      () => {
+        radarActivo =
+          !huboErrorTesela;
+
+        const horaRadar =
+          new Date(
+            ultimo.time * 1000
+          ).toLocaleString(
+            "es-AR"
+          );
+
+        if (radarActivo) {
+          texto(
+            "alertaRadar",
+            "📡 Radar activo. Último cuadro: " +
+            horaRadar
+          );
+        } else {
+          texto(
+            "alertaRadar",
+            "⚠️ Cobertura radar parcial para esta zona."
+          );
+        }
+
+        actualizarAlertaRadar();
+      }
+    );
+
+    capaRadar.addTo(mapa);
+
+  } catch (error) {
+    radarActivo = false;
+
+    texto(
+      "alertaRadar",
+      "⚠️ Radar no disponible: " +
+      error.message
+    );
+
+    actualizarAlertaRadar();
+  }
+}
+
 async function consultarMeteorologia() {
   if (
     latitud === null ||
@@ -1267,7 +1631,6 @@ async function consultarMeteorologia() {
   }
 
   consultaEnCurso = true;
-
   limpiarError();
 
   texto(
@@ -1319,10 +1682,18 @@ async function consultarMeteorologia() {
         wind_speed_unit: "kmh"
       });
 
+    const protocolo = "https:";
+    const dobleBarra = "//";
+
+    const endpoint =
+      protocolo +
+      dobleBarra +
+      "api.open-meteo.com/v1/forecast?" +
+      parametros.toString();
+
     const respuesta =
       await fetch(
-        "https://api.open-meteo.com/v1/forecast?" +
-        parametros.toString(),
+        endpoint,
         {
           cache: "no-store"
         }
@@ -1366,8 +1737,11 @@ function procesarMeteorologia(api) {
     );
   }
 
-  const actual = api.current;
-  const horario = api.hourly;
+  const actual =
+    api.current;
+
+  const horario =
+    api.hourly;
 
   const indice =
     indiceMasCercano(
@@ -1377,25 +1751,39 @@ function procesarMeteorologia(api) {
 
   const datos = {
     temperatura:
-      numero(actual.temperature_2m),
+      numero(
+        actual.temperature_2m
+      ),
 
     humedad:
-      numero(actual.relative_humidity_2m),
+      numero(
+        actual.relative_humidity_2m
+      ),
 
     puntoRocio:
-      numero(actual.dew_point_2m),
+      numero(
+        actual.dew_point_2m
+      ),
 
     nubosidad:
-      numero(actual.cloud_cover),
+      numero(
+        actual.cloud_cover
+      ),
 
     viento:
-      numero(actual.wind_speed_10m),
+      numero(
+        actual.wind_speed_10m
+      ),
 
     rafagas:
-      numero(actual.wind_gusts_10m),
+      numero(
+        actual.wind_gusts_10m
+      ),
 
     presion:
-      numero(actual.pressure_msl),
+      numero(
+        actual.pressure_msl
+      ),
 
     cape:
       maximoVentana(
@@ -1543,8 +1931,8 @@ function actualizarPanel(datos) {
 
   const valorGranizo =
     datos.granizo.porcentaje === null
-    ? "--"
-    : datos.granizo.porcentaje + "%";
+      ? "--"
+      : datos.granizo.porcentaje + "%";
 
   texto(
     "granizoIndicador",
@@ -1695,7 +2083,7 @@ function actualizarPanel(datos) {
 
     texto(
       "estadoDescripcion",
-      "Parámetros convectivos importantes. Mantener vigilancia."
+      "Parámetros convectivos importantes. Revisar radar."
     );
 
   } else if (
@@ -1737,7 +2125,6 @@ function actualizarPanel(datos) {
   );
 
   actualizarAlertaRadar();
-
   limpiarError();
 }
 
@@ -1755,6 +2142,17 @@ function actualizarAlertaRadar() {
   const datos =
     datosActuales;
 
+  if (!radarActivo) {
+    alerta.textContent =
+      "⚠️ Radar sin confirmar. Evaluación basada en el modelo.";
+
+    actualizarCirculoAlerta(
+      "ninguno"
+    );
+
+    return;
+  }
+
   if (
     datos.granizo.porcentaje >= 50 &&
     datos.cape >= 800 &&
@@ -1764,7 +2162,11 @@ function actualizarAlertaRadar() {
       "alerta-radar violeta";
 
     alerta.textContent =
-      "🧊 Ambiente favorable para granizo. No existe confirmación radar.";
+      "🧊 Ambiente favorable para granizo. Revisá núcleos intensos en el mapa.";
+
+    actualizarCirculoAlerta(
+      "violeta"
+    );
 
     return;
   }
@@ -1779,6 +2181,10 @@ function actualizarAlertaRadar() {
     alerta.textContent =
       "🚨 Ambiente favorable para núcleos convectivos intensos.";
 
+    actualizarCirculoAlerta(
+      "rojo"
+    );
+
     return;
   }
 
@@ -1791,7 +2197,11 @@ function actualizarAlertaRadar() {
       "alerta-radar naranja";
 
     alerta.textContent =
-      "⛈️ Vigilancia convectiva basada en el modelo meteorológico.";
+      "⛈️ Vigilancia de núcleos fuertes dentro del radio.";
+
+    actualizarCirculoAlerta(
+      "ninguno"
+    );
 
     return;
   }
@@ -1800,10 +2210,17 @@ function actualizarAlertaRadar() {
     "alerta-radar verde";
 
   alerta.textContent =
-    "✅ Sin señal ambiental severa en este momento.";
+    "📡 Radar activo. Sin señal ambiental severa.";
+
+  actualizarCirculoAlerta(
+    "ninguno"
+  );
 }
 
-function actualizarPronosticoHoras(horario, inicio) {
+function actualizarPronosticoHoras(
+  horario,
+  inicio
+) {
   const tarjetas = [];
 
   for (
@@ -1870,7 +2287,9 @@ function actualizarPronosticoHoras(horario, inicio) {
     tarjetas.join("");
 }
 
-function actualizarPronosticoDias(diario) {
+function actualizarPronosticoDias(
+  diario
+) {
   const etiquetas = [];
   const maximas = [];
   const minimas = [];
@@ -2203,32 +2622,9 @@ function dibujarGraficaSVG(
   `;
 }
 
-function cambiarRadio() {
-  CONFIG.radioKm =
-    Number(
-      elemento("radioRadar").value
-    );
-
-  texto(
-    "radioTexto",
-    CONFIG.radioKm +
-    " km"
-  );
-
-  texto(
-    "radioRadarEstado",
-    CONFIG.radioKm +
-    " km"
-  );
-
-  actualizarAlertaRadar();
-}
-
-function actualizarVigilancia() {
-  consultarMeteorologia();
-}
-
-async function posicionCorrecta(posicion) {
+async function posicionCorrecta(
+  posicion
+) {
   latitud =
     posicion.coords.latitude;
 
@@ -2256,11 +2652,6 @@ async function posicionCorrecta(posicion) {
   );
 
   texto(
-    "gpsRadarEstado",
-    "activo"
-  );
-
-  texto(
     "precisionDetalle",
     Math.round(precision) +
     " m"
@@ -2273,7 +2664,23 @@ async function posicionCorrecta(posicion) {
     longitud.toFixed(4)
   );
 
-  await consultarMeteorologia();
+  try {
+    await cargarLeaflet();
+
+    iniciarMapa();
+
+    await Promise.allSettled([
+      consultarMeteorologia(),
+      cargarRadar()
+    ]);
+
+  } catch (error) {
+    mostrarError(
+      error.message
+    );
+
+    await consultarMeteorologia();
+  }
 }
 
 function errorGPS(error) {
@@ -2285,11 +2692,6 @@ function errorGPS(error) {
   texto(
     "gpsEstado",
     "No disponible"
-  );
-
-  texto(
-    "gpsRadarEstado",
-    "no disponible"
   );
 
   texto(
@@ -2305,7 +2707,7 @@ function errorGPS(error) {
       "El permiso de ubicación fue rechazado.";
   } else if (error?.code === 2) {
     mensaje =
-      "La posición no está disponible.";
+      "La ubicación no está disponible.";
   } else if (error?.code === 3) {
     mensaje =
       "La solicitud GPS superó el tiempo de espera.";
