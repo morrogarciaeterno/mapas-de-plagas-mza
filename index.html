@@ -1,244 +1,883 @@
-<div class="card prediccion-territoria">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <h2>🔮 Predicción Inteligente Territoria</h2>
-
-    <div class="estado-meteo">
-        🟠 ESTADO ACTUAL: INESTABLE
-    </div>
-
-    <div class="metrica">
-        <span>🌧️ Riesgo de lluvia</span>
-        <strong>54%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso lluvia" style="width:54%"></div>
-    </div>
-
-    <div class="metrica">
-        <span>⛈️ Riesgo de tormenta</span>
-        <strong>62%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso tormenta" style="width:62%"></div>
-    </div>
-
-    <div class="metrica">
-        <span>⚡ Actividad eléctrica</span>
-        <strong>15%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso electrica" style="width:15%"></div>
-    </div>
-
-    <div class="metrica">
-        <span>📈 Confianza del pronóstico</span>
-        <strong>71%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso confianza" style="width:71%"></div>
-    </div>
-
-    <div class="spread-box">
-
-        <h3>🌡️ Análisis Atmosférico</h3>
-
-        <p><strong>Temperatura:</strong> 14°C</p>
-        <p><strong>Punto de rocío:</strong> 7.2°C</p>
-        <p><strong>Spread:</strong> 6.8°C</p>
-
-        <p style="margin-top:10px;">
-            Aire moderadamente húmedo. No se observa saturación completa.
-        </p>
-
-    </div>
-
-    <div class="rayos-box">
-
-        <h3>⚡ Actividad Eléctrica</h3>
-
-        <p>✅ Sin descargas eléctricas detectadas</p>
-
-        <p>
-            📡 <strong>Radio de análisis:</strong> 50 km
-        </p>
-
-        <p>
-            🕒 <strong>Ventana temporal:</strong> Últimos 30 minutos
-        </p>
-
-        <p>
-            📍 <strong>Ubicación:</strong> GPS del dispositivo
-        </p>
-
-        <p>
-            🟢 <strong>Nivel de riesgo:</strong> Bajo
-        </p>
-
-    </div>
-
-    <div class="factores-box">
-
-        <h3>📋 Factores Analizados</h3>
-
-        <ul>
-            <li>✅ Nubosidad elevada (86%)</li>
-            <li>✅ Presión atmosférica en descenso</li>
-            <li>✅ Temperatura estable</li>
-            <li>⚠️ Humedad moderada (66%)</li>
-            <li>⚠️ Viento débil (6 km/h)</li>
-            <li>✅ Punto de rocío monitoreado</li>
-            <li>✅ Sin actividad eléctrica significativa</li>
-        </ul>
-
-    </div>
-
-    <div class="pronostico-box">
-
-        <h3>🔮 Pronóstico Territoria</h3>
-
-        <p>
-            Las condiciones atmosféricas presentan
-            inestabilidad moderada.
-            La nubosidad elevada y la tendencia descendente de la
-            presión favorecen la aparición de precipitaciones
-            aisladas durante las próximas horas.
-        </p>
-
-        <p>
-            Actualmente no se detectan descargas eléctricas dentro
-            del radio de análisis de 50 km.
-        </p>
-
-        <p>
-            Riesgo estimado de lluvia: <strong>54%</strong><br>
-            Riesgo estimado de tormenta: <strong>62%</strong>
-        </p>
-
-    </div>
-
-    <div class="recomendacion-box">
-
-        <h3>🚨 Recomendación</h3>
-
-        <p>
-            Mantener vigilancia meteorológica durante las próximas
-            3 a 6 horas.
-        </p>
-
-        <p>
-            Se recomienda observar posibles cambios en la presión,
-            el viento y la actividad eléctrica regional.
-        </p>
-
-    </div>
-
-</div>
+<title>Territoria | Centro Meteorológico</title>
 
 <style>
 
-.prediccion-territoria{
-    background:#ffffff;
-    border-radius:20px;
-    padding:20px;
-    margin-top:15px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
+/* ================================
+   GENERAL
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.estado-meteo{
-    background:#fff3cd;
-    color:#856404;
-    text-align:center;
-    padding:12px;
-    border-radius:12px;
-    font-weight:700;
-    margin:15px 0;
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #08111f;
+    color: #e5e7eb;
+    padding: 12px;
 }
 
-.metrica{
-    display:flex;
-    justify-content:space-between;
-    margin-top:12px;
-    font-weight:600;
+.dashboard {
+    max-width: 1400px;
+    margin: auto;
 }
 
-.barra{
-    width:100%;
-    height:12px;
-    background:#e5e7eb;
-    border-radius:999px;
-    overflow:hidden;
-    margin:8px 0 15px;
+
+/* ================================
+   CABECERA
+================================ */
+
+.header {
+    background: linear-gradient(135deg,#0f2744,#123b63);
+    border: 1px solid #1e4d73;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 12px;
 }
 
-.progreso{
-    height:100%;
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
-.lluvia{
-    background:#2196f3;
+.header h1 {
+    font-size: 23px;
+    color: #38bdf8;
 }
 
-.tormenta{
-    background:#ff9800;
+.header p {
+    color: #94a3b8;
+    margin-top: 5px;
+    font-size: 13px;
 }
 
-.electrica{
-    background:#e53935;
+.live {
+    background: #064e3b;
+    color: #6ee7b7;
+    border: 1px solid #059669;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
 }
 
-.confianza{
-    background:#4caf50;
+
+/* ================================
+   ESTADO
+================================ */
+
+.estado {
+    background: #172033;
+    border: 1px solid #334155;
+    border-left: 5px solid #f59e0b;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
 }
 
-.spread-box,
-.rayos-box,
-.factores-box,
-.pronostico-box,
-.recomendacion-box{
-    background:#f8fafc;
-    padding:15px;
-    border-radius:12px;
-    margin-top:15px;
+.estado h2 {
+    color: #fbbf24;
+    font-size: 19px;
 }
 
-.rayos-box{
-    border-left:5px solid #f59e0b;
+.estado p {
+    margin-top: 5px;
+    color: #cbd5e1;
+    font-size: 13px;
 }
 
-.pronostico-box{
-    border-left:5px solid #2196f3;
+
+/* ================================
+   INDICADORES
+================================ */
+
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
-.recomendacion-box{
-    border-left:5px solid #ff9800;
+.indicador {
+    position: relative;
+    background: #111c2e;
+    border: 1px solid #263750;
+    border-radius: 12px;
+    padding: 14px;
+    min-height: 105px;
 }
 
-ul{
-    padding-left:20px;
+.indicador .icono {
+    font-size: 22px;
 }
 
-li{
-    margin-bottom:8px;
+.indicador .nombre {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 7px;
 }
 
-@media(max-width:600px){
+.indicador .valor {
+    color: #38bdf8;
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 4px;
+}
 
-    .prediccion-territoria{
-        padding:15px;
+.indicador .sub {
+    color: #64748b;
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+
+/* ================================
+   PANELES
+================================ */
+
+.panel {
+    background: #111c2e;
+    border: 1px solid #263750;
+    border-radius: 12px;
+    padding: 17px;
+    margin-bottom: 12px;
+}
+
+.panel h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #f1f5f9;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+
+/* ================================
+   BARRAS
+================================ */
+
+.metrica {
+    margin-bottom: 15px;
+}
+
+.metrica-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.metrica-header strong {
+    color: white;
+}
+
+.barra {
+    width: 100%;
+    height: 9px;
+    background: #293548;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progreso {
+    height: 100%;
+    border-radius: 20px;
+    transition: width .5s ease;
+}
+
+.lluvia {
+    background: #0ea5e9;
+}
+
+.tormenta {
+    background: #f59e0b;
+}
+
+.electrica {
+    background: #ef4444;
+}
+
+.confianza {
+    background: #22c55e;
+}
+
+
+/* ================================
+   RAYOS
+================================ */
+
+.rayos {
+    border-left: 4px solid #f59e0b;
+}
+
+.rayo-status {
+    background: #0d332a;
+    border: 1px solid #166534;
+    color: #86efac;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+.lista-datos {
+    display: grid;
+    gap: 9px;
+}
+
+.dato {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #263750;
+    padding-bottom: 7px;
+    font-size: 13px;
+}
+
+.dato span {
+    color: #94a3b8;
+}
+
+.dato strong {
+    color: #f1f5f9;
+}
+
+
+/* ================================
+   ANALISIS
+================================ */
+
+.analisis-lista {
+    list-style: none;
+}
+
+.analisis-lista li {
+    padding: 7px 0;
+    border-bottom: 1px solid #263750;
+    font-size: 13px;
+}
+
+
+/* ================================
+   PRONOSTICO
+================================ */
+
+.pronostico {
+    border-left: 4px solid #0ea5e9;
+}
+
+.pronostico-texto {
+    color: #cbd5e1;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+.footer {
+    text-align: center;
+    color: #475569;
+    font-size: 10px;
+    padding: 15px;
+}
+
+
+/* ================================
+   TABLET
+================================ */
+
+@media(max-width:900px) {
+
+    .indicadores {
+        grid-template-columns: repeat(3,1fr);
     }
 
-    h2{
-        font-size:20px;
+}
+
+
+/* ================================
+   CELULAR
+================================ */
+
+@media(max-width:600px) {
+
+    body {
+        padding: 8px;
     }
 
-    h3{
-        font-size:16px;
+    .header {
+        padding: 14px;
+    }
+
+    .header h1 {
+        font-size: 19px;
+    }
+
+    .indicadores {
+        grid-template-columns: repeat(2,1fr);
+        gap: 7px;
+    }
+
+    .indicador {
+        padding: 11px;
+        min-height: 95px;
+    }
+
+    .indicador .valor {
+        font-size: 20px;
+    }
+
+    .panel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel {
+        padding: 14px;
+    }
+
+}
+
+
+/* ================================
+   CELULAR MUY PEQUEÑO
+================================ */
+
+@media(max-width:350px) {
+
+    .indicadores {
+        grid-template-columns: 1fr;
     }
 
 }
 
 </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+
+<!-- CABECERA -->
+
+<div class="header">
+
+    <div class="header-top">
+
+        <div>
+            <h1>🌎 TERRITORIA METEO</h1>
+            <p>Centro inteligente de monitoreo meteorológico</p>
+        </div>
+
+        <div class="live">
+            ● EN LÍNEA
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ESTADO -->
+
+<div class="estado">
+
+    <h2>🟠 ESTADO: INESTABLE</h2>
+
+    <p>
+        Condiciones favorables para precipitaciones
+        y tormentas aisladas.
+    </p>
+
+</div>
+
+
+<!-- INDICADORES -->
+
+<div class="indicadores">
+
+
+<div class="indicador">
+
+    <div class="icono">🌡️</div>
+
+    <div class="nombre">
+        Temperatura
+    </div>
+
+    <div class="valor">
+        14°C
+    </div>
+
+    <div class="sub">
+        Temperatura actual
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">💧</div>
+
+    <div class="nombre">
+        Humedad
+    </div>
+
+    <div class="valor">
+        66%
+    </div>
+
+    <div class="sub">
+        Humedad relativa
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">🌬️</div>
+
+    <div class="nombre">
+        Viento
+    </div>
+
+    <div class="valor">
+        6 km/h
+    </div>
+
+    <div class="sub">
+        Velocidad actual
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">📉</div>
+
+    <div class="nombre">
+        Presión
+    </div>
+
+    <div class="valor">
+        930
+    </div>
+
+    <div class="sub">
+        hPa · descendiendo
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">☁️</div>
+
+    <div class="nombre">
+        Nubosidad
+    </div>
+
+    <div class="valor">
+        86%
+    </div>
+
+    <div class="sub">
+        Cobertura nubosa
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">🌿</div>
+
+    <div class="nombre">
+        Punto de rocío
+    </div>
+
+    <div class="valor">
+        7.2°C
+    </div>
+
+    <div class="sub">
+        Spread 6.8°C
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">🌧️</div>
+
+    <div class="nombre">
+        Riesgo lluvia
+    </div>
+
+    <div class="valor">
+        54%
+    </div>
+
+    <div class="sub">
+        Índice estimado
+    </div>
+
+</div>
+
+
+<div class="indicador">
+
+    <div class="icono">⚡</div>
+
+    <div class="nombre">
+        Radio rayos
+    </div>
+
+    <div class="valor">
+        50 km
+    </div>
+
+    <div class="sub">
+        Área de monitoreo
+    </div>
+
+</div>
+
+
+</div>
+
+
+<!-- PREDICCION -->
+
+<div class="panel">
+
+<h3>🔮 Predicción Inteligente</h3>
+
+
+<div class="metrica">
+
+    <div class="metrica-header">
+        <span>🌧️ Riesgo de lluvia</span>
+        <strong>54%</strong>
+    </div>
+
+    <div class="barra">
+        <div class="progreso lluvia"
+             style="width:54%">
+        </div>
+    </div>
+
+</div>
+
+
+<div class="metrica">
+
+    <div class="metrica-header">
+        <span>⛈️ Riesgo de tormenta</span>
+        <strong>62%</strong>
+    </div>
+
+    <div class="barra">
+        <div class="progreso tormenta"
+             style="width:62%">
+        </div>
+    </div>
+
+</div>
+
+
+<div class="metrica">
+
+    <div class="metrica-header">
+        <span>⚡ Actividad eléctrica</span>
+        <strong>15%</strong>
+    </div>
+
+    <div class="barra">
+        <div class="progreso electrica"
+             style="width:15%">
+        </div>
+    </div>
+
+</div>
+
+
+<div class="metrica">
+
+    <div class="metrica-header">
+        <span>📈 Confianza</span>
+        <strong>71%</strong>
+    </div>
+
+    <div class="barra">
+        <div class="progreso confianza"
+             style="width:71%">
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- DOS PANELES -->
+
+<div class="panel-grid">
+
+
+<!-- RAYOS -->
+
+<div class="panel rayos">
+
+<h3>⚡ Actividad Eléctrica</h3>
+
+<div class="rayo-status">
+    ✓ Sin descargas detectadas
+</div>
+
+<div class="lista-datos">
+
+    <div class="dato">
+        <span>📡 Radio analizado</span>
+        <strong>50 km</strong>
+    </div>
+
+    <div class="dato">
+        <span>🕒 Período</span>
+        <strong>30 min</strong>
+    </div>
+
+    <div class="dato">
+        <span>⚡ Descargas</span>
+        <strong>0</strong>
+    </div>
+
+    <div class="dato">
+        <span>📍 Posición</span>
+        <strong id="gpsEstado">
+            Solicitando GPS
+        </strong>
+    </div>
+
+    <div class="dato">
+        <span>🎯 Precisión GPS</span>
+        <strong id="gpsPrecision">
+            --
+        </strong>
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ANALISIS -->
+
+<div class="panel">
+
+<h3>📋 Análisis Atmosférico</h3>
+
+<ul class="analisis-lista">
+
+    <li>✅ Nubosidad elevada: 86%</li>
+
+    <li>✅ Presión en descenso</li>
+
+    <li>⚠️ Humedad moderada: 66%</li>
+
+    <li>⚠️ Viento débil: 6 km/h</li>
+
+    <li>🌡️ Temperatura: 14°C</li>
+
+    <li>💧 Punto de rocío: 7.2°C</li>
+
+    <li>📊 Spread T/Td: 6.8°C</li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+<!-- PRONOSTICO -->
+
+<div class="panel pronostico">
+
+<h3>🔮 Análisis Territoria</h3>
+
+<p class="pronostico-texto">
+
+Las variables meteorológicas utilizadas en este panel
+indican un escenario de inestabilidad.
+
+<br><br>
+
+<strong>Riesgo estimado de lluvia: 54%</strong>
+
+<br>
+
+<strong>Riesgo estimado de tormenta: 62%</strong>
+
+<br><br>
+
+El monitoreo eléctrico está configurado para utilizar
+un radio de <strong>50 km</strong> alrededor de la
+ubicación del dispositivo.
+
+</p>
+
+</div>
+
+
+<div class="footer">
+
+TERRITORIA · Sistema experimental de monitoreo ambiental
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =====================================
+   GPS
+===================================== */
+
+const gpsEstado =
+document.getElementById("gpsEstado");
+
+const gpsPrecision =
+document.getElementById("gpsPrecision");
+
+
+if ("geolocation" in navigator) {
+
+    const watchID =
+    navigator.geolocation.watchPosition(
+
+        function(position) {
+
+            const lat =
+            position.coords.latitude;
+
+            const lon =
+            position.coords.longitude;
+
+            const precision =
+            position.coords.accuracy;
+
+
+            gpsEstado.innerHTML =
+            "GPS activo";
+
+
+            gpsPrecision.innerHTML =
+            Math.round(precision) + " m";
+
+
+            /*
+            Acá podés enviar:
+
+            lat
+            lon
+
+            a la API meteorológica
+            y a la API de rayos.
+
+            El radio configurado
+            actualmente es 50 km.
+            */
+
+
+            console.log(
+                "LAT:", lat,
+                "LON:", lon,
+                "PRECISION:", precision
+            );
+
+        },
+
+        function(error) {
+
+            gpsEstado.innerHTML =
+            "GPS no disponible";
+
+            gpsPrecision.innerHTML =
+            "--";
+
+        },
+
+        {
+
+            enableHighAccuracy: true,
+
+            timeout: 10000,
+
+            maximumAge: 30000
+
+        }
+
+    );
+
+}
+else {
+
+    gpsEstado.innerHTML =
+    "GPS no compatible";
+
+}
+
+
+/* =====================================
+   CONFIGURACION TERRITORIA
+===================================== */
+
+const territoriaConfig = {
+
+    radioRayosKm: 50,
+
+    ventanaRayosMin: 30,
+
+    riesgoLluvia: 54,
+
+    riesgoTormenta: 62,
+
+    actividadElectrica: 15,
+
+    confianza: 71
+
+};
+
+console.log(
+    "Territoria:",
+    territoriaConfig
+);
+
+</script>
+
+</body>
+</html>
