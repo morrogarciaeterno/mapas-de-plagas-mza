@@ -2,340 +2,436 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>Territoria Meteo</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    font-family:"Segoe UI",Arial,sans-serif;
-    background:#08111f;
-    color:#e5e7eb;
-    padding:10px;
+:root {
+    --fondo: #07111f;
+    --panel: #101d31;
+    --panel-claro: #16243a;
+    --borde: #293b55;
+    --texto: #e7edf6;
+    --texto-secundario: #9baac0;
+    --azul: #20b8eb;
+    --verde: #22c55e;
+    --amarillo: #f5b82e;
+    --naranja: #f59e0b;
+    --rojo: #ef4444;
+    --violeta: #858cff;
 }
 
-.dashboard{
-    max-width:1400px;
-    margin:auto;
+body {
+    min-height: 100vh;
+    padding: 10px;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
 }
 
-/* HEADER */
-
-.header{
-    background:linear-gradient(135deg,#0f2744,#123b63);
-    border:1px solid #1e4d73;
-    border-radius:14px;
-    padding:18px;
-    margin-bottom:10px;
-}
-
-.header-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-}
-
-.header h1{
-    font-size:22px;
-    color:#38bdf8;
-}
-
-.header p{
-    color:#94a3b8;
-    font-size:12px;
-    margin-top:5px;
-}
-
-.live{
-    background:#064e3b;
-    color:#6ee7b7;
-    border:1px solid #059669;
-    padding:5px 9px;
-    border-radius:20px;
-    font-size:10px;
-    white-space:nowrap;
+.dashboard {
+    width: 100%;
+    max-width: 1450px;
+    margin: auto;
 }
 
 
-/* ESTADO */
+/* CABECERA */
 
-.estado{
-    background:#172033;
-    border:1px solid #334155;
-    border-left:5px solid #f59e0b;
-    border-radius:12px;
-    padding:15px;
-    margin-bottom:10px;
+.header {
+    padding: 17px;
+    margin-bottom: 10px;
+    border: 1px solid #1d4a70;
+    border-radius: 14px;
+    background:
+        linear-gradient(
+            135deg,
+            #102b49,
+            #153f68
+        );
 }
 
-.estado h2{
-    color:#fbbf24;
-    font-size:18px;
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-.estado p{
-    color:#cbd5e1;
-    font-size:12px;
-    margin-top:5px;
+.header h1 {
+    color: #40c6ef;
+    font-size: 22px;
+}
+
+.header p {
+    margin-top: 5px;
+    color: #a7b5c8;
+    font-size: 12px;
+}
+
+.en-linea {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border: 1px solid #138a67;
+    border-radius: 20px;
+    background: #064e3b;
+    color: #7df1bd;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.actualizacion {
+    margin-top: 10px;
+    color: #9eb1c9;
+    font-size: 11px;
+}
+
+
+/* ESTADO GENERAL */
+
+.estado-general {
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid var(--borde);
+    border-left: 5px solid var(--amarillo);
+    border-radius: 12px;
+    background: var(--panel);
+}
+
+.estado-general h2 {
+    color: var(--amarillo);
+    font-size: 18px;
+}
+
+.estado-general p {
+    margin-top: 6px;
+    color: #bbc8d9;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 
 /* INDICADORES */
 
-.indicadores{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:8px;
-    margin-bottom:10px;
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
-.indicador{
-    background:#111c2e;
-    border:1px solid #263750;
-    border-radius:12px;
-    padding:12px;
-    min-height:100px;
+.indicador {
+    min-height: 105px;
+    padding: 12px;
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    background: var(--panel);
 }
 
-.icono{
-    font-size:20px;
+.indicador-icono {
+    font-size: 21px;
 }
 
-.nombre{
-    color:#94a3b8;
-    font-size:11px;
-    margin-top:7px;
+.indicador-nombre {
+    margin-top: 7px;
+    color: var(--texto-secundario);
+    font-size: 11px;
 }
 
-.valor{
-    color:#38bdf8;
-    font-size:22px;
-    font-weight:700;
-    margin-top:4px;
+.indicador-valor {
+    margin-top: 4px;
+    color: var(--azul);
+    font-size: 21px;
+    font-weight: 700;
 }
 
-.sub{
-    color:#64748b;
-    font-size:10px;
-    margin-top:4px;
+.indicador-sub {
+    margin-top: 4px;
+    color: #708098;
+    font-size: 9px;
 }
 
 
 /* PANELES */
 
-.panel{
-    background:#111c2e;
-    border:1px solid #263750;
-    border-radius:12px;
-    padding:16px;
-    margin-bottom:10px;
+.panel {
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1px solid var(--borde);
+    border-radius: 13px;
+    background: var(--panel);
 }
 
-.panel h3{
-    font-size:16px;
-    margin-bottom:14px;
+.panel h3 {
+    margin-bottom: 14px;
+    font-size: 16px;
 }
 
-.panel-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
+.panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 
-/* BARRAS */
+/* MÉTRICAS */
 
-.metrica{
-    margin-bottom:14px;
+.metrica {
+    margin-bottom: 14px;
 }
 
-.metrica-header{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    font-size:12px;
-    margin-bottom:6px;
+.metrica:last-child {
+    margin-bottom: 0;
 }
 
-.barra{
-    height:9px;
-    background:#293548;
-    border-radius:20px;
-    overflow:hidden;
+.metrica-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
 }
 
-.progreso{
-    height:100%;
-    border-radius:20px;
-    transition:width .6s ease;
+.barra {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #29384d;
 }
 
-.lluvia{background:#0ea5e9;}
-.tormenta{background:#f59e0b;}
-.electrica{background:#ef4444;}
-.granizo{background:linear-gradient(90deg,#22d3ee,#818cf8);}
-.confianza{background:#22c55e;}
-
-
-/* DATOS */
-
-.lista-datos{
-    display:grid;
-    gap:8px;
+.progreso {
+    width: 0;
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.7s ease;
 }
 
-.dato{
-    display:flex;
-    justify-content:space-between;
-    gap:15px;
-    padding-bottom:7px;
-    border-bottom:1px solid #263750;
-    font-size:12px;
+.color-lluvia {
+    background: #0ea5e9;
 }
 
-.dato span{
-    color:#94a3b8;
+.color-tormenta {
+    background: #f59e0b;
 }
 
-.dato strong{
-    color:#f8fafc;
-    text-align:right;
+.color-rayos {
+    background: #ef4444;
+}
+
+.color-granizo {
+    background:
+        linear-gradient(
+            90deg,
+            #22d3ee,
+            #818cf8
+        );
+}
+
+.color-confianza {
+    background: #22c55e;
+}
+
+
+/* LISTA DE DATOS */
+
+.lista-datos {
+    display: grid;
+    gap: 8px;
+}
+
+.dato {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--borde);
+    font-size: 12px;
+}
+
+.dato span {
+    color: var(--texto-secundario);
+}
+
+.dato strong {
+    color: var(--texto);
+    text-align: right;
 }
 
 
 /* RAYOS */
 
-.panel-rayos{
-    border-left:4px solid #f59e0b;
+.panel-rayos {
+    border-left: 5px solid var(--naranja);
 }
 
-.status-ok{
-    background:#0d332a;
-    border:1px solid #166534;
-    color:#86efac;
-    padding:9px;
-    border-radius:8px;
-    margin-bottom:12px;
-    font-size:12px;
+.estado-ok {
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #166534;
+    border-radius: 9px;
+    background: #0b352b;
+    color: #86efac;
+    font-size: 12px;
 }
 
 
 /* GRANIZO */
 
-.panel-granizo{
-    border-left:4px solid #818cf8;
+.panel-granizo {
+    border-left: 5px solid var(--violeta);
 }
 
-.granizo-status{
-    background:#172554;
-    color:#bfdbfe;
-    border:1px solid #3730a3;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:12px;
-    font-size:12px;
+.estado-granizo {
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #3e46aa;
+    border-radius: 9px;
+    background: #1e2c67;
+    color: #c8d4ff;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
-
-/* ANALISIS */
-
-.analisis{
-    list-style:none;
+.nivel-bajo {
+    color: #67e8a5 !important;
 }
 
-.analisis li{
-    padding:7px 0;
-    border-bottom:1px solid #263750;
-    font-size:12px;
+.nivel-moderado {
+    color: #facc15 !important;
 }
 
-
-/* PRONOSTICO */
-
-.pronostico{
-    border-left:4px solid #0ea5e9;
+.nivel-alto {
+    color: #fb923c !important;
 }
 
-.pronostico p{
-    color:#cbd5e1;
-    line-height:1.6;
-    font-size:13px;
+.nivel-muy-alto {
+    color: #f87171 !important;
 }
 
 
-/* FOOTER */
+/* ANÁLISIS */
 
-.footer{
-    padding:15px;
-    text-align:center;
-    color:#475569;
-    font-size:10px;
+.lista-analisis {
+    list-style: none;
+}
+
+.lista-analisis li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--borde);
+    color: #d3dce9;
+    font-size: 12px;
+}
+
+
+/* PRONÓSTICO */
+
+.panel-pronostico {
+    border-left: 5px solid var(--azul);
+}
+
+.panel-pronostico p {
+    color: #c5d0df;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+
+/* ALERTAS */
+
+.mensaje-error {
+    display: none;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #991b1b;
+    border-radius: 10px;
+    background: #450a0a;
+    color: #fecaca;
+    font-size: 12px;
+}
+
+.footer {
+    padding: 16px;
+    text-align: center;
+    color: #526178;
+    font-size: 10px;
 }
 
 
 /* TABLET */
 
-@media(max-width:900px){
-    .indicadores{
-        grid-template-columns:repeat(3,1fr);
+@media (max-width: 1000px) {
+
+    .indicadores {
+        grid-template-columns: repeat(3, 1fr);
     }
+
 }
 
 
-/* MOVIL */
+/* CELULAR */
 
-@media(max-width:600px){
+@media (max-width: 650px) {
 
-    body{
-        padding:7px;
+    body {
+        padding: 7px;
     }
 
-    .header{
-        padding:13px;
+    .header {
+        padding: 13px;
     }
 
-    .header h1{
-        font-size:18px;
+    .header h1 {
+        font-size: 18px;
     }
 
-    .indicadores{
-        grid-template-columns:repeat(2,1fr);
-        gap:7px;
+    .indicadores {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
     }
 
-    .indicador{
-        min-height:94px;
-        padding:10px;
+    .indicador {
+        min-height: 96px;
+        padding: 10px;
     }
 
-    .valor{
-        font-size:19px;
+    .indicador-valor {
+        font-size: 19px;
     }
 
-    .panel-grid{
-        grid-template-columns:1fr;
+    .panel-grid {
+        grid-template-columns: 1fr;
     }
 
-    .panel{
-        padding:13px;
+    .panel {
+        padding: 13px;
     }
+
 }
 
 
-/* PANTALLAS MUY CHICAS */
+/* CELULAR MUY PEQUEÑO */
 
-@media(max-width:340px){
-    .indicadores{
-        grid-template-columns:1fr;
+@media (max-width: 340px) {
+
+    .indicadores {
+        grid-template-columns: 1fr;
     }
+
 }
+
 </style>
 </head>
 
@@ -344,660 +440,2500 @@ body{
 <div class="dashboard">
 
 
-<!-- CABECERA -->
+    <!-- CABECERA -->
 
-<div class="header">
+    <header class="header">
 
-    <div class="header-top">
+        <div class="header-top">
 
-        <div>
-            <h1>🌎 TERRITORIA METEO</h1>
-            <p>Centro inteligente de monitoreo meteorológico</p>
+            <div>
+
+                <h1>🌎 TERRITORIA METEO</h1>
+
+                <p>
+                    Centro inteligente de monitoreo meteorológico
+                </p>
+
+            </div>
+
+            <div
+                class="en-linea"
+                id="estadoSistema"
+            >
+                ● INICIANDO
+            </div>
+
         </div>
 
-        <div class="live">
-            ● EN LÍNEA
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- ESTADO -->
-
-<div class="estado">
-
-    <h2>🟠 ESTADO: INESTABLE</h2>
-
-    <p>
-        Condiciones favorables para precipitaciones
-        y tormentas aisladas.
-    </p>
-
-</div>
-
-
-<!-- INDICADORES PRINCIPALES -->
-
-<div class="indicadores">
-
-    <div class="indicador">
-        <div class="icono">🌡️</div>
-        <div class="nombre">Temperatura</div>
-        <div class="valor">14°C</div>
-        <div class="sub">Actual</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">💧</div>
-        <div class="nombre">Humedad</div>
-        <div class="valor">66%</div>
-        <div class="sub">Relativa</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">🌬️</div>
-        <div class="nombre">Viento</div>
-        <div class="valor">6 km/h</div>
-        <div class="sub">Velocidad</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">📉</div>
-        <div class="nombre">Presión</div>
-        <div class="valor">930</div>
-        <div class="sub">hPa · descendiendo</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">☁️</div>
-        <div class="nombre">Nubosidad</div>
-        <div class="valor">86%</div>
-        <div class="sub">Cobertura</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">🌿</div>
-        <div class="nombre">Punto de rocío</div>
-        <div class="valor">7.2°C</div>
-        <div class="sub">Spread 6.8°C</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">🌧️</div>
-        <div class="nombre">Riesgo lluvia</div>
-        <div class="valor">54%</div>
-        <div class="sub">Estimado</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">⚡</div>
-        <div class="nombre">Radio rayos</div>
-        <div class="valor">50 km</div>
-        <div class="sub">Monitoreo</div>
-    </div>
-
-    <div class="indicador">
-        <div class="icono">🧊</div>
-        <div class="nombre">Riesgo granizo</div>
-        <div class="valor" id="granizoValor">--</div>
-        <div class="sub" id="granizoEstado">
-            Esperando modelo
-        </div>
-    </div>
-
-</div>
-
-
-<!-- PREDICCION -->
-
-<div class="panel">
-
-<h3>🔮 Predicción Inteligente</h3>
-
-
-<div class="metrica">
-
-    <div class="metrica-header">
-        <span>🌧️ Riesgo de lluvia</span>
-        <strong>54%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso lluvia"
-             style="width:54%">
-        </div>
-    </div>
-
-</div>
-
-
-<div class="metrica">
-
-    <div class="metrica-header">
-        <span>⛈️ Riesgo de tormenta</span>
-        <strong>62%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso tormenta"
-             style="width:62%">
-        </div>
-    </div>
-
-</div>
-
-
-<div class="metrica">
-
-    <div class="metrica-header">
-        <span>⚡ Actividad eléctrica</span>
-        <strong>15%</strong>
-    </div>
-
-    <div class="barra">
-        <div class="progreso electrica"
-             style="width:15%">
-        </div>
-    </div>
-
-</div>
-
-
-<!-- GRANIZO -->
-
-<div class="metrica">
-
-    <div class="metrica-header">
-        <span>🧊 Riesgo de granizo</span>
-        <strong id="granizoPorcentaje">
-            --%
-        </strong>
-    </div>
-
-    <div class="barra">
         <div
-            class="progreso granizo"
-            id="barraGranizo"
-            style="width:0%">
+            class="actualizacion"
+            id="ultimaActualizacion"
+        >
+            Esperando ubicación GPS...
         </div>
-    </div>
 
-</div>
+    </header>
 
 
-<div class="metrica">
+    <!-- ERRORES -->
 
-    <div class="metrica-header">
-        <span>📈 Confianza general</span>
-        <strong>71%</strong>
-    </div>
+    <div
+        class="mensaje-error"
+        id="mensajeError"
+    ></div>
 
-    <div class="barra">
-        <div class="progreso confianza"
-             style="width:71%">
+
+    <!-- ESTADO GENERAL -->
+
+    <section class="estado-general">
+
+        <h2 id="estadoGeneral">
+            🟡 OBTENIENDO INFORMACIÓN
+        </h2>
+
+        <p id="estadoDescripcion">
+            Solicitando ubicación y consultando el modelo meteorológico.
+        </p>
+
+    </section>
+
+
+    <!-- INDICADORES -->
+
+    <section class="indicadores">
+
+        <div class="indicador">
+
+            <div class="indicador-icono">🌡️</div>
+
+            <div class="indicador-nombre">
+                Temperatura
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="temperatura"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Temperatura a 2 metros
+            </div>
+
         </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">💧</div>
+
+            <div class="indicador-nombre">
+                Humedad
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="humedad"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Humedad relativa
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">🌬️</div>
+
+            <div class="indicador-nombre">
+                Viento
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="viento"
+            >
+                --
+            </div>
+
+            <div
+                class="indicador-sub"
+                id="vientoDireccion"
+            >
+                Dirección --
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">📊</div>
+
+            <div class="indicador-nombre">
+                Presión
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="presion"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Nivel del mar
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">☁️</div>
+
+            <div class="indicador-nombre">
+                Nubosidad
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="nubosidad"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Cobertura total
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">🌿</div>
+
+            <div class="indicador-nombre">
+                Punto de rocío
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="puntoRocio"
+            >
+                --
+            </div>
+
+            <div
+                class="indicador-sub"
+                id="spread"
+            >
+                Spread --
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">🌧️</div>
+
+            <div class="indicador-nombre">
+                Riesgo lluvia
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="riesgoLluviaIndicador"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Próximas 6 horas
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">⛈️</div>
+
+            <div class="indicador-nombre">
+                Riesgo tormenta
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="riesgoTormentaIndicador"
+            >
+                --
+            </div>
+
+            <div class="indicador-sub">
+                Índice experimental
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">🧊</div>
+
+            <div class="indicador-nombre">
+                Riesgo granizo
+            </div>
+
+            <div
+                class="indicador-valor"
+                id="riesgoGranizoIndicador"
+            >
+                --
+            </div>
+
+            <div
+                class="indicador-sub"
+                id="nivelGranizoIndicador"
+            >
+                Esperando modelo
+            </div>
+
+        </div>
+
+
+        <div class="indicador">
+
+            <div class="indicador-icono">⚡</div>
+
+            <div class="indicador-nombre">
+                Radio rayos
+            </div>
+
+            <div class="indicador-valor">
+                50 km
+            </div>
+
+            <div class="indicador-sub">
+                Módulo preparado
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PREDICCIÓN -->
+
+    <section class="panel">
+
+        <h3>🔮 Predicción Inteligente</h3>
+
+
+        <div class="metrica">
+
+            <div class="metrica-header">
+
+                <span>🌧️ Riesgo de lluvia</span>
+
+                <strong id="riesgoLluviaTexto">
+                    --%
+                </strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div
+                    class="progreso color-lluvia"
+                    id="barraLluvia"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="metrica">
+
+            <div class="metrica-header">
+
+                <span>⛈️ Riesgo de tormenta</span>
+
+                <strong id="riesgoTormentaTexto">
+                    --%
+                </strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div
+                    class="progreso color-tormenta"
+                    id="barraTormenta"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="metrica">
+
+            <div class="metrica-header">
+
+                <span>⚡ Riesgo eléctrico estimado</span>
+
+                <strong id="riesgoElectricoTexto">
+                    --%
+                </strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div
+                    class="progreso color-rayos"
+                    id="barraElectrica"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="metrica">
+
+            <div class="metrica-header">
+
+                <span>🧊 Riesgo de granizo</span>
+
+                <strong id="riesgoGranizoTexto">
+                    --%
+                </strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div
+                    class="progreso color-granizo"
+                    id="barraGranizo"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="metrica">
+
+            <div class="metrica-header">
+
+                <span>📈 Confianza operativa</span>
+
+                <strong id="confianzaTexto">
+                    --%
+                </strong>
+
+            </div>
+
+            <div class="barra">
+
+                <div
+                    class="progreso color-confianza"
+                    id="barraConfianza"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PANELES TÉCNICOS -->
+
+    <div class="panel-grid">
+
+
+        <!-- GPS Y RAYOS -->
+
+        <section class="panel panel-rayos">
+
+            <h3>⚡ Posición y Actividad Eléctrica</h3>
+
+            <div
+                class="estado-ok"
+                id="estadoRayos"
+            >
+                Módulo de rayos preparado para futura API
+            </div>
+
+            <div class="lista-datos">
+
+                <div class="dato">
+
+                    <span>📡 Radio analizado</span>
+
+                    <strong>50 km</strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>🕒 Ventana temporal</span>
+
+                    <strong>30 minutos</strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>⚡ Descargas reales</span>
+
+                    <strong>
+                        Sin API conectada
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>📍 Posición</span>
+
+                    <strong id="gpsEstado">
+                        Solicitando GPS
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>🎯 Precisión</span>
+
+                    <strong id="gpsPrecision">
+                        --
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>🗺️ Coordenadas</span>
+
+                    <strong id="coordenadas">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- GRANIZO -->
+
+        <section class="panel panel-granizo">
+
+            <h3>🧊 Análisis de Granizo</h3>
+
+            <div
+                class="estado-granizo"
+                id="granizoStatus"
+            >
+                Esperando variables convectivas...
+            </div>
+
+            <div class="lista-datos">
+
+                <div class="dato">
+
+                    <span>CAPE</span>
+
+                    <strong id="cape">
+                        -- J/kg
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>Lifted Index</span>
+
+                    <strong id="liftedIndex">
+                        --
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>Cizalladura aproximada</span>
+
+                    <strong id="cizalladura">
+                        -- km/h
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>Nivel de congelación</span>
+
+                    <strong id="nivelCongelacion">
+                        -- m
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>Wet-Bulb Zero</span>
+
+                    <strong id="wetBulbZero">
+                        No disponible
+                    </strong>
+
+                </div>
+
+                <div class="dato">
+
+                    <span>Horizonte evaluado</span>
+
+                    <strong id="horaEvaluada">
+                        --
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
     </div>
 
-</div>
 
-</div>
+    <!-- ANÁLISIS ATMOSFÉRICO -->
 
+    <section class="panel">
 
-<!-- RAYOS + GRANIZO -->
+        <h3>📋 Análisis Atmosférico</h3>
 
-<div class="panel-grid">
+        <ul
+            class="lista-analisis"
+            id="listaAnalisis"
+        >
 
+            <li>
+                Cargando variables meteorológicas...
+            </li>
 
-<!-- ACTIVIDAD ELECTRICA -->
+        </ul>
 
-<div class="panel panel-rayos">
+    </section>
 
-<h3>⚡ Actividad Eléctrica</h3>
 
-<div class="status-ok">
-    ✓ Sin descargas detectadas
-</div>
+    <!-- ANÁLISIS TERRITORIA -->
 
-<div class="lista-datos">
+    <section class="panel panel-pronostico">
 
-    <div class="dato">
-        <span>📡 Radio analizado</span>
-        <strong>50 km</strong>
-    </div>
+        <h3>🔮 Análisis Territoria</h3>
 
-    <div class="dato">
-        <span>🕒 Período</span>
-        <strong>30 minutos</strong>
-    </div>
+        <p id="textoPronostico">
 
-    <div class="dato">
-        <span>⚡ Descargas</span>
-        <strong>0</strong>
-    </div>
+            Esperando la ubicación GPS y la respuesta
+            del modelo meteorológico.
 
-    <div class="dato">
-        <span>📍 Posición</span>
-        <strong id="gpsEstado">
-            Solicitando GPS
-        </strong>
-    </div>
+        </p>
 
-    <div class="dato">
-        <span>🎯 Precisión</span>
-        <strong id="gpsPrecision">
-            --
-        </strong>
-    </div>
+    </section>
 
-</div>
 
-</div>
+    <footer class="footer">
 
+        TERRITORIA · Motor meteorológico experimental
 
-<!-- GRANIZO -->
-
-<div class="panel panel-granizo">
-
-<h3>🧊 Análisis de Granizo</h3>
-
-<div class="granizo-status"
-     id="granizoStatus">
-    Esperando variables del modelo meteorológico
-</div>
-
-<div class="lista-datos">
-
-    <div class="dato">
-        <span>CAPE</span>
-        <strong id="cape">
-            -- J/kg
-        </strong>
-    </div>
-
-    <div class="dato">
-        <span>Lifted Index</span>
-        <strong id="liftedIndex">
-            --
-        </strong>
-    </div>
-
-    <div class="dato">
-        <span>Cizalladura 0-6 km</span>
-        <strong id="windShear">
-            --
-        </strong>
-    </div>
-
-    <div class="dato">
-        <span>Nivel congelación 0°C</span>
-        <strong id="freezingLevel">
-            -- m
-        </strong>
-    </div>
-
-    <div class="dato">
-        <span>Wet-Bulb Zero</span>
-        <strong id="wetBulbZero">
-            -- m
-        </strong>
-    </div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- ANALISIS ATMOSFERICO -->
-
-<div class="panel">
-
-<h3>📋 Análisis Atmosférico</h3>
-
-<ul class="analisis">
-
-    <li>✅ Nubosidad elevada: 86%</li>
-
-    <li>✅ Presión atmosférica descendiendo</li>
-
-    <li>⚠️ Humedad relativa: 66%</li>
-
-    <li>⚠️ Viento: 6 km/h</li>
-
-    <li>🌡️ Temperatura: 14°C</li>
-
-    <li>💧 Punto de rocío: 7.2°C</li>
-
-    <li>📊 Spread T/Td: 6.8°C</li>
-
-    <li id="analisisGranizo">
-        🧊 Granizo: esperando variables convectivas
-    </li>
-
-</ul>
-
-</div>
-
-
-<!-- PRONOSTICO -->
-
-<div class="panel pronostico">
-
-<h3>🔮 Análisis Territoria</h3>
-
-<p>
-
-Las variables disponibles indican actualmente
-un escenario de inestabilidad.
-
-<br><br>
-
-<strong>🌧️ Riesgo de lluvia: 54%</strong>
-
-<br>
-
-<strong>⛈️ Riesgo de tormenta: 62%</strong>
-
-<br>
-
-<strong>
-🧊 Riesgo de granizo:
-<span id="granizoPronostico">sin calcular</span>
-</strong>
-
-<br><br>
-
-El monitoreo eléctrico está configurado sobre
-un radio de <strong>50 km</strong> alrededor
-de la ubicación GPS del dispositivo.
-
-<br><br>
-
-El riesgo de granizo permanecerá sin calcular
-hasta disponer de las variables convectivas
-necesarias.
-
-</p>
-
-</div>
-
-
-<div class="footer">
-
-TERRITORIA · Sistema experimental de monitoreo meteorológico
-
-</div>
+    </footer>
 
 </div>
 
 
 <script>
 
-/* ============================================
-   CONFIGURACION
-============================================ */
+/* =====================================================
+   CONFIGURACIÓN
+===================================================== */
 
 const CONFIG = {
 
     radioRayosKm: 50,
 
-    ventanaRayosMin: 30
+    ventanaRayosMin: 30,
+
+    horasAnalisis: 6,
+
+    intervaloActualizacionMin: 15
 
 };
 
-
-/* ============================================
-   GPS DINAMICO
-============================================ */
-
-const gpsEstado =
-document.getElementById("gpsEstado");
-
-const gpsPrecision =
-document.getElementById("gpsPrecision");
-
-
-if("geolocation" in navigator){
-
-    navigator.geolocation.watchPosition(
-
-        function(position){
-
-            const lat =
-                position.coords.latitude;
-
-            const lon =
-                position.coords.longitude;
-
-            const accuracy =
-                position.coords.accuracy;
-
-
-            gpsEstado.textContent =
-                "GPS activo";
-
-
-            gpsPrecision.textContent =
-                Math.round(accuracy) + " m";
-
-
-            /*
-             * LAT y LON quedan disponibles.
-             *
-             * Desde acá podés consultar:
-             *
-             * API meteorológica
-             * API de rayos
-             * modelo convectivo
-             *
-             * usando la posición real
-             * del dispositivo.
-             */
-
-            console.log({
-                lat,
-                lon,
-                accuracy,
-                radio: CONFIG.radioRayosKm
-            });
-
-        },
-
-        function(){
-
-            gpsEstado.textContent =
-                "GPS no disponible";
-
-            gpsPrecision.textContent =
-                "--";
-
-        },
-
-        {
-            enableHighAccuracy:true,
-            timeout:10000,
-            maximumAge:30000
-        }
-
-    );
-
-}else{
-
-    gpsEstado.textContent =
-        "GPS no compatible";
-
-}
-
-
-/* ============================================
-   VARIABLES GRANIZO
-============================================ */
 
 /*
- * IMPORTANTE:
+ * Este índice es experimental.
  *
- * Dejamos null mientras no tengamos
- * datos reales del modelo.
- *
- * Después estos valores vendrán
- * de la API meteorológica.
+ * No reemplaza avisos oficiales,
+ * radares, observaciones de superficie
+ * ni pronósticos meteorológicos profesionales.
  */
 
-const datosGranizo = {
 
-    cape: null,
+/* =====================================================
+   UTILIDADES
+===================================================== */
 
-    liftedIndex: null,
+function limitar(numero, minimo, maximo) {
 
-    shear06: null,
-
-    freezingLevel: null,
-
-    wetBulbZero: null
-
-};
-
-
-/* ============================================
-   MOSTRAR VARIABLES
-============================================ */
-
-function mostrarDatosGranizo(d){
-
-    document.getElementById("cape")
-        .textContent =
-        d.cape === null
-        ? "-- J/kg"
-        : d.cape + " J/kg";
-
-
-    document.getElementById("liftedIndex")
-        .textContent =
-        d.liftedIndex === null
-        ? "--"
-        : d.liftedIndex;
-
-
-    document.getElementById("windShear")
-        .textContent =
-        d.shear06 === null
-        ? "--"
-        : d.shear06 + " km/h";
-
-
-    document.getElementById("freezingLevel")
-        .textContent =
-        d.freezingLevel === null
-        ? "-- m"
-        : d.freezingLevel + " m";
-
-
-    document.getElementById("wetBulbZero")
-        .textContent =
-        d.wetBulbZero === null
-        ? "-- m"
-        : d.wetBulbZero + " m";
+    return Math.min(
+        maximo,
+        Math.max(minimo, numero)
+    );
 
 }
 
 
-/* ============================================
-   CALCULO DE GRANIZO
-============================================ */
+function esNumero(valor) {
 
-function calcularRiesgoGranizo(d){
+    return (
+        valor !== null &&
+        valor !== undefined &&
+        Number.isFinite(Number(valor))
+    );
+
+}
+
+
+function redondear(valor, decimales = 0) {
+
+    if (!esNumero(valor)) {
+        return null;
+    }
+
+    const factor = Math.pow(10, decimales);
+
+    return (
+        Math.round(Number(valor) * factor) /
+        factor
+    );
+
+}
+
+
+function valorSeguro(valor, reemplazo = 0) {
+
+    return esNumero(valor)
+        ? Number(valor)
+        : reemplazo;
+
+}
+
+
+function setTexto(id, texto) {
+
+    const elemento =
+        document.getElementById(id);
+
+    if (elemento) {
+        elemento.textContent = texto;
+    }
+
+}
+
+
+function setBarra(id, porcentaje) {
+
+    const elemento =
+        document.getElementById(id);
+
+    if (!elemento) {
+        return;
+    }
+
+    const valor =
+        limitar(
+            valorSeguro(porcentaje),
+            0,
+            100
+        );
+
+    elemento.style.width =
+        valor + "%";
+
+}
+
+
+function gradosADireccion(grados) {
+
+    if (!esNumero(grados)) {
+        return "--";
+    }
+
+    const direcciones = [
+        "N",
+        "NE",
+        "E",
+        "SE",
+        "S",
+        "SO",
+        "O",
+        "NO"
+    ];
+
+    const indice =
+        Math.round(
+            Number(grados) / 45
+        ) % 8;
+
+    return direcciones[indice];
+
+}
+
+
+function mostrarError(mensaje) {
+
+    const caja =
+        document.getElementById("mensajeError");
+
+    caja.style.display = "block";
+
+    caja.textContent = mensaje;
+
+}
+
+
+function ocultarError() {
+
+    const caja =
+        document.getElementById("mensajeError");
+
+    caja.style.display = "none";
+
+    caja.textContent = "";
+
+}
+
+
+/* =====================================================
+   VIENTO A COMPONENTES U/V
+===================================================== */
+
+function vientoUV(velocidad, direccionGrados) {
+
+    const velocidadSegura =
+        valorSeguro(velocidad);
+
+    const direccionRadianes =
+        valorSeguro(direccionGrados) *
+        Math.PI / 180;
 
     /*
-     * No generamos una probabilidad
-     * si faltan datos críticos.
+     * Dirección meteorológica:
+     * indica desde dónde viene el viento.
      */
 
-    if(
-        d.cape === null ||
-        d.liftedIndex === null ||
-        d.shear06 === null ||
-        d.freezingLevel === null ||
-        d.wetBulbZero === null
-    ){
+    return {
 
-        actualizarGranizoSinDatos();
+        u:
+            -velocidadSegura *
+            Math.sin(direccionRadianes),
 
-        return;
+        v:
+            -velocidadSegura *
+            Math.cos(direccionRadianes)
+
+    };
+
+}
+
+
+/* =====================================================
+   CIZALLADURA APROXIMADA
+===================================================== */
+
+function calcularCizalladura(
+    vientoSuperficie,
+    direccionSuperficie,
+    viento500,
+    direccion500
+) {
+
+    if (
+        !esNumero(vientoSuperficie) ||
+        !esNumero(direccionSuperficie) ||
+        !esNumero(viento500) ||
+        !esNumero(direccion500)
+    ) {
+        return null;
+    }
+
+    const superficie =
+        vientoUV(
+            vientoSuperficie,
+            direccionSuperficie
+        );
+
+    const nivel500 =
+        vientoUV(
+            viento500,
+            direccion500
+        );
+
+    const diferenciaU =
+        nivel500.u - superficie.u;
+
+    const diferenciaV =
+        nivel500.v - superficie.v;
+
+    return Math.sqrt(
+        diferenciaU * diferenciaU +
+        diferenciaV * diferenciaV
+    );
+
+}
+
+
+/* =====================================================
+   ÍNDICE DE GRANIZO EXPERIMENTAL
+===================================================== */
+
+function calcularGranizo(datos) {
+
+    let score = 0;
+
+    let pesoDisponible = 0;
+
+
+    /*
+     * CAPE
+     * Peso máximo: 30
+     */
+
+    if (esNumero(datos.cape)) {
+
+        pesoDisponible += 30;
+
+        if (datos.cape >= 2500) {
+            score += 30;
+        }
+        else if (datos.cape >= 1500) {
+            score += 24;
+        }
+        else if (datos.cape >= 800) {
+            score += 16;
+        }
+        else if (datos.cape >= 300) {
+            score += 8;
+        }
 
     }
 
 
     /*
-     * IMPORTANTE:
-     *
-     * Acá después vamos a colocar
-     * el modelo calibrado de Territoria.
-     *
-     * Por ahora NO inventamos un porcentaje.
+     * LIFTED INDEX
+     * Peso máximo: 20
      */
 
+    if (esNumero(datos.liftedIndex)) {
+
+        pesoDisponible += 20;
+
+        if (datos.liftedIndex <= -6) {
+            score += 20;
+        }
+        else if (datos.liftedIndex <= -4) {
+            score += 16;
+        }
+        else if (datos.liftedIndex <= -2) {
+            score += 11;
+        }
+        else if (datos.liftedIndex < 0) {
+            score += 5;
+        }
+
+    }
+
+
+    /*
+     * CIZALLADURA APROXIMADA
+     * Peso máximo: 25
+     */
+
+    if (esNumero(datos.cizalladura)) {
+
+        pesoDisponible += 25;
+
+        if (datos.cizalladura >= 75) {
+            score += 25;
+        }
+        else if (datos.cizalladura >= 55) {
+            score += 20;
+        }
+        else if (datos.cizalladura >= 35) {
+            score += 14;
+        }
+        else if (datos.cizalladura >= 20) {
+            score += 7;
+        }
+
+    }
+
+
+    /*
+     * NIVEL DE CONGELACIÓN
+     * Peso máximo: 20
+     *
+     * Este bloque estima qué tan favorable
+     * podría ser la supervivencia del granizo.
+     */
+
+    if (esNumero(datos.nivelCongelacion)) {
+
+        pesoDisponible += 20;
+
+        if (
+            datos.nivelCongelacion >= 1800 &&
+            datos.nivelCongelacion <= 3200
+        ) {
+            score += 20;
+        }
+        else if (
+            datos.nivelCongelacion > 3200 &&
+            datos.nivelCongelacion <= 3800
+        ) {
+            score += 13;
+        }
+        else if (
+            datos.nivelCongelacion >= 1000 &&
+            datos.nivelCongelacion < 1800
+        ) {
+            score += 12;
+        }
+        else if (
+            datos.nivelCongelacion > 3800 &&
+            datos.nivelCongelacion <= 4300
+        ) {
+            score += 6;
+        }
+
+    }
+
+
+    /*
+     * NUBOSIDAD
+     * Peso máximo: 5
+     */
+
+    if (esNumero(datos.nubosidad)) {
+
+        pesoDisponible += 5;
+
+        if (datos.nubosidad >= 80) {
+            score += 5;
+        }
+        else if (datos.nubosidad >= 60) {
+            score += 3;
+        }
+
+    }
+
+
+    if (pesoDisponible === 0) {
+
+        return {
+
+            porcentaje: null,
+
+            nivel: "SIN DATOS",
+
+            clase: ""
+
+        };
+
+    }
+
+
+    /*
+     * Normalización para trabajar
+     * solamente con variables disponibles.
+     */
+
+    const porcentaje =
+        Math.round(
+            limitar(
+                score / pesoDisponible * 100,
+                0,
+                100
+            )
+        );
+
+
+    let nivel = "BAJO";
+
+    let clase = "nivel-bajo";
+
+
+    if (porcentaje >= 70) {
+
+        nivel = "MUY ALTO";
+
+        clase = "nivel-muy-alto";
+
+    }
+    else if (porcentaje >= 50) {
+
+        nivel = "ALTO";
+
+        clase = "nivel-alto";
+
+    }
+    else if (porcentaje >= 30) {
+
+        nivel = "MODERADO";
+
+        clase = "nivel-moderado";
+
+    }
+
+
+    return {
+
+        porcentaje,
+
+        nivel,
+
+        clase
+
+    };
+
 }
 
 
-/* ============================================
-   ESTADO SIN DATOS
-============================================ */
+/* =====================================================
+   ÍNDICE DE TORMENTA EXPERIMENTAL
+===================================================== */
 
-function actualizarGranizoSinDatos(){
+function calcularTormenta(datos) {
 
-    document.getElementById(
-        "granizoValor"
-    ).textContent = "--";
+    let score = 0;
 
 
-    document.getElementById(
-        "granizoEstado"
-    ).textContent =
-        "Esperando modelo";
+    if (datos.nubosidad >= 80) {
+        score += 15;
+    }
+    else if (datos.nubosidad >= 60) {
+        score += 9;
+    }
 
 
-    document.getElementById(
-        "granizoPorcentaje"
-    ).textContent =
-        "--%";
+    if (datos.humedad >= 80) {
+        score += 12;
+    }
+    else if (datos.humedad >= 60) {
+        score += 7;
+    }
 
 
-    document.getElementById(
-        "barraGranizo"
-    ).style.width =
-        "0%";
+    if (datos.cape >= 2000) {
+        score += 28;
+    }
+    else if (datos.cape >= 1000) {
+        score += 20;
+    }
+    else if (datos.cape >= 500) {
+        score += 12;
+    }
+    else if (datos.cape >= 100) {
+        score += 5;
+    }
 
 
-    document.getElementById(
-        "granizoStatus"
-    ).textContent =
-        "Esperando CAPE, LI, cizalladura, nivel 0°C y Wet-Bulb Zero";
+    if (datos.liftedIndex <= -6) {
+        score += 22;
+    }
+    else if (datos.liftedIndex <= -4) {
+        score += 17;
+    }
+    else if (datos.liftedIndex <= -2) {
+        score += 11;
+    }
+    else if (datos.liftedIndex < 0) {
+        score += 5;
+    }
 
 
-    document.getElementById(
-        "granizoPronostico"
-    ).textContent =
-        "sin calcular";
+    if (datos.cizalladura >= 55) {
+        score += 15;
+    }
+    else if (datos.cizalladura >= 35) {
+        score += 10;
+    }
+    else if (datos.cizalladura >= 20) {
+        score += 5;
+    }
 
 
-    document.getElementById(
-        "analisisGranizo"
-    ).textContent =
-        "🧊 Granizo: esperando variables convectivas";
+    if (datos.precipitacionMax6h > 0) {
+        score += 8;
+    }
+
+
+    return Math.round(
+        limitar(score, 0, 100)
+    );
 
 }
 
 
-/* ============================================
-   EJECUCION
-============================================ */
+/* =====================================================
+   RIESGO ELÉCTRICO ESTIMADO
+===================================================== */
 
-mostrarDatosGranizo(datosGranizo);
+function calcularRiesgoElectrico(datos) {
 
-calcularRiesgoGranizo(datosGranizo);
+    let score = 0;
+
+
+    if (datos.cape >= 2000) {
+        score += 40;
+    }
+    else if (datos.cape >= 1000) {
+        score += 30;
+    }
+    else if (datos.cape >= 500) {
+        score += 20;
+    }
+    else if (datos.cape >= 100) {
+        score += 8;
+    }
+
+
+    if (datos.liftedIndex <= -5) {
+        score += 30;
+    }
+    else if (datos.liftedIndex <= -3) {
+        score += 20;
+    }
+    else if (datos.liftedIndex < 0) {
+        score += 10;
+    }
+
+
+    if (datos.nubosidad >= 80) {
+        score += 15;
+    }
+
+
+    if (datos.precipitacionMax6h > 0) {
+        score += 15;
+    }
+
+
+    return Math.round(
+        limitar(score, 0, 100)
+    );
+
+}
+
+
+/* =====================================================
+   ESTADO GENERAL
+===================================================== */
+
+function actualizarEstadoGeneral(
+    tormenta,
+    granizo,
+    lluvia
+) {
+
+    let titulo;
+    let descripcion;
+    let color;
+
+
+    if (
+        granizo !== null &&
+        granizo >= 70
+    ) {
+
+        titulo =
+            "🔴 RIESGO CONVECTIVO MUY ALTO";
+
+        descripcion =
+            "El modelo presenta condiciones favorables para tormentas intensas y posible granizo.";
+
+        color = "#ef4444";
+
+    }
+    else if (
+        tormenta >= 70 ||
+        (
+            granizo !== null &&
+            granizo >= 50
+        )
+    ) {
+
+        titulo =
+            "🟠 INESTABILIDAD ALTA";
+
+        descripcion =
+            "Se detectan parámetros convectivos relevantes. Mantener seguimiento meteorológico.";
+
+        color = "#f97316";
+
+    }
+    else if (
+        tormenta >= 40 ||
+        lluvia >= 50
+    ) {
+
+        titulo =
+            "🟡 INESTABILIDAD MODERADA";
+
+        descripcion =
+            "Existen condiciones para precipitaciones o tormentas aisladas.";
+
+        color = "#f5b82e";
+
+    }
+    else {
+
+        titulo =
+            "🟢 CONDICIONES ESTABLES";
+
+        descripcion =
+            "Los parámetros disponibles no muestran inestabilidad significativa.";
+
+        color = "#22c55e";
+
+    }
+
+
+    setTexto(
+        "estadoGeneral",
+        titulo
+    );
+
+    setTexto(
+        "estadoDescripcion",
+        descripcion
+    );
+
+
+    document.querySelector(
+        ".estado-general"
+    ).style.borderLeftColor = color;
+
+}
+
+
+/* =====================================================
+   CONSULTA OPEN-METEO
+===================================================== */
+
+async function consultarMeteo(lat, lon) {
+
+    ocultarError();
+
+
+    setTexto(
+        "estadoSistema",
+        "● CONSULTANDO"
+    );
+
+
+    const variablesCurrent = [
+
+        "temperature_2m",
+
+        "relative_humidity_2m",
+
+        "dew_point_2m",
+
+        "cloud_cover",
+
+        "wind_speed_10m",
+
+        "wind_direction_10m",
+
+        "wind_gusts_10m",
+
+        "pressure_msl"
+
+    ].join(",");
+
+
+    const variablesHourly = [
+
+        "precipitation_probability",
+
+        "precipitation",
+
+        "cape",
+
+        "lifted_index",
+
+        "freezing_level_height",
+
+        "cloud_cover",
+
+        "relative_humidity_2m",
+
+        "wind_speed_10m",
+
+        "wind_direction_10m",
+
+        "wind_speed_500hPa",
+
+        "wind_direction_500hPa"
+
+    ].join(",");
+
+
+    const parametros =
+        new URLSearchParams({
+
+            latitude: lat,
+
+            longitude: lon,
+
+            current: variablesCurrent,
+
+            hourly: variablesHourly,
+
+            forecast_days: "2",
+
+            timezone: "auto",
+
+            wind_speed_unit: "kmh"
+
+        });
+
+
+    const url =
+        "https://api.open-meteo.com/v1/forecast?" +
+        parametros.toString();
+
+
+    const respuesta =
+        await fetch(url);
+
+
+    if (!respuesta.ok) {
+
+        throw new Error(
+            "La API meteorológica respondió con código " +
+            respuesta.status
+        );
+
+    }
+
+
+    const datos =
+        await respuesta.json();
+
+
+    procesarDatosMeteo(datos);
+
+}
+
+
+/* =====================================================
+   ELEGIR HORA ACTUAL
+===================================================== */
+
+function encontrarIndiceHorario(
+    tiempos,
+    horaActual
+) {
+
+    if (
+        !Array.isArray(tiempos) ||
+        tiempos.length === 0
+    ) {
+        return 0;
+    }
+
+
+    const objetivo =
+        new Date(horaActual).getTime();
+
+
+    let mejorIndice = 0;
+
+    let menorDiferencia = Infinity;
+
+
+    tiempos.forEach(
+        function(tiempo, indice) {
+
+            const diferencia =
+                Math.abs(
+                    new Date(tiempo).getTime() -
+                    objetivo
+                );
+
+            if (diferencia < menorDiferencia) {
+
+                menorDiferencia =
+                    diferencia;
+
+                mejorIndice =
+                    indice;
+
+            }
+
+        }
+    );
+
+
+    return mejorIndice;
+
+}
+
+
+/* =====================================================
+   MÁXIMOS EN LAS PRÓXIMAS HORAS
+===================================================== */
+
+function maximoVentana(
+    valores,
+    inicio,
+    cantidad
+) {
+
+    if (!Array.isArray(valores)) {
+        return null;
+    }
+
+
+    const ventana =
+        valores
+            .slice(
+                inicio,
+                inicio + cantidad
+            )
+            .filter(esNumero)
+            .map(Number);
+
+
+    if (ventana.length === 0) {
+        return null;
+    }
+
+
+    return Math.max(...ventana);
+
+}
+
+
+function minimoVentana(
+    valores,
+    inicio,
+    cantidad
+) {
+
+    if (!Array.isArray(valores)) {
+        return null;
+    }
+
+
+    const ventana =
+        valores
+            .slice(
+                inicio,
+                inicio + cantidad
+            )
+            .filter(esNumero)
+            .map(Number);
+
+
+    if (ventana.length === 0) {
+        return null;
+    }
+
+
+    return Math.min(...ventana);
+
+}
+
+
+/* =====================================================
+   PROCESAR RESPUESTA
+===================================================== */
+
+function procesarDatosMeteo(api) {
+
+    if (
+        !api.current ||
+        !api.hourly
+    ) {
+
+        throw new Error(
+            "La respuesta no contiene las variables necesarias."
+        );
+
+    }
+
+
+    const actual =
+        api.current;
+
+    const horario =
+        api.hourly;
+
+
+    const indiceActual =
+        encontrarIndiceHorario(
+            horario.time,
+            actual.time
+        );
+
+
+    const horas =
+        CONFIG.horasAnalisis;
+
+
+    const temperatura =
+        valorSeguro(
+            actual.temperature_2m
+        );
+
+
+    const humedad =
+        valorSeguro(
+            actual.relative_humidity_2m
+        );
+
+
+    const puntoRocio =
+        valorSeguro(
+            actual.dew_point_2m
+        );
+
+
+    const nubosidad =
+        valorSeguro(
+            actual.cloud_cover
+        );
+
+
+    const viento =
+        valorSeguro(
+            actual.wind_speed_10m
+        );
+
+
+    const direccionViento =
+        valorSeguro(
+            actual.wind_direction_10m
+        );
+
+
+    const rafagas =
+        valorSeguro(
+            actual.wind_gusts_10m
+        );
+
+
+    const presion =
+        valorSeguro(
+            actual.pressure_msl
+        );
+
+
+    const spread =
+        temperatura - puntoRocio;
+
+
+    const cape =
+        maximoVentana(
+            horario.cape,
+            indiceActual,
+            horas
+        );
+
+
+    const liftedIndex =
+        minimoVentana(
+            horario.lifted_index,
+            indiceActual,
+            horas
+        );
+
+
+    const nivelCongelacion =
+        minimoVentana(
+            horario.freezing_level_height,
+            indiceActual,
+            horas
+        );
+
+
+    const probabilidadLluvia =
+        maximoVentana(
+            horario.precipitation_probability,
+            indiceActual,
+            horas
+        );
+
+
+    const precipitacionMax6h =
+        maximoVentana(
+            horario.precipitation,
+            indiceActual,
+            horas
+        );
+
+
+    const viento500 =
+        maximoVentana(
+            horario.wind_speed_500hPa,
+            indiceActual,
+            horas
+        );
+
+
+    /*
+     * Para dirección usamos la correspondiente
+     * a la hora actual del modelo.
+     */
+
+    const direccion500 =
+        Array.isArray(
+            horario.wind_direction_500hPa
+        )
+        ? horario.wind_direction_500hPa[
+            indiceActual
+        ]
+        : null;
+
+
+    const cizalladura =
+        calcularCizalladura(
+            viento,
+            direccionViento,
+            viento500,
+            direccion500
+        );
+
+
+    const datosCalculo = {
+
+        temperatura,
+
+        humedad,
+
+        puntoRocio,
+
+        nubosidad,
+
+        viento,
+
+        direccionViento,
+
+        rafagas,
+
+        presion,
+
+        cape,
+
+        liftedIndex,
+
+        nivelCongelacion,
+
+        cizalladura,
+
+        precipitacionMax6h
+
+    };
+
+
+    const granizo =
+        calcularGranizo(
+            datosCalculo
+        );
+
+
+    const tormenta =
+        calcularTormenta(
+            datosCalculo
+        );
+
+
+    const electrico =
+        calcularRiesgoElectrico(
+            datosCalculo
+        );
+
+
+    const lluvia =
+        esNumero(probabilidadLluvia)
+        ? Math.round(probabilidadLluvia)
+        : 0;
+
+
+    let confianza = 55;
+
+    if (esNumero(cape)) {
+        confianza += 10;
+    }
+
+    if (esNumero(liftedIndex)) {
+        confianza += 10;
+    }
+
+    if (esNumero(nivelCongelacion)) {
+        confianza += 10;
+    }
+
+    if (esNumero(cizalladura)) {
+        confianza += 10;
+    }
+
+    confianza =
+        limitar(confianza, 0, 85);
+
+
+    actualizarInterfaz({
+
+        temperatura,
+
+        humedad,
+
+        puntoRocio,
+
+        nubosidad,
+
+        viento,
+
+        direccionViento,
+
+        rafagas,
+
+        presion,
+
+        spread,
+
+        cape,
+
+        liftedIndex,
+
+        nivelCongelacion,
+
+        cizalladura,
+
+        lluvia,
+
+        tormenta,
+
+        electrico,
+
+        granizo,
+
+        confianza,
+
+        horaEvaluada:
+            horario.time[indiceActual]
+
+    });
+
+}
+
+
+/* =====================================================
+   ACTUALIZAR INTERFAZ
+===================================================== */
+
+function actualizarInterfaz(d) {
+
+    setTexto(
+        "temperatura",
+        redondear(d.temperatura, 1) + "°C"
+    );
+
+    setTexto(
+        "humedad",
+        redondear(d.humedad) + "%"
+    );
+
+    setTexto(
+        "viento",
+        redondear(d.viento) + " km/h"
+    );
+
+    setTexto(
+        "vientoDireccion",
+        gradosADireccion(
+            d.direccionViento
+        ) +
+        " · ráfagas " +
+        redondear(d.rafagas) +
+        " km/h"
+    );
+
+    setTexto(
+        "presion",
+        redondear(d.presion) + " hPa"
+    );
+
+    setTexto(
+        "nubosidad",
+        redondear(d.nubosidad) + "%"
+    );
+
+    setTexto(
+        "puntoRocio",
+        redondear(d.puntoRocio, 1) + "°C"
+    );
+
+    setTexto(
+        "spread",
+        "Spread " +
+        redondear(d.spread, 1) +
+        "°C"
+    );
+
+
+    setTexto(
+        "riesgoLluviaIndicador",
+        d.lluvia + "%"
+    );
+
+    setTexto(
+        "riesgoTormentaIndicador",
+        d.tormenta + "%"
+    );
+
+
+    setTexto(
+        "riesgoLluviaTexto",
+        d.lluvia + "%"
+    );
+
+    setTexto(
+        "riesgoTormentaTexto",
+        d.tormenta + "%"
+    );
+
+    setTexto(
+        "riesgoElectricoTexto",
+        d.electrico + "%"
+    );
+
+    setTexto(
+        "confianzaTexto",
+        d.confianza + "%"
+    );
+
+
+    setBarra(
+        "barraLluvia",
+        d.lluvia
+    );
+
+    setBarra(
+        "barraTormenta",
+        d.tormenta
+    );
+
+    setBarra(
+        "barraElectrica",
+        d.electrico
+    );
+
+    setBarra(
+        "barraConfianza",
+        d.confianza
+    );
+
+
+    if (
+        d.granizo.porcentaje !== null
+    ) {
+
+        setTexto(
+            "riesgoGranizoIndicador",
+            d.granizo.porcentaje + "%"
+        );
+
+        setTexto(
+            "riesgoGranizoTexto",
+            d.granizo.porcentaje + "%"
+        );
+
+        setTexto(
+            "nivelGranizoIndicador",
+            d.granizo.nivel
+        );
+
+        setBarra(
+            "barraGranizo",
+            d.granizo.porcentaje
+        );
+
+
+        const estadoGranizo =
+            document.getElementById(
+                "granizoStatus"
+            );
+
+
+        estadoGranizo.className =
+            "estado-granizo " +
+            d.granizo.clase;
+
+
+        estadoGranizo.textContent =
+            "Riesgo " +
+            d.granizo.nivel +
+            " de granizo: " +
+            d.granizo.porcentaje +
+            "%. Índice experimental basado en parámetros del modelo.";
+
+    }
+    else {
+
+        setTexto(
+            "riesgoGranizoIndicador",
+            "--"
+        );
+
+        setTexto(
+            "riesgoGranizoTexto",
+            "--%"
+        );
+
+        setTexto(
+            "nivelGranizoIndicador",
+            "Datos insuficientes"
+        );
+
+    }
+
+
+    setTexto(
+        "cape",
+        esNumero(d.cape)
+        ? redondear(d.cape) + " J/kg"
+        : "-- J/kg"
+    );
+
+    setTexto(
+        "liftedIndex",
+        esNumero(d.liftedIndex)
+        ? redondear(d.liftedIndex, 1)
+        : "--"
+    );
+
+    setTexto(
+        "cizalladura",
+        esNumero(d.cizalladura)
+        ? redondear(d.cizalladura) +
+          " km/h"
+        : "-- km/h"
+    );
+
+    setTexto(
+        "nivelCongelacion",
+        esNumero(d.nivelCongelacion)
+        ? redondear(d.nivelCongelacion) +
+          " m"
+        : "-- m"
+    );
+
+    setTexto(
+        "wetBulbZero",
+        "No provisto por esta consulta"
+    );
+
+    setTexto(
+        "horaEvaluada",
+        d.horaEvaluada
+        ? new Date(
+            d.horaEvaluada
+          ).toLocaleString()
+        : "--"
+    );
+
+
+    actualizarAnalisis(d);
+
+    actualizarPronostico(d);
+
+    actualizarEstadoGeneral(
+        d.tormenta,
+        d.granizo.porcentaje,
+        d.lluvia
+    );
+
+
+    setTexto(
+        "estadoSistema",
+        "● EN LÍNEA"
+    );
+
+    setTexto(
+        "ultimaActualizacion",
+        "Datos actualizados: " +
+        new Date().toLocaleString()
+    );
+
+}
+
+
+/* =====================================================
+   ANÁLISIS NARRATIVO
+===================================================== */
+
+function actualizarAnalisis(d) {
+
+    const items = [];
+
+
+    items.push(
+        d.nubosidad >= 80
+        ? "✅ Nubosidad elevada: " +
+          redondear(d.nubosidad) + "%"
+        : "☁️ Nubosidad: " +
+          redondear(d.nubosidad) + "%"
+    );
+
+
+    items.push(
+        "💧 Humedad relativa: " +
+        redondear(d.humedad) + "%"
+    );
+
+
+    items.push(
+        "🌡️ Temperatura: " +
+        redondear(d.temperatura, 1) +
+        "°C"
+    );
+
+
+    items.push(
+        "🌿 Punto de rocío: " +
+        redondear(d.puntoRocio, 1) +
+        "°C"
+    );
+
+
+    items.push(
+        "📊 Spread T/Td: " +
+        redondear(d.spread, 1) +
+        "°C"
+    );
+
+
+    items.push(
+        "🌬️ Viento: " +
+        redondear(d.viento) +
+        " km/h, ráfagas " +
+        redondear(d.rafagas) +
+        " km/h"
+    );
+
+
+    items.push(
+        esNumero(d.cape)
+        ? "⛈️ CAPE máximo próximas 6 h: " +
+          redondear(d.cape) +
+          " J/kg"
+        : "⛈️ CAPE no disponible"
+    );
+
+
+    items.push(
+        esNumero(d.liftedIndex)
+        ? "📉 Lifted Index mínimo: " +
+          redondear(
+              d.liftedIndex,
+              1
+          )
+        : "📉 Lifted Index no disponible"
+    );
+
+
+    items.push(
+        esNumero(d.cizalladura)
+        ? "🌀 Cizalladura aproximada: " +
+          redondear(d.cizalladura) +
+          " km/h"
+        : "🌀 Cizalladura no disponible"
+    );
+
+
+    items.push(
+        esNumero(d.nivelCongelacion)
+        ? "❄️ Nivel mínimo de congelación: " +
+          redondear(
+              d.nivelCongelacion
+          ) +
+          " m"
+        : "❄️ Nivel de congelación no disponible"
+    );
+
+
+    items.push(
+        d.granizo.porcentaje !== null
+        ? "🧊 Riesgo experimental de granizo: " +
+          d.granizo.porcentaje +
+          "% · " +
+          d.granizo.nivel
+        : "🧊 Riesgo de granizo sin calcular"
+    );
+
+
+    const lista =
+        document.getElementById(
+            "listaAnalisis"
+        );
+
+
+    lista.innerHTML =
+        items
+            .map(
+                item =>
+                    "<li>" +
+                    item +
+                    "</li>"
+            )
+            .join("");
+
+}
+
+
+/* =====================================================
+   PRONÓSTICO NARRATIVO
+===================================================== */
+
+function actualizarPronostico(d) {
+
+    let texto = "";
+
+
+    if (
+        d.granizo.porcentaje !== null &&
+        d.granizo.porcentaje >= 70
+    ) {
+
+        texto =
+            "El modelo presenta una combinación elevada de inestabilidad, organización convectiva y condiciones favorables para granizo. Se recomienda consultar alertas oficiales, radar meteorológico y observaciones en tiempo real.";
+
+    }
+    else if (
+        d.granizo.porcentaje !== null &&
+        d.granizo.porcentaje >= 50
+    ) {
+
+        texto =
+            "Se observan parámetros compatibles con tormentas capaces de producir granizo. El índice debe confirmarse con radar, alertas oficiales y datos reales de actividad eléctrica.";
+
+    }
+    else if (d.tormenta >= 50) {
+
+        texto =
+            "Las variables del modelo indican inestabilidad y posibilidad de tormentas aisladas. El riesgo experimental de granizo es " +
+            (
+                d.granizo.porcentaje !== null
+                ? d.granizo.porcentaje + "%"
+                : "indeterminado"
+            ) +
+            ".";
+
+    }
+    else {
+
+        texto =
+            "Los parámetros disponibles no muestran actualmente una señal convectiva fuerte. El sistema continuará actualizando el análisis con la posición GPS.";
+
+    }
+
+
+    texto +=
+        " Riesgo de lluvia para las próximas horas: " +
+        d.lluvia +
+        "%. Riesgo de tormenta: " +
+        d.tormenta +
+        "%.";
+
+
+    setTexto(
+        "textoPronostico",
+        texto
+    );
+
+}
+
+
+/* =====================================================
+   GPS
+===================================================== */
+
+let ultimaConsulta = 0;
+
+let ultimaLat = null;
+
+let ultimaLon = null;
+
+
+function distanciaAproximada(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+) {
+
+    if (
+        lat2 === null ||
+        lon2 === null
+    ) {
+        return Infinity;
+    }
+
+
+    const radioTierra = 6371;
+
+    const dLat =
+        (lat2 - lat1) *
+        Math.PI / 180;
+
+    const dLon =
+        (lon2 - lon1) *
+        Math.PI / 180;
+
+
+    const a =
+        Math.sin(dLat / 2) *
+        Math.sin(dLat / 2) +
+
+        Math.cos(
+            lat1 * Math.PI / 180
+        ) *
+
+        Math.cos(
+            lat2 * Math.PI / 180
+        ) *
+
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+
+    return (
+        radioTierra *
+        2 *
+        Math.atan2(
+            Math.sqrt(a),
+            Math.sqrt(1 - a)
+        )
+    );
+
+}
+
+
+async function manejarPosicion(position) {
+
+    const lat =
+        position.coords.latitude;
+
+    const lon =
+        position.coords.longitude;
+
+    const precision =
+        position.coords.accuracy;
+
+
+    setTexto(
+        "gpsEstado",
+        "GPS activo"
+    );
+
+    setTexto(
+        "gpsPrecision",
+        Math.round(precision) + " m"
+    );
+
+    setTexto(
+        "coordenadas",
+        lat.toFixed(4) +
+        ", " +
+        lon.toFixed(4)
+    );
+
+
+    const ahora =
+        Date.now();
+
+
+    const minutosDesdeConsulta =
+        (ahora - ultimaConsulta) /
+        60000;
+
+
+    const movimientoKm =
+        distanciaAproximada(
+            ultimaLat,
+            ultimaLon,
+            lat,
+            lon
+        );
+
+
+    /*
+     * Consulta cuando:
+     *
+     * 1. Es la primera posición.
+     * 2. Pasaron 15 minutos.
+     * 3. La persona se movió más de 2 km.
+     */
+
+    const debeConsultar =
+        ultimaConsulta === 0 ||
+        minutosDesdeConsulta >=
+            CONFIG.intervaloActualizacionMin ||
+        movimientoKm >= 2;
+
+
+    if (!debeConsultar) {
+        return;
+    }
+
+
+    ultimaConsulta = ahora;
+
+    ultimaLat = lat;
+
+    ultimaLon = lon;
+
+
+    try {
+
+        await consultarMeteo(
+            lat,
+            lon
+        );
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        setTexto(
+            "estadoSistema",
+            "● ERROR"
+        );
+
+        mostrarError(
+            "No fue posible consultar el modelo meteorológico: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+function errorGPS(error) {
+
+    let mensaje =
+        "No se pudo obtener la ubicación GPS.";
+
+
+    if (error.code === 1) {
+
+        mensaje =
+            "El permiso de ubicación fue rechazado. Activá la ubicación para calcular los índices locales.";
+
+    }
+    else if (error.code === 2) {
+
+        mensaje =
+            "La ubicación no está disponible en este momento.";
+
+    }
+    else if (error.code === 3) {
+
+        mensaje =
+            "La solicitud de ubicación superó el tiempo de espera.";
+
+    }
+
+
+    setTexto(
+        "gpsEstado",
+        "GPS no disponible"
+    );
+
+    setTexto(
+        "estadoSistema",
+        "● SIN GPS"
+    );
+
+    mostrarError(mensaje);
+
+}
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+if ("geolocation" in navigator) {
+
+    navigator.geolocation.watchPosition(
+
+        manejarPosicion,
+
+        errorGPS,
+
+        {
+
+            enableHighAccuracy: true,
+
+            timeout: 15000,
+
+            maximumAge: 30000
+
+        }
+
+    );
+
+}
+else {
+
+    setTexto(
+        "gpsEstado",
+        "GPS no compatible"
+    );
+
+    setTexto(
+        "estadoSistema",
+        "● SIN GPS"
+    );
+
+    mostrarError(
+        "Este navegador no admite geolocalización."
+    );
+
+}
 
 </script>
 
