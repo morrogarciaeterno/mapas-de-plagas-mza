@@ -1,262 +1,227 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="card prediccion-territoria">
 
-<title>Territoria Meteo</title>
+<h2>🔮 Predicción Inteligente Territoria</h2>
+
+<div class="estado-meteo">
+🟠 ESTADO ACTUAL: INESTABLE
+</div>
+
+<div class="metrica">
+<span>🌧️ Riesgo de lluvia</span>
+<strong>54%</strong>
+</div>
+
+<div class="barra">
+<div class="progreso lluvia" style="width:54%;"></div>
+</div>
+
+<div class="metrica">
+<span>⛈️ Riesgo de tormenta</span>
+<strong>62%</strong>
+</div>
+
+<div class="barra">
+<div class="progreso tormenta" style="width:62%;"></div>
+</div>
+
+<div class="metrica">
+<span>⚡ Actividad eléctrica</span>
+<strong>15%</strong>
+</div>
+
+<div class="barra">
+<div class="progreso electrica" style="width:15%;"></div>
+</div>
+
+<div class="metrica">
+<span>📈 Confianza del pronóstico</span>
+<strong>71%</strong>
+</div>
+
+<div class="barra">
+<div class="progreso confianza" style="width:71%;"></div>
+</div>
+
+<div class="spread-box">
+
+<h3>🌡️ Análisis Atmosférico</h3>
+
+<p>
+Temperatura: <strong>14°C</strong>
+</p>
+
+<p>
+Punto de Rocío: <strong>7.2°C</strong>
+</p>
+
+<p>
+Spread: <strong>6.8°C</strong>
+</p>
+
+<p>
+Aire moderadamente húmedo. No se observa saturación completa.
+</p>
+
+</div>
+
+<div class="rayos-box">
+
+<h3>⚡ Actividad Eléctrica</h3>
+
+<p>
+✅ Sin descargas eléctricas detectadas en la zona monitoreada.
+</p>
+
+<p>
+Distancia mínima registrada:
+<strong>-- km</strong>
+</p>
+
+</div>
+
+<div class="factores-box">
+
+<h3>📋 Factores Analizados</h3>
+
+<ul>
+
+<li>✅ Nubosidad elevada (86%)</li>
+
+<li>✅ Presión atmosférica en descenso</li>
+
+<li>✅ Temperatura estable</li>
+
+<li>⚠️ Humedad moderada (66%)</li>
+
+<li>⚠️ Viento débil (6 km/h)</li>
+
+<li>✅ Punto de rocío monitoreado</li>
+
+<li>✅ Sin actividad eléctrica significativa</li>
+
+</ul>
+
+</div>
+
+<div class="pronostico-box">
+
+<h3>🔮 Pronóstico Territoria</h3>
+
+<p>
+
+Las condiciones atmosféricas muestran un escenario de
+<strong>inestabilidad moderada</strong>.
+
+La elevada nubosidad y la disminución de la presión favorecen
+la formación de precipitaciones aisladas durante las próximas horas.
+
+No se detecta actividad eléctrica cercana por el momento,
+aunque la evolución de la presión y de la humedad deberá
+continuar siendo monitoreada.
+
+</p>
+
+</div>
+
+<div class="recomendacion-box">
+
+<h3>🚨 Recomendación</h3>
+
+<p>
+
+Mantener vigilancia meteorológica durante las próximas
+<strong>3 a 6 horas</strong>.
+
+Actualmente no se observan indicadores de tormenta severa,
+pero existen condiciones favorables para desarrollos convectivos
+aislados.
+
+</p>
+
+</div>
+
+</div>
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+.prediccion-territoria{
+background:#fff;
+padding:20px;
+border-radius:20px;
+box-shadow:0 2px 12px rgba(0,0,0,.08);
+margin:15px 0;
 }
 
-body{
-    background:#f4f6f9;
-    padding:15px;
+.estado-meteo{
+background:#fff3cd;
+color:#856404;
+padding:12px;
+border-radius:12px;
+font-weight:bold;
+text-align:center;
+margin:15px 0;
 }
 
-.card{
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    margin-bottom:16px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
-}
-
-.header{
-    background:linear-gradient(135deg,#1565c0,#1976d2);
-    color:white;
-    text-align:center;
-}
-
-.header h1{
-    font-size:42px;
-    margin-bottom:5px;
-}
-
-.header p{
-    font-size:18px;
-}
-
-.alerta{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    background:#fff3cd;
-    border-left:6px solid #ffb300;
-}
-
-.alerta-icono{
-    font-size:50px;
-}
-
-.alerta h2{
-    color:#8d6e00;
-    margin-bottom:8px;
-}
-
-.valor{
-    font-size:22px;
-    font-weight:bold;
-    margin-top:10px;
-}
-
-.titulo{
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-.riesgo-panel{
-    background:white;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 2px 12px rgba(0,0,0,.08);
-    margin-bottom:16px;
-}
-
-.estado{
-    text-align:center;
-    padding:12px;
-    border-radius:12px;
-    font-weight:bold;
-    margin-bottom:15px;
-}
-
-.estado.inestable{
-    background:#fff3cd;
-    color:#856404;
-}
-
-.indice-item{
-    display:flex;
-    justify-content:space-between;
-    margin:10px 0;
-    font-weight:bold;
+.metrica{
+display:flex;
+justify-content:space-between;
+font-weight:bold;
+margin-top:12px;
 }
 
 .barra{
-    height:12px;
-    background:#e5e7eb;
-    border-radius:20px;
-    overflow:hidden;
-    margin-bottom:15px;
+height:12px;
+background:#e5e7eb;
+border-radius:20px;
+overflow:hidden;
+margin:8px 0 15px 0;
+}
+
+.progreso{
+height:100%;
 }
 
 .lluvia{
-    height:100%;
-    background:#2196f3;
+background:#2196f3;
 }
 
 .tormenta{
-    height:100%;
-    background:#ff9800;
+background:#ff9800;
 }
 
-.spread{
-    background:#f3f4f6;
-    padding:12px;
-    border-radius:12px;
-    margin-top:10px;
+.electrica{
+background:#f44336;
 }
 
-.factores{
-    margin-top:12px;
-    padding-left:20px;
+.confianza{
+background:#4caf50;
 }
 
-.factores li{
-    margin-bottom:8px;
+.spread-box,
+.rayos-box,
+.factores-box,
+.pronostico-box,
+.recomendacion-box{
+background:#f8fafc;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
 }
 
-.grid{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:16px;
+.pronostico-box{
+border-left:5px solid #2196f3;
 }
 
-@media(min-width:768px){
-    .grid{
-        grid-template-columns:repeat(2,1fr);
-    }
+.recomendacion-box{
+border-left:5px solid #ff9800;
+}
+
+ul{
+padding-left:20px;
+}
+
+li{
+margin-bottom:6px;
 }
 
 </style>
-</head>
-
-<body>
-
-<div class="card header">
-    <h1>🌎 TERRITORIA</h1>
-    <p>PLATAFORMA INTELIGENTE DE GESTIÓN TERRITORIAL</p>
-</div>
-
-<div class="card alerta">
-    <div class="alerta-icono">⚡</div>
-
-    <div>
-        <h2>Atención: Inestabilidad por Tormenta (60%)</h2>
-        <p>Variables moderadas. Monitorear evolución de presión y viento.</p>
-    </div>
-</div>
-
-<div class="riesgo-panel">
-
-    <h2>📊 Índice Meteorológico</h2>
-
-    <br>
-
-    <div class="estado inestable">
-        🟠 Estado Actual: INESTABLE
-    </div>
-
-    <div class="indice-item">
-        <span>🌧️ Riesgo de lluvia</span>
-        <span>58%</span>
-    </div>
-
-    <div class="barra">
-        <div class="lluvia" style="width:58%;"></div>
-    </div>
-
-    <div class="indice-item">
-        <span>⛈️ Riesgo de tormenta</span>
-        <span>60%</span>
-    </div>
-
-    <div class="barra">
-        <div class="tormenta" style="width:60%;"></div>
-    </div>
-
-    <div class="spread">
-        🌡️ Diferencia Temp / Rocío:
-        <strong>6.8°C</strong>
-        <br><br>
-        <small>
-        El aire aún no está completamente saturado.
-        </small>
-    </div>
-
-    <ul class="factores">
-        <li>✅ Nubosidad alta (86%)</li>
-        <li>✅ Presión en descenso</li>
-        <li>⚠️ Humedad moderada (66%)</li>
-        <li>⚠️ Viento débil (6 km/h)</li>
-    </ul>
-
-</div>
-
-<div class="grid">
-
-    <div class="card">
-        <div class="titulo">🌡️ Temperatura</div>
-        <div class="valor">14°C</div>
-    </div>
-
-    <div class="card">
-        <div class="titulo">💧 Humedad</div>
-        <div class="valor">66%</div>
-    </div>
-
-    <div class="card">
-        <div class="titulo">🌿 Punto de Rocío</div>
-        <div class="valor">7.2°C</div>
-    </div>
-
-    <div class="card">
-        <div class="titulo">☁️ Nubosidad</div>
-        <div class="valor">86%</div>
-    </div>
-
-    <div class="card">
-        <div class="titulo">🌬️ Viento</div>
-        <div class="valor">6 km/h SSE</div>
-    </div>
-
-    <div class="card">
-        <div class="titulo">📉 Presión</div>
-        <div class="valor">930 hPa</div>
-    </div>
-
-</div>
-
-<script>
-
-// Datos de prueba
-
-const temperatura = 14;
-const puntoRocio = 7.2;
-
-const spread = (temperatura - puntoRocio).toFixed(1);
-
-console.log("Spread:", spread);
-
-</script>
-
-</body>
-</html>
