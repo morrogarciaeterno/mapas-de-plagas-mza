@@ -3,234 +3,258 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Testing Predicción Meteorológica</title>
+
+<title>Territoria Meteo</title>
 
 <style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
 body{
-    background:#071220;
-    color:white;
-    font-family:Arial, sans-serif;
-    padding:20px;
+    background:#f4f6f9;
+    padding:15px;
 }
 
 .card{
-    max-width:800px;
-    margin:auto;
-    background:#0f1c34;
-    border-radius:15px;
+    background:white;
+    border-radius:20px;
     padding:20px;
-    box-shadow:0 0 20px rgba(0,0,0,.4);
+    margin-bottom:16px;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
 }
 
-h1{
+.header{
+    background:linear-gradient(135deg,#1565c0,#1976d2);
+    color:white;
     text-align:center;
+}
+
+.header h1{
+    font-size:42px;
+    margin-bottom:5px;
+}
+
+.header p{
+    font-size:18px;
+}
+
+.alerta{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    background:#fff3cd;
+    border-left:6px solid #ffb300;
+}
+
+.alerta-icono{
+    font-size:50px;
+}
+
+.alerta h2{
+    color:#8d6e00;
+    margin-bottom:8px;
+}
+
+.valor{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+.titulo{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.riesgo-panel{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    margin-bottom:16px;
+}
+
+.estado{
+    text-align:center;
+    padding:12px;
+    border-radius:12px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.estado.inestable{
+    background:#fff3cd;
+    color:#856404;
+}
+
+.indice-item{
+    display:flex;
+    justify-content:space-between;
+    margin:10px 0;
+    font-weight:bold;
+}
+
+.barra{
+    height:12px;
+    background:#e5e7eb;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:15px;
+}
+
+.lluvia{
+    height:100%;
+    background:#2196f3;
+}
+
+.tormenta{
+    height:100%;
+    background:#ff9800;
+}
+
+.spread{
+    background:#f3f4f6;
+    padding:12px;
+    border-radius:12px;
+    margin-top:10px;
+}
+
+.factores{
+    margin-top:12px;
+    padding-left:20px;
+}
+
+.factores li{
+    margin-bottom:8px;
 }
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
+    grid-template-columns:1fr;
+    gap:16px;
 }
 
-.box{
-    background:#172846;
-    padding:15px;
-    border-radius:12px;
+@media(min-width:768px){
+    .grid{
+        grid-template-columns:repeat(2,1fr);
+    }
 }
 
-.valor{
-    font-size:28px;
-    font-weight:bold;
-    color:#59c7ff;
-}
-
-.alerta{
-    margin:20px 0;
-    padding:15px;
-    border-radius:12px;
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.verde{background:#0d5e3f;}
-.amarillo{background:#8b6b00;}
-.naranja{background:#c76a00;}
-.rojo{background:#b00020;}
-
-.barra{
-    width:100%;
-    height:20px;
-    background:#24354f;
-    border-radius:20px;
-    overflow:hidden;
-    margin-top:8px;
-}
-
-.progreso{
-    height:100%;
-    transition:1s;
-}
-
-.lluvia{
-    background:#19a7ff;
-}
-
-.tormenta{
-    background:#ff9800;
-}
 </style>
 </head>
+
 <body>
 
-<div class="card">
+<div class="card header">
+    <h1>🌎 TERRITORIA</h1>
+    <p>PLATAFORMA INTELIGENTE DE GESTIÓN TERRITORIAL</p>
+</div>
 
-<h1>🌦 Predictor Experimental</h1>
+<div class="card alerta">
+    <div class="alerta-icono">⚡</div>
+
+    <div>
+        <h2>Atención: Inestabilidad por Tormenta (60%)</h2>
+        <p>Variables moderadas. Monitorear evolución de presión y viento.</p>
+    </div>
+</div>
+
+<div class="riesgo-panel">
+
+    <h2>📊 Índice Meteorológico</h2>
+
+    <br>
+
+    <div class="estado inestable">
+        🟠 Estado Actual: INESTABLE
+    </div>
+
+    <div class="indice-item">
+        <span>🌧️ Riesgo de lluvia</span>
+        <span>58%</span>
+    </div>
+
+    <div class="barra">
+        <div class="lluvia" style="width:58%;"></div>
+    </div>
+
+    <div class="indice-item">
+        <span>⛈️ Riesgo de tormenta</span>
+        <span>60%</span>
+    </div>
+
+    <div class="barra">
+        <div class="tormenta" style="width:60%;"></div>
+    </div>
+
+    <div class="spread">
+        🌡️ Diferencia Temp / Rocío:
+        <strong>6.8°C</strong>
+        <br><br>
+        <small>
+        El aire aún no está completamente saturado.
+        </small>
+    </div>
+
+    <ul class="factores">
+        <li>✅ Nubosidad alta (86%)</li>
+        <li>✅ Presión en descenso</li>
+        <li>⚠️ Humedad moderada (66%)</li>
+        <li>⚠️ Viento débil (6 km/h)</li>
+    </ul>
+
+</div>
 
 <div class="grid">
-    <div class="box">
-        <div>Temperatura</div>
+
+    <div class="card">
+        <div class="titulo">🌡️ Temperatura</div>
         <div class="valor">14°C</div>
     </div>
 
-    <div class="box">
-        <div>Humedad</div>
+    <div class="card">
+        <div class="titulo">💧 Humedad</div>
         <div class="valor">66%</div>
     </div>
 
-    <div class="box">
-        <div>Punto Rocío</div>
+    <div class="card">
+        <div class="titulo">🌿 Punto de Rocío</div>
         <div class="valor">7.2°C</div>
     </div>
 
-    <div class="box">
-        <div>Nubosidad</div>
+    <div class="card">
+        <div class="titulo">☁️ Nubosidad</div>
         <div class="valor">86%</div>
     </div>
 
-    <div class="box">
-        <div>Presión</div>
+    <div class="card">
+        <div class="titulo">🌬️ Viento</div>
+        <div class="valor">6 km/h SSE</div>
+    </div>
+
+    <div class="card">
+        <div class="titulo">📉 Presión</div>
         <div class="valor">930 hPa</div>
     </div>
-
-    <div class="box">
-        <div>Viento</div>
-        <div class="valor">6 km/h</div>
-    </div>
-</div>
-
-<div id="alerta" class="alerta">
-Calculando...
-</div>
-
-<h3>🌧 Probabilidad de Lluvia</h3>
-
-<div>
-    <span id="lluviaValor">0%</span>
-    <div class="barra">
-        <div class="progreso lluvia" id="barraLluvia"></div>
-    </div>
-</div>
-
-<h3>⛈ Riesgo de Tormenta</h3>
-
-<div>
-    <span id="tormentaValor">0%</span>
-    <div class="barra">
-        <div class="progreso tormenta" id="barraTormenta"></div>
-    </div>
-</div>
 
 </div>
 
 <script>
 
-// Datos simulados
+// Datos de prueba
 
-const meteo = {
-    temperature: 14,
-    humidity: 66,
-    dewPoint: 7.2,
-    cloudCover: 86,
-    pressure: 930,
-    pressureTrend: "falling",
-    wind: 6,
-    rainProbability: 37,
-    cape: 1200,
-    liftedIndex: -3
-};
+const temperatura = 14;
+const puntoRocio = 7.2;
 
-// SCORE LLUVIA
+const spread = (temperatura - puntoRocio).toFixed(1);
 
-function calcularLluvia(d){
-
-    let score = 0;
-
-    score += d.humidity * 0.25;
-    score += d.cloudCover * 0.20;
-    score += d.rainProbability * 0.25;
-
-    if(d.pressureTrend === "falling")
-        score += 15;
-
-    const spread = d.temperature - d.dewPoint;
-
-    if(spread < 2)
-        score += 20;
-    else if(spread < 5)
-        score += 10;
-
-    return Math.min(100, Math.round(score));
-}
-
-// SCORE TORMENTA
-
-function calcularTormenta(d){
-
-    let score = 0;
-
-    if(d.cape > 500) score += 20;
-    if(d.cape > 1000) score += 20;
-    if(d.cape > 2000) score += 20;
-
-    if(d.liftedIndex < -2) score += 20;
-    if(d.liftedIndex < -4) score += 10;
-
-    if(d.humidity > 60) score += 10;
-
-    if(d.pressureTrend === "falling")
-        score += 20;
-
-    return Math.min(score,100);
-}
-
-const lluvia = calcularLluvia(meteo);
-const tormenta = calcularTormenta(meteo);
-
-document.getElementById("lluviaValor").innerHTML = lluvia + "%";
-document.getElementById("barraLluvia").style.width = lluvia + "%";
-
-document.getElementById("tormentaValor").innerHTML = tormenta + "%";
-document.getElementById("barraTormenta").style.width = tormenta + "%";
-
-const alerta = document.getElementById("alerta");
-
-if(tormenta > 75){
-    alerta.className = "alerta rojo";
-    alerta.innerHTML = "⛈ Alta probabilidad de tormenta";
-}
-else if(lluvia > 60){
-    alerta.className = "alerta naranja";
-    alerta.innerHTML = "🌧 Lluvia probable en las próximas horas";
-}
-else if(lluvia > 40){
-    alerta.className = "alerta amarillo";
-    alerta.innerHTML = "⚠️ Inestabilidad moderada";
-}
-else{
-    alerta.className = "alerta verde";
-    alerta.innerHTML = "✅ Condiciones estables";
-}
+console.log("Spread:", spread);
 
 </script>
 
