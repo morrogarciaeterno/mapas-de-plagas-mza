@@ -2,94 +2,62 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07111f">
-
 <title>Territoria Meteo</title>
 
 <style>
-
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 :root{
-  --fondo:#07111f;
+  --bg:#07111f;
   --panel:#101d31;
   --panel2:#17263d;
-  --borde:#293b55;
-  --texto:#e7edf6;
-  --secundario:#9baac0;
-  --azul:#28b9ee;
-  --verde:#22c55e;
-  --amarillo:#facc15;
-  --naranja:#f59e0b;
-  --rojo:#ef4444;
-  --violeta:#a855f7;
+  --border:#293b55;
+  --text:#e7edf6;
+  --muted:#9baac0;
+  --blue:#28b9ee;
+  --green:#22c55e;
+  --yellow:#facc15;
+  --orange:#f59e0b;
+  --red:#ef4444;
+  --violet:#a855f7;
 }
 
-html{
-  color-scheme:dark;
-}
+html{color-scheme:dark}
 
 body{
   margin:0;
   min-height:100vh;
   padding:8px;
   overflow-x:hidden;
-  background:var(--fondo);
-  color:var(--texto);
+  background:var(--bg);
+  color:var(--text);
   font-family:"Segoe UI",Arial,sans-serif;
 }
 
-button,
-select{
-  font:inherit;
-}
-
-
-/* =========================================
-   CONTENEDOR PRINCIPAL
-========================================= */
+button,select{font:inherit}
 
 .dashboard{
   width:calc(100% - 20px);
-  max-width:1700px;
+  max-width:1750px;
   margin:auto;
 }
 
-
-/* =========================================
-   TARJETAS
-========================================= */
-
 .card{
   margin-bottom:10px;
-  padding:15px;
-
-  border:1px solid var(--borde);
+  padding:16px;
+  border:1px solid var(--border);
   border-radius:14px;
-
   background:var(--panel);
 }
 
-
-/* =========================================
-   CABECERA
-========================================= */
-
 .header{
   border-color:#1d4a70;
-
-  background:
-    linear-gradient(
-      135deg,
-      #102b49,
-      #153f68
-    );
+  background:linear-gradient(135deg,#102b49,#153f68);
 }
 
-.header-superior{
+.header-row{
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -104,5441 +72,1309 @@ select{
 
 .header p{
   margin:5px 0 0;
-  color:var(--secundario);
+  color:var(--muted);
   font-size:12px;
 }
 
-.estado-sistema{
-  flex-shrink:0;
-
+.online{
   padding:7px 11px;
-
   border:1px solid #138a67;
   border-radius:20px;
-
   background:#064e3b;
   color:#7df1bd;
-
   font-size:10px;
   font-weight:700;
 }
 
-.actualizacion{
+.updated{
   display:block;
-
   margin-top:10px;
-
-  color:var(--secundario);
+  color:var(--muted);
   font-size:10px;
 }
-
-
-/* =========================================
-   ERROR
-========================================= */
 
 .error{
   display:none;
-
   margin-bottom:10px;
   padding:11px;
-
   border:1px solid #991b1b;
   border-radius:10px;
-
   background:#450a0a;
   color:#fecaca;
-
   font-size:12px;
-  line-height:1.5;
 }
 
-
-/* =========================================
-   ESTADO GENERAL
-========================================= */
-
-.estado-general{
-  border-left:5px solid var(--amarillo);
+.general{
+  border-left:5px solid var(--yellow);
 }
 
-.estado-general h2{
+.general h2{
   margin:0;
-
-  color:var(--amarillo);
-
+  color:var(--yellow);
   font-size:18px;
 }
 
-.estado-general p{
-  margin:8px 0 0;
-
+.general p{
+  margin:7px 0 0;
   color:#cbd5e1;
-
   font-size:12px;
-  line-height:1.5;
 }
 
-
-/* =========================================
-   INDICADORES
-========================================= */
-
-.indicadores{
+.indicators{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-
   gap:8px;
-
   margin-bottom:10px;
 }
 
-.indicador{
+.indicator{
   min-height:105px;
   padding:12px;
-
-  border:1px solid var(--borde);
+  border:1px solid var(--border);
   border-radius:13px;
-
   background:var(--panel);
 }
 
-.indicador-icono{
-  font-size:22px;
-}
+.indicator-icon{font-size:22px}
 
-.indicador-nombre{
+.indicator-name{
   margin-top:7px;
-
-  color:var(--secundario);
-
+  color:var(--muted);
   font-size:12px;
 }
 
-.indicador-valor{
+.indicator-value{
   display:block;
-
   margin-top:5px;
-
-  color:var(--azul);
-
+  color:var(--blue);
   font-size:22px;
   font-weight:700;
 }
 
-.indicador-sub{
+.indicator-sub{
   display:block;
-
   margin-top:4px;
-
   color:#74859d;
-
-  font-size:9px;
-  line-height:1.4;
-}
-
-
-/* =========================================
-   PRONÓSTICO SEMANAL
-========================================= */
-
-.pronostico-semanal{
-  padding:18px 22px;
-}
-
-.titulo-semanal{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-
-  gap:15px;
-
-  margin-bottom:5px;
-}
-
-.titulo-semanal h3{
-  margin:0;
-}
-
-.subtitulo-semanal{
-  display:block;
-
-  margin-top:4px;
-
-  color:#8495ad;
-
-  font-size:11px;
-}
-
-.leyenda-temperatura{
-  display:flex;
-  align-items:center;
-  gap:15px;
-
-  white-space:nowrap;
-}
-
-.leyenda-max{
-  color:#fb923c;
-  font-size:11px;
-}
-
-.leyenda-min{
-  color:#38bdf8;
-  font-size:11px;
-}
-
-
-/* =========================================
-   GRÁFICA
-========================================= */
-
-.grafica{
-  width:100%;
-  height:300px;
-
-  overflow:hidden;
-
-  border-bottom:1px solid var(--borde);
-
-  background:transparent;
-}
-
-.grafica svg{
-  display:block;
-
-  width:100%;
-  height:300px;
-}
-
-
-/* =========================================
-   7 DÍAS
-========================================= */
-
-.pronostico-dias{
-  display:grid;
-
-  grid-template-columns:
-    repeat(7,minmax(0,1fr));
-
-  gap:7px;
-
-  width:100%;
-
-  margin-top:10px;
-}
-
-.dia-card{
-  min-width:0;
-
-  padding:11px 5px;
-
-  border:1px solid var(--borde);
-  border-radius:10px;
-
-  background:#142238;
-
-  text-align:center;
-
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    background .2s ease;
-}
-
-.dia-card:hover{
-  transform:translateY(-2px);
-
-  border-color:#3e5878;
-
-  background:#182a44;
-}
-
-.dia-card strong{
-  display:block;
-
-  color:#f1f5f9;
-
-  font-size:12px;
-}
-
-.dia-fecha{
-  margin-top:3px;
-
-  color:#718198;
-
   font-size:9px;
 }
-
-.icono-clima{
-  margin:7px 0;
-
-  font-size:24px;
-}
-
-.temperaturas-dia{
-  display:flex;
-  justify-content:center;
-  gap:5px;
-
-  font-size:12px;
-}
-
-.temp-max{
-  color:#fb923c;
-  font-weight:700;
-}
-
-.temp-min{
-  color:#38bdf8;
-  font-weight:700;
-}
-
-.detalle-dia{
-  margin-top:6px;
-
-  color:#b4c0d0;
-
-  font-size:10px;
-}
-
-
-/* =========================================
-   ÍNDICES
-========================================= */
 
 .card h3{
   margin:0 0 14px;
-
   font-size:16px;
 }
 
-.metrica{
-  margin-bottom:14px;
+.week-header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
 }
 
-.metrica-cabecera{
+.week-header h3{margin:0}
+
+.week-header small{
+  display:block;
+  margin-top:4px;
+  color:#8495ad;
+}
+
+.legend{
+  display:flex;
+  gap:14px;
+  font-size:11px;
+}
+
+.max-legend{color:#fb923c}
+.min-legend{color:#38bdf8}
+
+.chart{
+  width:100%;
+  height:390px;
+  overflow:hidden;
+}
+
+.chart svg{
+  display:block;
+  width:100%;
+  height:390px;
+}
+
+.metric{margin-bottom:14px}
+
+.metric-head{
   display:flex;
   justify-content:space-between;
-
-  gap:10px;
-
   margin-bottom:6px;
-
   font-size:12px;
 }
 
-.barra{
-  width:100%;
+.bar{
   height:9px;
-
   overflow:hidden;
-
   border-radius:20px;
-
   background:#29384d;
 }
 
-.progreso{
+.fill{
   width:0;
   height:100%;
-
   border-radius:20px;
-
-  transition:width .6s ease;
+  transition:width .5s;
 }
 
-.barra-lluvia{
-  background:#0ea5e9;
-}
+.rain{background:#0ea5e9}
+.storm{background:#f59e0b}
+.electric{background:#ef4444}
+.hail{background:linear-gradient(90deg,#22d3ee,#818cf8)}
 
-.barra-tormenta{
-  background:#f59e0b;
-}
-
-.barra-electrico{
-  background:#ef4444;
-}
-
-.barra-granizo{
-  background:
-    linear-gradient(
-      90deg,
-      #22d3ee,
-      #818cf8
-    );
-}
-
-
-/* =========================================
-   PANEL DOBLE
-========================================= */
-
-.panel-grid{
+.two-columns{
   display:grid;
-
-  grid-template-columns:
-    repeat(2,minmax(0,1fr));
-
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
 }
 
-
-/* =========================================
-   DATOS
-========================================= */
-
-.dato{
+.data-row{
   display:flex;
   justify-content:space-between;
-
   gap:15px;
-
   padding:8px 0;
-
-  border-bottom:1px solid var(--borde);
-
+  border-bottom:1px solid var(--border);
   font-size:12px;
 }
 
-.dato span{
-  color:var(--secundario);
-}
+.data-row span{color:var(--muted)}
+.data-row strong{text-align:right}
 
-.dato strong{
-  text-align:right;
-}
-
-
-/* =========================================
-   GRANIZO
-========================================= */
-
-.estado-granizo{
+.hail-status{
   margin-bottom:10px;
   padding:11px;
-
   border:1px solid #3e46aa;
   border-radius:10px;
-
   background:#1e2c67;
-  color:#dbeafe;
-
   font-size:12px;
-  line-height:1.5;
 }
 
-
-/* =========================================
-   RADAR
-========================================= */
-
-.radar-layout{
+.radar-grid{
   display:grid;
-
-  grid-template-columns:
-    minmax(0,2fr)
-    minmax(320px,.75fr);
-
+  grid-template-columns:minmax(0,2fr) minmax(280px,.7fr);
   gap:12px;
-
-  align-items:stretch;
 }
 
-.radar-panel{
-  min-width:0;
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:10px;
 }
 
-.radar-lateral{
+button,select{
+  padding:9px 12px;
+  border:1px solid #3b82f6;
+  border-radius:8px;
+  background:#172554;
+  color:#fff;
+  cursor:pointer;
+}
+
+#radarMap{
+  width:100%;
+  height:500px;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#0f172a;
+}
+
+.map-loading{
   display:grid;
-  gap:10px;
-
-  align-content:start;
+  place-items:center;
+  width:100%;
+  height:100%;
+  color:var(--muted);
 }
 
-.alerta-radar{
-  padding:12px;
+.radar-side{
+  display:grid;
+  align-content:start;
+  gap:10px;
+}
 
+.radar-alert{
+  padding:12px;
   border:1px solid #854d0e;
   border-radius:11px;
-
   background:#422006;
   color:#fde68a;
-
   font-size:12px;
   line-height:1.5;
 }
 
-.alerta-radar.verde{
+.radar-alert.green{
   border-color:#166534;
   background:#0b352b;
   color:#bbf7d0;
 }
 
-.alerta-radar.naranja{
+.radar-alert.orange{
   border-color:#ea580c;
   background:#431407;
   color:#ffedd5;
 }
 
-.alerta-radar.roja{
+.radar-alert.red{
   border-color:#ef4444;
   background:#450a0a;
   color:#fee2e2;
-
-  animation:
-    pulso-rojo 1.3s infinite;
 }
 
-.alerta-radar.violeta{
+.radar-alert.violet{
   border-color:#a855f7;
   background:#3b0764;
   color:#f3e8ff;
-
-  animation:
-    pulso-violeta 1.1s infinite;
 }
 
-@keyframes pulso-rojo{
-
-  0%,100%{
-    box-shadow:
-      0 0 10px
-      rgba(239,68,68,.2);
-  }
-
-  50%{
-    box-shadow:
-      0 0 28px
-      rgba(239,68,68,.7);
-  }
-}
-
-@keyframes pulso-violeta{
-
-  0%,100%{
-    box-shadow:
-      0 0 10px
-      rgba(168,85,247,.25);
-  }
-
-  50%{
-    box-shadow:
-      0 0 30px
-      rgba(168,85,247,.75);
-  }
-}
-
-.controles{
-  display:flex;
-  flex-wrap:wrap;
-
-  gap:8px;
-
-  margin-bottom:10px;
-}
-
-button,
-select{
-  padding:9px 12px;
-
-  border:1px solid #3b82f6;
-  border-radius:8px;
-
-  background:#172554;
-  color:white;
-
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-#mapaRadar{
-  width:100%;
-  height:500px;
-
-  overflow:hidden;
-
-  border:1px solid var(--borde);
-  border-radius:12px;
-
-  background:#0f172a;
-}
-
-.cargando-mapa{
+.dbz{
   display:grid;
-
-  place-items:center;
-
-  width:100%;
-  height:100%;
-
-  padding:20px;
-
-  color:var(--secundario);
-
-  text-align:center;
-}
-
-
-/* =========================================
-   LEYENDA RADAR
-========================================= */
-
-.leyenda{
-  display:grid;
-
-  grid-template-columns:
-    repeat(2,1fr);
-
+  grid-template-columns:repeat(2,1fr);
   gap:6px;
 }
 
-.leyenda div{
-  padding:8px 4px;
-
+.dbz div{
+  padding:9px 4px;
   border-radius:7px;
-
-  color:white;
-
   text-align:center;
-
   font-size:9px;
 }
 
-.dbz-verde{
-  background:#166534;
-}
+.dbz1{background:#166534}
+.dbz2{background:#a16207}
+.dbz3{background:#b91c1c}
+.dbz4{background:#7e22ce}
 
-.dbz-amarillo{
-  background:#a16207;
-}
-
-.dbz-rojo{
-  background:#b91c1c;
-}
-
-.dbz-violeta{
-  background:#7e22ce;
-}
-
-.aviso{
+.notice{
   padding:10px;
-
   border:1px solid #854d0e;
   border-radius:8px;
-
   background:#422006;
   color:#fde68a;
-
   font-size:11px;
   line-height:1.5;
 }
 
-
-/* =========================================
-   12 HORAS
-========================================= */
-
-.pronostico-horas{
+.hours{
   display:grid;
-
-  grid-template-columns:
-    repeat(12,minmax(0,1fr));
-
+  grid-template-columns:repeat(12,minmax(0,1fr));
   gap:6px;
 }
 
-.hora-card{
+.hour-card{
   min-width:0;
-
-  padding:11px 5px;
-
-  border:1px solid var(--borde);
+  padding:11px 4px;
+  border:1px solid var(--border);
   border-radius:10px;
-
   background:var(--panel2);
-
   text-align:center;
 }
 
-.hora-card small{
-  color:var(--secundario);
-
+.hour-card small{
+  color:var(--muted);
   font-size:10px;
 }
 
-.hora-card .icono-clima{
-  margin:6px 0;
+.weather-icon{
+  margin:7px 0;
+  font-size:24px;
 }
 
-.temperatura-hora{
-  color:var(--azul);
-
+.hour-temp{
+  color:var(--blue);
   font-size:16px;
   font-weight:700;
 }
 
-.detalle-hora{
+.hour-detail{
   margin-top:5px;
-
   color:#cbd5e1;
-
   font-size:9px;
-  line-height:1.6;
 }
 
-
-/* =========================================
-   ANÁLISIS
-========================================= */
-
-.analisis{
+.analysis{
   color:#d3dce9;
-
   font-size:12px;
   line-height:1.9;
 }
 
 .footer{
   padding:15px;
-
   color:#526178;
-
   text-align:center;
-
   font-size:10px;
 }
 
+.leaflet-container{
+  background:#0f172a;
+}
 
-/* =========================================
-   OCULTAR SCROLLBARS
-========================================= */
-
-.pronostico-horas,
-.pronostico-dias,
-.grafica{
+.hours,.chart{
   scrollbar-width:none;
 }
 
-.pronostico-horas::-webkit-scrollbar,
-.pronostico-dias::-webkit-scrollbar,
-.grafica::-webkit-scrollbar{
+.hours::-webkit-scrollbar,
+.chart::-webkit-scrollbar{
   display:none;
 }
 
-
-/* =========================================
-   LEAFLET
-========================================= */
-
-.leaflet-container{
-  background:#0f172a;
-
-  font-family:
-    "Segoe UI",
-    Arial,
-    sans-serif;
-}
-
-
-/* =========================================
-   DESKTOP GRANDE
-========================================= */
-
-@media(min-width:1400px){
-
-  .dashboard{
-    width:calc(100% - 50px);
-    max-width:1800px;
+@media(max-width:1100px){
+  .indicators{
+    grid-template-columns:repeat(3,1fr);
   }
 
-  .indicadores{
-    gap:9px;
+  .radar-grid{
+    grid-template-columns:1fr;
   }
 
-  .indicador{
-    padding:14px;
-  }
-
-  .grafica{
-    height:320px;
-  }
-
-  .grafica svg{
-    height:320px;
-  }
-
-  #mapaRadar{
-    height:560px;
-  }
-
-}
-
-
-/* =========================================
-   TABLET
-========================================= */
-
-@media(
-  min-width:701px
-  ) and (
-  max-width:1100px
-){
-
-  .indicadores{
-    grid-template-columns:
-      repeat(3,1fr);
-  }
-
-  .pronostico-dias{
-    overflow-x:auto;
-
-    grid-template-columns:
-      repeat(7,minmax(100px,1fr));
-  }
-
-  .pronostico-horas{
+  .hours{
     display:flex;
-
-    gap:7px;
-
     overflow-x:auto;
   }
 
-  .hora-card{
+  .hour-card{
     flex:0 0 105px;
   }
-
-  .radar-layout{
-    grid-template-columns:1fr;
-  }
-
 }
 
-
-/* =========================================
-   MÓVIL
-========================================= */
-
 @media(max-width:700px){
+  body{padding:6px}
 
-  body{
-    padding:6px;
+  .dashboard{width:100%}
+
+  .header h1{font-size:18px}
+
+  .indicators{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .dashboard{
-    width:100%;
-  }
-
-  .header h1{
-    font-size:18px;
-  }
-
-  .indicadores{
-    grid-template-columns:
-      repeat(2,1fr);
-
-    gap:7px;
-  }
-
-  .panel-grid{
+  .two-columns{
     grid-template-columns:1fr;
   }
 
-  .titulo-semanal{
+  .week-header{
     display:block;
   }
 
-  .leyenda-temperatura{
-    margin-top:10px;
+  .legend{
+    margin-top:9px;
   }
 
-  .grafica{
-    height:250px;
-
+  .chart{
+    height:350px;
     overflow-x:auto;
   }
 
-  .grafica svg{
-    width:650px;
-    min-width:650px;
-    height:250px;
-  }
-
-  .pronostico-dias{
-    display:flex;
-
-    gap:7px;
-
-    overflow-x:auto;
-
-    scroll-snap-type:
-      x mandatory;
-  }
-
-  .dia-card{
-    flex:0 0 105px;
-
-    width:105px;
-    min-width:105px;
-
-    scroll-snap-align:start;
-  }
-
-  .pronostico-horas{
-    display:flex;
-
-    gap:7px;
-
-    overflow-x:auto;
-
-    scroll-snap-type:
-      x mandatory;
-  }
-
-  .hora-card{
-    flex:0 0 105px;
-
-    width:105px;
-    min-width:105px;
-
-    scroll-snap-align:start;
-  }
-
-  .radar-layout{
-    grid-template-columns:1fr;
-  }
-
-  #mapaRadar{
+  .chart svg{
+    width:760px;
+    min-width:760px;
     height:350px;
   }
 
+  #radarMap{
+    height:350px;
+  }
 }
 
-
-/* =========================================
-   MÓVIL PEQUEÑO
-========================================= */
-
 @media(max-width:350px){
-
-  .indicadores{
+  .indicators{
     grid-template-columns:1fr;
   }
-
 }
 </style>
 </head>
 
 <body>
-
 <div class="dashboard">
 
-
-<!-- =====================================
-     CABECERA
-===================================== -->
-
 <header class="card header">
-
-  <div class="header-superior">
-
+  <div class="header-row">
     <div>
-
-      <h1>
-        🌎 TERRITORIA METEO
-      </h1>
-
-      <p>
-        Monitoreo meteorológico y convectivo
-      </p>
-
+      <h1>🌎 TERRITORIA METEO</h1>
+      <p>Monitoreo meteorológico y convectivo</p>
     </div>
 
-
-    <div
-      class="estado-sistema"
-      id="estadoSistema"
-    >
+    <div class="online" id="systemStatus">
       ● INICIANDO
     </div>
-
   </div>
 
-
-  <small
-    class="actualizacion"
-    id="actualizacion"
-  >
+  <small class="updated" id="updated">
     Esperando ubicación GPS...
   </small>
-
 </header>
 
+<div class="error" id="error"></div>
 
-<div
-  class="error"
-  id="error"
-></div>
-
-
-<!-- =====================================
-     ESTADO GENERAL
-===================================== -->
-
-<section class="card estado-general">
-
-  <h2 id="estadoGeneral">
+<section class="card general">
+  <h2 id="generalStatus">
     🟡 OBTENIENDO INFORMACIÓN
   </h2>
 
-  <p id="estadoDescripcion">
+  <p id="generalDescription">
     Solicitando ubicación y modelo meteorológico.
   </p>
+</section>
+
+<section class="indicators">
+
+  <div class="indicator">
+    <div class="indicator-icon">🌡️</div>
+    <div class="indicator-name">Temperatura</div>
+    <strong class="indicator-value" id="temperature">--</strong>
+    <small class="indicator-sub">Temperatura actual</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">💧</div>
+    <div class="indicator-name">Humedad</div>
+    <strong class="indicator-value" id="humidity">--</strong>
+    <small class="indicator-sub">Humedad relativa</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">🌬️</div>
+    <div class="indicator-name">Viento</div>
+    <strong class="indicator-value" id="wind">--</strong>
+    <small class="indicator-sub" id="windDetail">--</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">📊</div>
+    <div class="indicator-name">Presión</div>
+    <strong class="indicator-value" id="pressure">--</strong>
+    <small class="indicator-sub">Nivel del mar</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">☁️</div>
+    <div class="indicator-name">Nubosidad</div>
+    <strong class="indicator-value" id="cloud">--</strong>
+    <small class="indicator-sub">Cobertura total</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">🌿</div>
+    <div class="indicator-name">Punto de rocío</div>
+    <strong class="indicator-value" id="dew">--</strong>
+    <small class="indicator-sub" id="spread">--</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">🌧️</div>
+    <div class="indicator-name">Lluvia 12 h</div>
+    <strong class="indicator-value" id="rainValue">--</strong>
+    <small class="indicator-sub">Probabilidad máxima</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">⛈️</div>
+    <div class="indicator-name">Tormenta</div>
+    <strong class="indicator-value" id="stormValue">--</strong>
+    <small class="indicator-sub">Índice experimental</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">🧊</div>
+    <div class="indicator-name">Granizo</div>
+    <strong class="indicator-value" id="hailValue">--</strong>
+    <small class="indicator-sub" id="hailLevel">Esperando modelo</small>
+  </div>
+
+  <div class="indicator">
+    <div class="indicator-icon">📍</div>
+    <div class="indicator-name">GPS</div>
+    <strong class="indicator-value" id="gpsValue">--</strong>
+    <small class="indicator-sub" id="gpsAccuracy">--</small>
+  </div>
 
 </section>
 
-
-<!-- =====================================
-     INDICADORES
-===================================== -->
-
-<section class="indicadores">
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      🌡️
-    </div>
-
-    <div class="indicador-nombre">
-      Temperatura
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="temperatura"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Temperatura actual
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      💧
-    </div>
-
-    <div class="indicador-nombre">
-      Humedad
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="humedad"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Humedad relativa
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      🌬️
-    </div>
-
-    <div class="indicador-nombre">
-      Viento
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="viento"
-    >
-      --
-    </strong>
-
-    <small
-      class="indicador-sub"
-      id="vientoDetalle"
-    >
-      --
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      📊
-    </div>
-
-    <div class="indicador-nombre">
-      Presión
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="presion"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Nivel del mar
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      ☁️
-    </div>
-
-    <div class="indicador-nombre">
-      Nubosidad
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="nubosidad"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Cobertura total
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      🌿
-    </div>
-
-    <div class="indicador-nombre">
-      Punto de rocío
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="puntoRocio"
-    >
-      --
-    </strong>
-
-    <small
-      class="indicador-sub"
-      id="spread"
-    >
-      --
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      🌧️
-    </div>
-
-    <div class="indicador-nombre">
-      Lluvia 12 h
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="lluviaIndicador"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Probabilidad máxima
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      ⛈️
-    </div>
-
-    <div class="indicador-nombre">
-      Tormenta
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="tormentaIndicador"
-    >
-      --
-    </strong>
-
-    <small class="indicador-sub">
-      Índice experimental
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      🧊
-    </div>
-
-    <div class="indicador-nombre">
-      Granizo
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="granizoIndicador"
-    >
-      --
-    </strong>
-
-    <small
-      class="indicador-sub"
-      id="granizoNivel"
-    >
-      Esperando modelo
-    </small>
-
-  </div>
-
-
-  <div class="indicador">
-
-    <div class="indicador-icono">
-      📍
-    </div>
-
-    <div class="indicador-nombre">
-      GPS
-    </div>
-
-    <strong
-      class="indicador-valor"
-      id="gpsIndicador"
-    >
-      --
-    </strong>
-
-    <small
-      class="indicador-sub"
-      id="gpsPrecision"
-    >
-      --
-    </small>
-
-  </div>
-
-
-</section>
-
-
-<!-- =====================================
-     PRONÓSTICO 7 DÍAS
-     AHORA DEBAJO DE INDICADORES
-===================================== -->
-
-<section class="card pronostico-semanal">
-
-
-  <div class="titulo-semanal">
-
+<section class="card">
+  <div class="week-header">
     <div>
-
-      <h3>
-        📅 Pronóstico de 7 días
-      </h3>
-
-      <span class="subtitulo-semanal">
-        Evolución de temperaturas y precipitaciones
-      </span>
-
+      <h3>📅 Pronóstico de 7 días</h3>
+      <small>Evolución térmica, estado del tiempo y precipitación</small>
     </div>
 
-
-    <div class="leyenda-temperatura">
-
-      <span class="leyenda-max">
-        ● Máxima
-      </span>
-
-      <span class="leyenda-min">
-        ● Mínima
-      </span>
-
+    <div class="legend">
+      <span class="max-legend">● Máxima</span>
+      <span class="min-legend">● Mínima</span>
     </div>
-
   </div>
 
-
-  <div
-    class="grafica"
-    id="graficaTemperaturas"
-  >
-  </div>
-
-
-  <div
-    class="pronostico-dias"
-    id="pronosticoDias"
-  >
-    Cargando...
-  </div>
-
-
+  <div class="chart" id="weeklyChart"></div>
 </section>
-
-
-<!-- =====================================
-     ÍNDICES
-===================================== -->
 
 <section class="card">
+  <h3>🔮 Índices Territoria</h3>
 
-  <h3>
-    🔮 Índices Territoria
-  </h3>
-
-
-  <div class="metrica">
-
-    <div class="metrica-cabecera">
-
-      <span>
-        🌧️ Riesgo de lluvia
-      </span>
-
-      <strong id="lluviaTexto">
-        --%
-      </strong>
-
+  <div class="metric">
+    <div class="metric-head">
+      <span>🌧️ Riesgo de lluvia</span>
+      <strong id="rainText">--%</strong>
     </div>
-
-
-    <div class="barra">
-
-      <div
-        class="progreso barra-lluvia"
-        id="barraLluvia"
-      ></div>
-
+    <div class="bar">
+      <div class="fill rain" id="rainBar"></div>
     </div>
-
   </div>
 
-
-  <div class="metrica">
-
-    <div class="metrica-cabecera">
-
-      <span>
-        ⛈️ Riesgo de tormenta
-      </span>
-
-      <strong id="tormentaTexto">
-        --%
-      </strong>
-
+  <div class="metric">
+    <div class="metric-head">
+      <span>⛈️ Riesgo de tormenta</span>
+      <strong id="stormText">--%</strong>
     </div>
-
-
-    <div class="barra">
-
-      <div
-        class="progreso barra-tormenta"
-        id="barraTormenta"
-      ></div>
-
+    <div class="bar">
+      <div class="fill storm" id="stormBar"></div>
     </div>
-
   </div>
 
-
-  <div class="metrica">
-
-    <div class="metrica-cabecera">
-
-      <span>
-        ⚡ Riesgo eléctrico
-      </span>
-
-      <strong id="electricoTexto">
-        --%
-      </strong>
-
+  <div class="metric">
+    <div class="metric-head">
+      <span>⚡ Riesgo eléctrico</span>
+      <strong id="electricText">--%</strong>
     </div>
-
-
-    <div class="barra">
-
-      <div
-        class="progreso barra-electrico"
-        id="barraElectrico"
-      ></div>
-
+    <div class="bar">
+      <div class="fill electric" id="electricBar"></div>
     </div>
-
   </div>
 
-
-  <div class="metrica">
-
-    <div class="metrica-cabecera">
-
-      <span>
-        🧊 Potencial de granizo
-      </span>
-
-      <strong id="granizoTexto">
-        --%
-      </strong>
-
+  <div class="metric">
+    <div class="metric-head">
+      <span>🧊 Potencial de granizo</span>
+      <strong id="hailText">--%</strong>
     </div>
-
-
-    <div class="barra">
-
-      <div
-        class="progreso barra-granizo"
-        id="barraGranizo"
-      ></div>
-
+    <div class="bar">
+      <div class="fill hail" id="hailBar"></div>
     </div>
-
   </div>
-
-
 </section>
 
+<div class="two-columns">
 
-<!-- =====================================
-     GRANIZO + GPS
-===================================== -->
+  <section class="card">
+    <h3>🧊 Análisis de granizo</h3>
 
-<div class="panel-grid">
+    <div class="hail-status" id="hailStatus">
+      Esperando variables convectivas...
+    </div>
 
+    <div class="data-row">
+      <span>CAPE máximo 12 h</span>
+      <strong id="cape">-- J/kg</strong>
+    </div>
 
-<section class="card">
+    <div class="data-row">
+      <span>Lifted Index mínimo</span>
+      <strong id="liftedIndex">--</strong>
+    </div>
 
-  <h3>
-    🧊 Análisis de Granizo
-  </h3>
+    <div class="data-row">
+      <span>Cizalladura aproximada</span>
+      <strong id="shear">-- km/h</strong>
+    </div>
 
+    <div class="data-row">
+      <span>Nivel de congelación</span>
+      <strong id="freezing">-- m</strong>
+    </div>
+  </section>
 
-  <div
-    class="estado-granizo"
-    id="granizoEstado"
-  >
-    Esperando variables convectivas...
-  </div>
+  <section class="card">
+    <h3>📍 Ubicación</h3>
 
+    <div class="data-row">
+      <span>Estado GPS</span>
+      <strong id="gpsStatus">Solicitando</strong>
+    </div>
 
-  <div class="dato">
+    <div class="data-row">
+      <span>Precisión</span>
+      <strong id="accuracyDetail">--</strong>
+    </div>
 
-    <span>
-      CAPE máximo 12 h
-    </span>
+    <div class="data-row">
+      <span>Coordenadas</span>
+      <strong id="coordinates">--</strong>
+    </div>
 
-    <strong id="cape">
-      -- J/kg
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Lifted Index mínimo
-    </span>
-
-    <strong id="liftedIndex">
-      --
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Cizalladura aproximada
-    </span>
-
-    <strong id="cizalladura">
-      -- km/h
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Nivel de congelación
-    </span>
-
-    <strong id="nivelCongelacion">
-      -- m
-    </strong>
-
-  </div>
-
-
-</section>
-
-
-<section class="card">
-
-  <h3>
-    📍 Ubicación
-  </h3>
-
-
-  <div class="dato">
-
-    <span>
-      Estado GPS
-    </span>
-
-    <strong id="gpsEstado">
-      Solicitando
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Precisión
-    </span>
-
-    <strong id="precisionDetalle">
-      --
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Coordenadas
-    </span>
-
-    <strong id="coordenadas">
-      --
-    </strong>
-
-  </div>
-
-
-  <div class="dato">
-
-    <span>
-      Radio radar
-    </span>
-
-    <strong id="radioTexto">
-      50 km
-    </strong>
-
-  </div>
-
-
-</section>
-
+    <div class="data-row">
+      <span>Radio radar</span>
+      <strong id="radiusText">50 km</strong>
+    </div>
+  </section>
 
 </div>
 
-
-<!-- =====================================
-     RADAR
-===================================== -->
-
 <section class="card">
+  <h3>📡 Radar y vigilancia</h3>
 
-  <h3>
-    📡 Radar y vigilancia
-  </h3>
+  <div class="radar-grid">
 
-
-  <div class="radar-layout">
-
-
-    <div class="radar-panel">
-
-
-      <div class="controles">
-
-        <button
-          type="button"
-          onclick="centrarRadar()"
-        >
+    <div>
+      <div class="controls">
+        <button type="button" onclick="centerRadar()">
           📍 Centrar GPS
         </button>
 
-
-        <button
-          type="button"
-          onclick="cargarRadar()"
-        >
+        <button type="button" onclick="loadRadar()">
           🔄 Actualizar radar
         </button>
 
-
-        <select
-          id="radioRadar"
-          onchange="cambiarRadio()"
-        >
-
-          <option value="20">
-            20 km
-          </option>
-
-          <option
-            value="50"
-            selected
-          >
-            50 km
-          </option>
-
-          <option value="100">
-            100 km
-          </option>
-
+        <select id="radarRadius" onchange="changeRadius()">
+          <option value="20">20 km</option>
+          <option value="50" selected>50 km</option>
+          <option value="100">100 km</option>
         </select>
-
       </div>
 
-
-      <div id="mapaRadar">
-
-        <div class="cargando-mapa">
+      <div id="radarMap">
+        <div class="map-loading">
           Cargando mapa interactivo...
         </div>
-
       </div>
-
-
     </div>
 
+    <aside class="radar-side">
 
-    <aside class="radar-lateral">
-
-
-      <div
-        class="alerta-radar"
-        id="alertaRadar"
-      >
+      <div class="radar-alert" id="radarAlert">
         📡 Preparando mapa meteorológico...
       </div>
 
-
-      <div class="leyenda">
-
-        <div class="dbz-verde">
-          20-34 dBZ
-          <br>
-          Moderado
-        </div>
-
-        <div class="dbz-amarillo">
-          35-44 dBZ
-          <br>
-          Fuerte
-        </div>
-
-        <div class="dbz-rojo">
-          45-54 dBZ
-          <br>
-          Muy fuerte
-        </div>
-
-        <div class="dbz-violeta">
-          ≥55 dBZ
-          <br>
-          Intenso
-        </div>
-
+      <div class="dbz">
+        <div class="dbz1">20-34 dBZ<br>Moderado</div>
+        <div class="dbz2">35-44 dBZ<br>Fuerte</div>
+        <div class="dbz3">45-54 dBZ<br>Muy fuerte</div>
+        <div class="dbz4">≥55 dBZ<br>Intenso</div>
       </div>
 
-
-      <div class="aviso">
-
-        El radar muestra reflectividad
-        sobre el mapa.
-
-        <br><br>
-
-        Los ecos intensos requieren
-        vigilancia, pero no confirman
-        automáticamente granizo en
-        superficie.
-
+      <div class="notice">
+        La reflectividad intensa exige vigilancia, pero no confirma
+        automáticamente granizo en superficie.
       </div>
 
-
-      <div class="dato">
-
-        <span>
-          Radio
-        </span>
-
-        <strong id="radioRadarLateral">
-          50 km
-        </strong>
-
+      <div class="data-row">
+        <span>Radar</span>
+        <strong id="radarStatus">Preparando</strong>
       </div>
 
-
-      <div class="dato">
-
-        <span>
-          GPS
-        </span>
-
-        <strong id="gpsRadar">
-          Esperando
-        </strong>
-
+      <div class="data-row">
+        <span>Última imagen</span>
+        <strong id="radarTime">--</strong>
       </div>
-
-
-      <div class="dato">
-
-        <span>
-          Radar
-        </span>
-
-        <strong id="estadoRadarTexto">
-          Preparando
-        </strong>
-
-      </div>
-
 
     </aside>
 
-
   </div>
-
-
 </section>
-
-
-<!-- =====================================
-     12 HORAS
-===================================== -->
 
 <section class="card">
-
-  <h3>
-    🕒 Próximas 12 horas
-  </h3>
-
-
-  <div
-    class="pronostico-horas"
-    id="pronosticoHoras"
-  >
-    Cargando...
-  </div>
-
-
+  <h3>🕒 Próximas 12 horas</h3>
+  <div class="hours" id="hourlyForecast">Cargando...</div>
 </section>
-
-
-<!-- =====================================
-     ANÁLISIS
-===================================== -->
 
 <section class="card">
-
-  <h3>
-    📋 Análisis atmosférico
-  </h3>
-
-
-  <div
-    class="analisis"
-    id="analisis"
-  >
-    Esperando datos...
-  </div>
-
-
+  <h3>📋 Análisis atmosférico</h3>
+  <div class="analysis" id="analysis">Esperando datos...</div>
 </section>
-
 
 <footer class="footer">
-
   TERRITORIA · Open-Meteo · RainViewer · OpenStreetMap
-
 </footer>
-
 
 </div>
 
-
 <script>
-
-/* =====================================
-   CONFIG
-===================================== */
-
-const CONFIG = {
-
-  horas:12,
-
-  radioKm:50
-
+const CONFIG={
+  hours:12,
+  radiusKm:50
 };
 
+let latitude=null;
+let longitude=null;
+let currentData=null;
 
-let latitud = null;
-let longitud = null;
+let map=null;
+let gpsMarker=null;
+let radiusCircle=null;
+let alertCircle=null;
+let radarLayer=null;
 
-let datosActuales = null;
+let radarActive=false;
+let querying=false;
 
-let mapa = null;
+const el=id=>document.getElementById(id);
 
-let marcadorGps = null;
-
-let circuloRadio = null;
-
-let circuloAlerta = null;
-
-let capaRadar = null;
-
-let leafletDisponible = false;
-
-let radarActivo = false;
-
-let consultaEnCurso = false;
-
-
-/* =====================================
-   UTILIDADES
-===================================== */
-
-const elemento = id =>
-  document.getElementById(id);
-
-
-function texto(
-  id,
-  valor
-){
-
-  const nodo =
-    elemento(id);
-
-  if(nodo){
-    nodo.textContent =
-      valor;
-  }
-
+function setText(id,value){
+  const node=el(id);
+  if(node) node.textContent=value;
 }
 
-
-function limitar(
-  valor,
-  minimo = 0,
-  maximo = 100
-){
-
-  return Math.min(
-    maximo,
-    Math.max(
-      minimo,
-      valor
-    )
-  );
-
+function valid(value){
+  return value!==null &&
+    value!==undefined &&
+    Number.isFinite(Number(value));
 }
 
-
-function esNumero(valor){
-
-  return(
-
-    valor !== null &&
-
-    valor !== undefined &&
-
-    Number.isFinite(
-      Number(valor)
-    )
-
-  );
-
+function number(value,fallback=0){
+  return valid(value)?Number(value):fallback;
 }
 
-
-function numero(
-  valor,
-  reemplazo = 0
-){
-
-  return esNumero(valor)
-    ? Number(valor)
-    : reemplazo;
-
+function clamp(value,min=0,max=100){
+  return Math.min(max,Math.max(min,value));
 }
 
-
-function actualizarBarra(
-  id,
-  valor
-){
-
-  const nodo =
-    elemento(id);
-
-  if(nodo){
-
-    nodo.style.width =
-      limitar(
-        numero(valor)
-      ) +
-      "%";
-
-  }
-
+function setBar(id,value){
+  const node=el(id);
+  if(node) node.style.width=clamp(number(value))+"%";
 }
 
-
-function mostrarError(
-  mensaje
-){
-
-  const caja =
-    elemento("error");
-
-  caja.style.display =
-    "block";
-
-  caja.textContent =
-    mensaje;
-
+function showError(message){
+  el("error").style.display="block";
+  setText("error",message);
 }
 
-
-function limpiarError(){
-
-  const caja =
-    elemento("error");
-
-  caja.style.display =
-    "none";
-
-  caja.textContent =
-    "";
-
+function clearError(){
+  el("error").style.display="none";
+  setText("error","");
 }
 
+function maximum(values,start,count){
+  const data=(values||[])
+    .slice(start,start+count)
+    .filter(valid)
+    .map(Number);
 
-/* =====================================
-   VENTANAS
-===================================== */
-
-function maximoVentana(
-  valores,
-  inicio,
-  cantidad
-){
-
-  const ventana =
-    (valores || [])
-      .slice(
-        inicio,
-        inicio + cantidad
-      )
-      .filter(esNumero)
-      .map(Number);
-
-
-  return ventana.length
-    ? Math.max(...ventana)
-    : null;
-
+  return data.length?Math.max(...data):null;
 }
 
+function minimum(values,start,count){
+  const data=(values||[])
+    .slice(start,start+count)
+    .filter(valid)
+    .map(Number);
 
-function minimoVentana(
-  valores,
-  inicio,
-  cantidad
-){
-
-  const ventana =
-    (valores || [])
-      .slice(
-        inicio,
-        inicio + cantidad
-      )
-      .filter(esNumero)
-      .map(Number);
-
-
-  return ventana.length
-    ? Math.min(...ventana)
-    : null;
-
+  return data.length?Math.min(...data):null;
 }
 
+function nearestIndex(times,target){
+  let index=0;
+  let difference=Infinity;
 
-function indiceMasCercano(
-  tiempos,
-  hora
-){
+  times.forEach((time,i)=>{
+    const currentDifference=Math.abs(
+      new Date(time).getTime()-
+      new Date(target).getTime()
+    );
 
-  let indice = 0;
-
-  let diferencia =
-    Infinity;
-
-
-  tiempos.forEach(
-    (
-      tiempo,
-      actual
-    ) => {
-
-      const distancia =
-        Math.abs(
-
-          new Date(
-            tiempo
-          ).getTime()
-
-          -
-
-          new Date(
-            hora
-          ).getTime()
-
-        );
-
-
-      if(
-        distancia <
-        diferencia
-      ){
-
-        diferencia =
-          distancia;
-
-        indice =
-          actual;
-
-      }
-
+    if(currentDifference<difference){
+      difference=currentDifference;
+      index=i;
     }
-  );
+  });
 
-
-  return indice;
-
+  return index;
 }
 
-
-/* =====================================
-   VIENTO
-===================================== */
-
-function vientoUV(
-  velocidad,
-  direccion
-){
-
-  const radianes =
-    numero(
-      direccion
-    ) *
-    Math.PI /
-    180;
-
+function windVector(speed,direction){
+  const radians=number(direction)*Math.PI/180;
 
   return{
-
-    u:
-      -numero(
-        velocidad
-      ) *
-      Math.sin(
-        radianes
-      ),
-
-    v:
-      -numero(
-        velocidad
-      ) *
-      Math.cos(
-        radianes
-      )
-
+    u:-number(speed)*Math.sin(radians),
+    v:-number(speed)*Math.cos(radians)
   };
-
 }
 
-
-/* =====================================
-   CIZALLADURA
-===================================== */
-
-function calcularCizalladura(
-  horario,
-  inicio,
-  cantidad
-){
-
-  const resultados = [];
-
+function maximumShear(hourly,start,count){
+  const values=[];
 
   for(
-
-    let i = inicio;
-
-    i <
-    Math.min(
-      inicio + cantidad,
-      horario.time.length
-    );
-
+    let i=start;
+    i<Math.min(start+count,hourly.time.length);
     i++
-
   ){
-
-    const datos = [
-
-      horario
-        .wind_speed_10m
-        ?.[i],
-
-      horario
-        .wind_direction_10m
-        ?.[i],
-
-      horario
-        .wind_speed_500hPa
-        ?.[i],
-
-      horario
-        .wind_direction_500hPa
-        ?.[i]
-
+    const required=[
+      hourly.wind_speed_10m?.[i],
+      hourly.wind_direction_10m?.[i],
+      hourly.wind_speed_500hPa?.[i],
+      hourly.wind_direction_500hPa?.[i]
     ];
 
+    if(!required.every(valid)) continue;
 
-    if(
-      !datos.every(
-        esNumero
-      )
-    ){
+    const surface=windVector(required[0],required[1]);
+    const upper=windVector(required[2],required[3]);
 
-      continue;
-
-    }
-
-
-    const superficie =
-      vientoUV(
-        datos[0],
-        datos[1]
-      );
-
-
-    const altura =
-      vientoUV(
-        datos[2],
-        datos[3]
-      );
-
-
-    resultados.push(
-
+    values.push(
       Math.hypot(
-
-        altura.u -
-        superficie.u,
-
-        altura.v -
-        superficie.v
-
-      )
-
-    );
-
-  }
-
-
-  return resultados.length
-    ? Math.max(
-        ...resultados
-      )
-    : null;
-
-}
-
-
-/* =====================================
-   GRANIZO
-===================================== */
-
-function calcularGranizo(
-  datos
-){
-
-  if(
-
-    !esNumero(
-      datos.cape
-    ) ||
-
-    !esNumero(
-      datos.liftedIndex
-    )
-
-  ){
-
-    return{
-
-      porcentaje:null,
-
-      nivel:
-        "SIN DATOS"
-
-    };
-
-  }
-
-
-  if(
-
-    datos.cape < 100 ||
-
-    datos.liftedIndex >= 2
-
-  ){
-
-    return{
-
-      porcentaje:2,
-
-      nivel:
-        "MUY BAJO"
-
-    };
-
-  }
-
-
-  if(
-
-    datos.cape < 300 ||
-
-    datos.liftedIndex >= 0
-
-  ){
-
-    return{
-
-      porcentaje:8,
-
-      nivel:"BAJO"
-
-    };
-
-  }
-
-
-  let score = 0;
-
-
-  if(
-    datos.cape >= 2500
-  ){
-
-    score += 35;
-
-  }
-
-  else if(
-    datos.cape >= 1500
-  ){
-
-    score += 28;
-
-  }
-
-  else if(
-    datos.cape >= 800
-  ){
-
-    score += 20;
-
-  }
-
-  else{
-
-    score += 10;
-
-  }
-
-
-  if(
-    datos.liftedIndex <= -6
-  ){
-
-    score += 25;
-
-  }
-
-  else if(
-    datos.liftedIndex <= -4
-  ){
-
-    score += 20;
-
-  }
-
-  else if(
-    datos.liftedIndex <= -2
-  ){
-
-    score += 14;
-
-  }
-
-  else if(
-    datos.liftedIndex < 0
-  ){
-
-    score += 6;
-
-  }
-
-
-  if(
-    datos.cizalladura >= 75
-  ){
-
-    score += 25;
-
-  }
-
-  else if(
-    datos.cizalladura >= 55
-  ){
-
-    score += 20;
-
-  }
-
-  else if(
-    datos.cizalladura >= 35
-  ){
-
-    score += 14;
-
-  }
-
-  else if(
-    datos.cizalladura >= 20
-  ){
-
-    score += 7;
-
-  }
-
-
-  if(
-
-    datos.nivelCongelacion >= 1800 &&
-
-    datos.nivelCongelacion <= 3200
-
-  ){
-
-    score += 15;
-
-  }
-
-  else if(
-
-    datos.nivelCongelacion > 3200 &&
-
-    datos.nivelCongelacion <= 3800
-
-  ){
-
-    score += 9;
-
-  }
-
-  else if(
-
-    datos.nivelCongelacion >= 1000 &&
-
-    datos.nivelCongelacion < 1800
-
-  ){
-
-    score += 8;
-
-  }
-
-
-  const porcentaje =
-    limitar(
-      Math.round(
-        score
+        upper.u-surface.u,
+        upper.v-surface.v
       )
     );
-
-
-  let nivel =
-    "MUY BAJO";
-
-
-  if(
-    porcentaje >= 70
-  ){
-
-    nivel =
-      "MUY ALTO";
-
   }
 
-  else if(
-    porcentaje >= 50
-  ){
-
-    nivel =
-      "ALTO";
-
-  }
-
-  else if(
-    porcentaje >= 30
-  ){
-
-    nivel =
-      "MODERADO";
-
-  }
-
-  else if(
-    porcentaje >= 10
-  ){
-
-    nivel =
-      "BAJO";
-
-  }
-
-
-  return{
-
-    porcentaje,
-
-    nivel
-
-  };
-
+  return values.length?Math.max(...values):null;
 }
 
-
-/* =====================================
-   TORMENTA
-===================================== */
-
-function calcularTormenta(
-  datos
-){
-
-  let score = 0;
-
-
-  if(
-    datos.nubosidad >= 80
-  ){
-
-    score += 12;
-
+function hailRisk(data){
+  if(!valid(data.cape)||!valid(data.liftedIndex)){
+    return{percentage:null,level:"SIN DATOS"};
   }
 
-  else if(
-    datos.nubosidad >= 60
-  ){
-
-    score += 7;
-
+  if(data.cape<100||data.liftedIndex>=2){
+    return{percentage:2,level:"MUY BAJO"};
   }
 
-
-  if(
-    datos.humedad >= 80
-  ){
-
-    score += 10;
-
+  if(data.cape<300||data.liftedIndex>=0){
+    return{percentage:8,level:"BAJO"};
   }
 
-  else if(
-    datos.humedad >= 60
-  ){
+  let score=0;
 
-    score += 6;
+  if(data.cape>=2500) score+=35;
+  else if(data.cape>=1500) score+=28;
+  else if(data.cape>=800) score+=20;
+  else score+=10;
 
-  }
+  if(data.liftedIndex<=-6) score+=25;
+  else if(data.liftedIndex<=-4) score+=20;
+  else if(data.liftedIndex<=-2) score+=14;
+  else if(data.liftedIndex<0) score+=6;
 
+  if(data.shear>=75) score+=25;
+  else if(data.shear>=55) score+=20;
+  else if(data.shear>=35) score+=14;
+  else if(data.shear>=20) score+=7;
 
-  if(
-    datos.cape >= 2000
-  ){
+  if(data.freezing>=1800&&data.freezing<=3200) score+=15;
+  else if(data.freezing>3200&&data.freezing<=3800) score+=9;
+  else if(data.freezing>=1000&&data.freezing<1800) score+=8;
 
-    score += 30;
+  const percentage=clamp(Math.round(score));
 
-  }
+  let level="MUY BAJO";
 
-  else if(
-    datos.cape >= 1000
-  ){
+  if(percentage>=70) level="MUY ALTO";
+  else if(percentage>=50) level="ALTO";
+  else if(percentage>=30) level="MODERADO";
+  else if(percentage>=10) level="BAJO";
 
-    score += 22;
-
-  }
-
-  else if(
-    datos.cape >= 500
-  ){
-
-    score += 14;
-
-  }
-
-  else if(
-    datos.cape >= 100
-  ){
-
-    score += 5;
-
-  }
-
-
-  if(
-    datos.liftedIndex <= -6
-  ){
-
-    score += 25;
-
-  }
-
-  else if(
-    datos.liftedIndex <= -4
-  ){
-
-    score += 19;
-
-  }
-
-  else if(
-    datos.liftedIndex <= -2
-  ){
-
-    score += 12;
-
-  }
-
-  else if(
-    datos.liftedIndex < 0
-  ){
-
-    score += 5;
-
-  }
-
-
-  if(
-    datos.cizalladura >= 55
-  ){
-
-    score += 15;
-
-  }
-
-  else if(
-    datos.cizalladura >= 35
-  ){
-
-    score += 10;
-
-  }
-
-  else if(
-    datos.cizalladura >= 20
-  ){
-
-    score += 5;
-
-  }
-
-
-  return limitar(
-    Math.round(
-      score
-    )
-  );
-
+  return{percentage,level};
 }
 
+function stormRisk(data){
+  let score=0;
 
-/* =====================================
-   ICONOS CLIMA
-===================================== */
+  if(data.cloud>=80) score+=12;
+  else if(data.cloud>=60) score+=7;
 
-function obtenerClima(
-  codigo
-){
+  if(data.humidity>=80) score+=10;
+  else if(data.humidity>=60) score+=6;
 
-  const valor =
-    Number(
-      codigo
-    );
+  if(data.cape>=2000) score+=30;
+  else if(data.cape>=1000) score+=22;
+  else if(data.cape>=500) score+=14;
+  else if(data.cape>=100) score+=5;
 
+  if(data.liftedIndex<=-6) score+=25;
+  else if(data.liftedIndex<=-4) score+=19;
+  else if(data.liftedIndex<=-2) score+=12;
+  else if(data.liftedIndex<0) score+=5;
 
-  if(
-    valor === 0
-  ){
+  if(data.shear>=55) score+=15;
+  else if(data.shear>=35) score+=10;
+  else if(data.shear>=20) score+=5;
 
-    return[
-      "☀️",
-      "Despejado"
-    ];
-
-  }
-
-
-  if(
-    [1,2].includes(
-      valor
-    )
-  ){
-
-    return[
-      "🌤️",
-      "Parcial"
-    ];
-
-  }
-
-
-  if(
-    valor === 3
-  ){
-
-    return[
-      "☁️",
-      "Nublado"
-    ];
-
-  }
-
-
-  if(
-    [45,48].includes(
-      valor
-    )
-  ){
-
-    return[
-      "🌫️",
-      "Niebla"
-    ];
-
-  }
-
-
-  if(
-
-    [
-      51,
-      53,
-      55,
-      61,
-      63,
-      65,
-      80,
-      81,
-      82
-    ].includes(
-      valor
-    )
-
-  ){
-
-    return[
-      "🌧️",
-      "Lluvia"
-    ];
-
-  }
-
-
-  if(
-    [95,96,99].includes(
-      valor
-    )
-  ){
-
-    return[
-      "⛈️",
-      "Tormenta"
-    ];
-
-  }
-
-
-  return[
-    "🌡️",
-    "Variable"
-  ];
-
+  return clamp(Math.round(score));
 }
 
+function weather(code){
+  const value=Number(code);
 
-/* =====================================
-   LEAFLET DINÁMICO
-===================================== */
+  if(value===0) return["☀️","Despejado"];
+  if([1,2].includes(value)) return["🌤️","Parcial"];
+  if(value===3) return["☁️","Nublado"];
+  if([45,48].includes(value)) return["🌫️","Niebla"];
 
-function cargarLeaflet(){
+  if([
+    51,53,55,61,63,65,80,81,82
+  ].includes(value)){
+    return["🌧️","Lluvia"];
+  }
 
-  return new Promise(
+  if([95,96,99].includes(value)){
+    return["⛈️","Tormenta"];
+  }
 
-    (
-      resolver,
-      rechazar
-    ) => {
+  return["🌡️","Variable"];
+}
 
-      if(
-        window.L
-      ){
-
-        leafletDisponible =
-          true;
-
-        resolver();
-
-        return;
-
-      }
-
-
-      const protocolo =
-        "https:";
-
-      const dobleBarra =
-        "//";
-
-
-      const cssUrl =
-
-        protocolo +
-
-        dobleBarra +
-
-        "unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-
-
-      const jsUrl =
-
-        protocolo +
-
-        dobleBarra +
-
-        "unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-
-
-      const link =
-        document.createElement(
-          "link"
-        );
-
-
-      link.rel =
-        "stylesheet";
-
-      link.href =
-        cssUrl;
-
-
-      document.head
-        .appendChild(
-          link
-        );
-
-
-      const script =
-        document.createElement(
-          "script"
-        );
-
-
-      script.src =
-        jsUrl;
-
-
-      script.async =
-        true;
-
-
-      script.onload =
-        () => {
-
-          leafletDisponible =
-            true;
-
-          resolver();
-
-        };
-
-
-      script.onerror =
-        () => {
-
-          leafletDisponible =
-            false;
-
-          rechazar(
-
-            new Error(
-              "Leaflet no pudo cargarse."
-            )
-
-          );
-
-        };
-
-
-      document.head
-        .appendChild(
-          script
-        );
-
+function loadLeaflet(){
+  return new Promise((resolve,reject)=>{
+    if(window.L){
+      resolve();
+      return;
     }
 
-  );
+    const css=document.createElement("link");
+    css.rel="stylesheet";
+    css.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    document.head.appendChild(css);
 
+    const script=document.createElement("script");
+    script.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    script.async=true;
+
+    script.onload=resolve;
+    script.onerror=()=>reject(
+      new Error("Leaflet no pudo cargarse.")
+    );
+
+    document.head.appendChild(script);
+  });
 }
 
+function initialiseMap(){
+  if(!window.L||latitude===null||longitude===null) return;
 
-/* =====================================
-   MAPA
-===================================== */
+  if(!map){
+    el("radarMap").innerHTML="";
 
-function iniciarMapa(){
-
-  if(
-
-    !leafletDisponible ||
-
-    !window.L ||
-
-    latitud === null ||
-
-    longitud === null
-
-  ){
-
-    return;
-
-  }
-
-
-  if(!mapa){
-
-    elemento(
-      "mapaRadar"
-    ).innerHTML =
-      "";
-
-
-    mapa =
-      L.map(
-        "mapaRadar",
-        {
-          zoomControl:true
-        }
-      )
-      .setView(
-        [
-          latitud,
-          longitud
-        ],
-        8
-      );
-
-
-    const protocolo =
-      "https:";
-
-    const dobleBarra =
-      "//";
-
-
-    const mapaBase =
-
-      protocolo +
-
-      dobleBarra +
-
-      "{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
+    map=L.map("radarMap").setView(
+      [latitude,longitude],
+      8
+    );
 
     L.tileLayer(
-
-      mapaBase,
-
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
-
         maxZoom:19,
-
-        attribution:
-          "&copy; OpenStreetMap"
-
+        attribution:"&copy; OpenStreetMap"
       }
-
-    )
-    .addTo(
-      mapa
-    );
-
+    ).addTo(map);
   }
 
-
-  if(!marcadorGps){
-
-    marcadorGps =
-      L.marker(
-        [
-          latitud,
-          longitud
-        ]
-      )
-      .addTo(
-        mapa
-      )
-      .bindPopup(
-        "📍 Ubicación GPS"
-      );
-
+  if(!gpsMarker){
+    gpsMarker=L.marker([latitude,longitude])
+      .addTo(map)
+      .bindPopup("📍 Ubicación GPS");
+  }else{
+    gpsMarker.setLatLng([latitude,longitude]);
   }
 
-  else{
+  updateRadius();
 
-    marcadorGps
-      .setLatLng(
-        [
-          latitud,
-          longitud
-        ]
-      );
-
-  }
-
-
-  actualizarCirculoRadar();
-
-
-  setTimeout(
-    () => {
-
-      mapa.invalidateSize();
-
-    },
-    300
-  );
-
+  setTimeout(()=>map.invalidateSize(),250);
 }
 
+function updateRadius(){
+  if(!map||latitude===null||longitude===null) return;
 
-/* =====================================
-   RADIO RADAR
-===================================== */
+  if(radiusCircle) map.removeLayer(radiusCircle);
 
-function actualizarCirculoRadar(){
-
-  if(
-
-    !mapa ||
-
-    !window.L ||
-
-    latitud === null ||
-
-    longitud === null
-
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    circuloRadio
-  ){
-
-    mapa.removeLayer(
-      circuloRadio
-    );
-
-  }
-
-
-  circuloRadio =
-    L.circle(
-
-      [
-        latitud,
-        longitud
-      ],
-
-      {
-
-        radius:
-          CONFIG.radioKm *
-          1000,
-
-        color:
-          "#38bdf8",
-
-        fillColor:
-          "#38bdf8",
-
-        fillOpacity:
-          .05,
-
-        weight:
-          2
-
-      }
-
-    )
-    .addTo(
-      mapa
-    );
-
-
-  mapa.fitBounds(
-
-    circuloRadio
-      .getBounds(),
-
+  radiusCircle=L.circle(
+    [latitude,longitude],
     {
-      padding:
-        [20,20]
+      radius:CONFIG.radiusKm*1000,
+      color:"#38bdf8",
+      fillColor:"#38bdf8",
+      fillOpacity:.05,
+      weight:2
     }
+  ).addTo(map);
 
+  map.fitBounds(
+    radiusCircle.getBounds(),
+    {padding:[20,20]}
   );
-
 }
 
-
-/* =====================================
-   CÍRCULO ALERTA
-===================================== */
-
-function actualizarCirculoAlerta(
-  tipo
-){
-
-  if(
-
-    !mapa ||
-
-    !window.L ||
-
-    latitud === null ||
-
-    longitud === null
-
-  ){
-
-    return;
-
-  }
-
-
-  if(
-    circuloAlerta
-  ){
-
-    mapa.removeLayer(
-      circuloAlerta
+function centerRadar(){
+  if(map&&radiusCircle){
+    map.fitBounds(
+      radiusCircle.getBounds(),
+      {padding:[20,20]}
     );
-
-    circuloAlerta =
-      null;
-
   }
-
-
-  if(
-
-    tipo !== "rojo" &&
-
-    tipo !== "violeta"
-
-  ){
-
-    return;
-
-  }
-
-
-  const color =
-
-    tipo === "violeta"
-
-      ? "#a855f7"
-
-      : "#ef4444";
-
-
-  circuloAlerta =
-    L.circle(
-
-      [
-        latitud,
-        longitud
-      ],
-
-      {
-
-        radius:
-          CONFIG.radioKm *
-          1000,
-
-        color,
-
-        fillColor:
-          color,
-
-        fillOpacity:
-          .07,
-
-        weight:
-          4,
-
-        dashArray:
-          "10 8"
-
-      }
-
-    )
-    .addTo(
-      mapa
-    );
-
 }
 
+function changeRadius(){
+  CONFIG.radiusKm=Number(el("radarRadius").value);
 
-/* =====================================
-   CENTRAR
-===================================== */
-
-function centrarRadar(){
-
-  if(
-
-    !mapa ||
-
-    !circuloRadio
-
-  ){
-
-    return;
-
-  }
-
-
-  mapa.fitBounds(
-
-    circuloRadio
-      .getBounds(),
-
-    {
-      padding:
-        [20,20]
-    }
-
-  );
-
+  setText("radiusText",CONFIG.radiusKm+" km");
+  updateRadius();
 }
 
+async function loadRadar(){
+  if(!map||!window.L) return;
 
-/* =====================================
-   CAMBIAR RADIO
-===================================== */
-
-function cambiarRadio(){
-
-  CONFIG.radioKm =
-
-    Number(
-
-      elemento(
-        "radioRadar"
-      ).value
-
-    );
-
-
-  texto(
-    "radioTexto",
-    CONFIG.radioKm +
-    " km"
-  );
-
-
-  texto(
-    "radioRadarLateral",
-    CONFIG.radioKm +
-    " km"
-  );
-
-
-  actualizarCirculoRadar();
-
-  actualizarAlertaRadar();
-
-}
-
-
-/* =====================================
-   RAINVIEWER
-===================================== */
-
-async function cargarRadar(){
-
-  if(
-
-    !mapa ||
-
-    !window.L
-
-  ){
-
-    return;
-
-  }
-
-
-  texto(
-    "alertaRadar",
-    "📡 Consultando la última imagen radar..."
-  );
-
-
-  texto(
-    "estadoRadarTexto",
-    "Consultando"
-  );
-
+  setText("radarAlert","📡 Consultando radar...");
+  setText("radarStatus","Consultando");
 
   try{
+    const response=await fetch(
+      "https://api.rainviewer.com/public/weather-maps.json",
+      {cache:"no-store"}
+    );
 
-    const protocolo =
-      "https:";
-
-    const dobleBarra =
-      "//";
-
-
-    const apiRadar =
-
-      protocolo +
-
-      dobleBarra +
-
-      "api.rainviewer.com/public/weather-maps.json";
-
-
-    const respuesta =
-      await fetch(
-
-        apiRadar,
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
-
-
-    if(
-      !respuesta.ok
-    ){
-
-      throw new Error(
-
-        "HTTP " +
-        respuesta.status
-
-      );
-
+    if(!response.ok){
+      throw new Error("HTTP "+response.status);
     }
 
+    const radar=await response.json();
+    const frames=radar.radar?.past||[];
 
-    const datos =
-      await respuesta.json();
-
-
-    const cuadros =
-      datos.radar?.past ||
-      [];
-
-
-    if(
-      !cuadros.length
-    ){
-
-      throw new Error(
-        "No hay cuadros radar disponibles."
-      );
-
+    if(!frames.length){
+      throw new Error("Sin imágenes disponibles.");
     }
 
+    const frame=frames[frames.length-1];
 
-    const ultimo =
-      cuadros[
-        cuadros.length - 1
-      ];
-
-
-    if(
-      capaRadar
-    ){
-
-      mapa.removeLayer(
-        capaRadar
-      );
-
+    if(radarLayer){
+      map.removeLayer(radarLayer);
     }
 
-
-    const rutaRadar =
-
-      datos.host +
-
-      ultimo.path +
-
+    const url=
+      radar.host+
+      frame.path+
       "/256/{z}/{x}/{y}/2/1_1.png";
 
+    radarLayer=L.tileLayer(url,{
+      opacity:.72,
+      zIndex:10,
+      maxNativeZoom:7,
+      maxZoom:18,
+      attribution:"Radar: RainViewer"
+    });
 
-    capaRadar =
-      L.tileLayer(
+    radarLayer.on("load",()=>{
+      radarActive=true;
 
-        rutaRadar,
+      const time=new Date(
+        frame.time*1000
+      ).toLocaleString("es-AR");
 
-        {
+      setText("radarStatus","Activo");
+      setText("radarTime",time);
 
-          opacity:.72,
+      updateRadarAlert();
+    });
 
-          zIndex:10,
+    radarLayer.addTo(map);
 
-          maxNativeZoom:7,
+  }catch(error){
+    radarActive=false;
 
-          maxZoom:18,
-
-          attribution:
-            "Radar: RainViewer"
-
-        }
-
-      );
-
-
-    let huboError =
-      false;
-
-
-    capaRadar.on(
-
-      "tileerror",
-
-      () => {
-
-        huboError =
-          true;
-
-      }
-
+    setText("radarStatus","No disponible");
+    setText("radarTime","--");
+    setText(
+      "radarAlert",
+      "⚠️ Radar no disponible: "+error.message
     );
-
-
-    capaRadar.on(
-
-      "load",
-
-      () => {
-
-        radarActivo =
-          !huboError;
-
-
-        const horaRadar =
-
-          new Date(
-            ultimo.time *
-            1000
-          )
-          .toLocaleString(
-            "es-AR"
-          );
-
-
-        if(
-          radarActivo
-        ){
-
-          texto(
-            "estadoRadarTexto",
-            "Activo"
-          );
-
-
-          texto(
-            "alertaRadar",
-            "📡 Radar activo · " +
-            horaRadar
-          );
-
-        }
-
-        else{
-
-          texto(
-            "estadoRadarTexto",
-            "Cobertura parcial"
-          );
-
-
-          texto(
-            "alertaRadar",
-            "⚠️ Cobertura radar parcial."
-          );
-
-        }
-
-
-        actualizarAlertaRadar();
-
-      }
-
-    );
-
-
-    capaRadar.addTo(
-      mapa
-    );
-
   }
-
-  catch(error){
-
-    radarActivo =
-      false;
-
-
-    texto(
-      "estadoRadarTexto",
-      "No disponible"
-    );
-
-
-    texto(
-      "alertaRadar",
-      "⚠️ Radar no disponible: " +
-      error.message
-    );
-
-
-    actualizarAlertaRadar();
-
-  }
-
 }
 
-
-/* =====================================
-   API METEO
-===================================== */
-
-async function consultarMeteorologia(){
-
+async function queryWeather(){
   if(
+    latitude===null||
+    longitude===null||
+    querying
+  ) return;
 
-    latitud === null ||
-
-    longitud === null ||
-
-    consultaEnCurso
-
-  ){
-
-    return;
-
-  }
-
-
-  consultaEnCurso =
-    true;
-
-
-  limpiarError();
-
-
-  texto(
-    "estadoSistema",
-    "● CONSULTANDO"
-  );
-
+  querying=true;
+  clearError();
+  setText("systemStatus","● CONSULTANDO");
 
   try{
-
-
-    const actuales = [
-
+    const current=[
       "temperature_2m",
-
       "relative_humidity_2m",
-
       "dew_point_2m",
-
       "cloud_cover",
-
       "wind_speed_10m",
-
-      "wind_direction_10m",
-
       "wind_gusts_10m",
-
       "pressure_msl"
-
     ].join(",");
 
-
-    const horarias = [
-
+    const hourly=[
       "temperature_2m",
-
       "precipitation_probability",
-
       "weather_code",
-
       "cape",
-
       "lifted_index",
-
       "freezing_level_height",
-
       "wind_speed_10m",
-
       "wind_direction_10m",
-
       "wind_speed_500hPa",
-
       "wind_direction_500hPa"
-
     ].join(",");
 
-
-    const diarias = [
-
+    const daily=[
       "weather_code",
-
       "temperature_2m_max",
-
       "temperature_2m_min",
-
       "precipitation_probability_max"
-
     ].join(",");
 
+    const params=new URLSearchParams({
+      latitude,
+      longitude,
+      current,
+      hourly,
+      daily,
+      forecast_days:"7",
+      timezone:"auto",
+      wind_speed_unit:"kmh"
+    });
 
-    const parametros =
-      new URLSearchParams({
-
-        latitude:
-          latitud,
-
-        longitude:
-          longitud,
-
-        current:
-          actuales,
-
-        hourly:
-          horarias,
-
-        daily:
-          diarias,
-
-        forecast_days:
-          "7",
-
-        timezone:
-          "auto",
-
-        wind_speed_unit:
-          "kmh"
-
-      });
-
-
-    const protocolo =
-      "https:";
-
-    const dobleBarra =
-      "//";
-
-
-    const endpoint =
-
-      protocolo +
-
-      dobleBarra +
-
-      "api.open-meteo.com/v1/forecast?" +
-
-      parametros.toString();
-
-
-    const respuesta =
-      await fetch(
-
-        endpoint,
-
-        {
-          cache:
-            "no-store"
-        }
-
-      );
-
-
-    if(
-      !respuesta.ok
-    ){
-
-      throw new Error(
-
-        "Open-Meteo HTTP " +
-        respuesta.status
-
-      );
-
-    }
-
-
-    procesarMeteorologia(
-
-      await respuesta.json()
-
+    const response=await fetch(
+      "https://api.open-meteo.com/v1/forecast?"+
+      params.toString(),
+      {cache:"no-store"}
     );
 
-  }
+    if(!response.ok){
+      throw new Error("Open-Meteo HTTP "+response.status);
+    }
 
-  catch(error){
+    processWeather(await response.json());
 
-    mostrarError(
-
-      "No fue posible actualizar el clima: " +
+  }catch(error){
+    showError(
+      "No se pudo actualizar el clima: "+
       error.message
-
     );
 
-
-    texto(
-      "estadoSistema",
-      "● ERROR"
-    );
-
+    setText("systemStatus","● ERROR");
+  }finally{
+    querying=false;
   }
-
-  finally{
-
-    consultaEnCurso =
-      false;
-
-  }
-
 }
 
-
-/* =====================================
-   PROCESAR METEO
-===================================== */
-
-function procesarMeteorologia(
-  api
-){
-
-  if(
-
-    !api.current ||
-
-    !api.hourly ||
-
-    !api.daily
-
-  ){
-
-    throw new Error(
-      "Respuesta meteorológica incompleta."
-    );
-
-  }
-
-
-  const actual =
-    api.current;
-
-
-  const horario =
-    api.hourly;
-
-
-  const indice =
-    indiceMasCercano(
-
-      horario.time,
-
-      actual.time
-
-    );
-
-
-  const datos = {
-
-
-    temperatura:
-      numero(
-        actual.temperature_2m
-      ),
-
-
-    humedad:
-      numero(
-        actual.relative_humidity_2m
-      ),
-
-
-    puntoRocio:
-      numero(
-        actual.dew_point_2m
-      ),
-
-
-    nubosidad:
-      numero(
-        actual.cloud_cover
-      ),
-
-
-    viento:
-      numero(
-        actual.wind_speed_10m
-      ),
-
-
-    rafagas:
-      numero(
-        actual.wind_gusts_10m
-      ),
-
-
-    presion:
-      numero(
-        actual.pressure_msl
-      ),
-
-
-    cape:
-      maximoVentana(
-
-        horario.cape,
-
-        indice,
-
-        CONFIG.horas
-
-      ),
-
-
-    liftedIndex:
-      minimoVentana(
-
-        horario.lifted_index,
-
-        indice,
-
-        CONFIG.horas
-
-      ),
-
-
-    nivelCongelacion:
-      minimoVentana(
-
-        horario.freezing_level_height,
-
-        indice,
-
-        CONFIG.horas
-
-      ),
-
-
-    lluvia:
-      maximoVentana(
-
-        horario
-          .precipitation_probability,
-
-        indice,
-
-        CONFIG.horas
-
-      ) || 0,
-
-
-    cizalladura:
-      calcularCizalladura(
-
-        horario,
-
-        indice,
-
-        CONFIG.horas
-
-      )
-
-  };
-
-
-  datos.spread =
-
-    datos.temperatura -
-
-    datos.puntoRocio;
-
-
-  datos.granizo =
-    calcularGranizo(
-      datos
-    );
-
-
-  datos.tormenta =
-    calcularTormenta(
-      datos
-    );
-
-
-  datos.electrico =
-
-    limitar(
-
-      Math.round(
-
-        (
-          datos.cape >= 500
-          ? 25
-          : 0
-        )
-
-        +
-
-        (
-          datos.liftedIndex < 0
-          ? 20
-          : 0
-        )
-
-        +
-
-        (
-          datos.nubosidad >= 80
-          ? 10
-          : 0
-        )
-
-      )
-
-    );
-
-
-  datosActuales =
-    datos;
-
-
-  actualizarPanel(
-    datos
+function processWeather(api){
+  const current=api.current;
+  const hourly=api.hourly;
+
+  const index=nearestIndex(
+    hourly.time,
+    current.time
   );
 
-
-  actualizarPronosticoHoras(
-
-    horario,
-
-    indice
-
-  );
-
-
-  actualizarPronosticoDias(
-
-    api.daily
-
-  );
-
-}
-
-
-/* =====================================
-   PANEL
-===================================== */
-
-function actualizarPanel(
-  datos
-){
-
-  texto(
-    "temperatura",
-    datos.temperatura
-      .toFixed(1) +
-    "°C"
-  );
-
-
-  texto(
-    "humedad",
-    Math.round(
-      datos.humedad
-    ) +
-    "%"
-  );
-
-
-  texto(
-    "viento",
-    Math.round(
-      datos.viento
-    ) +
-    " km/h"
-  );
-
-
-  texto(
-    "vientoDetalle",
-    "Ráfagas " +
-    Math.round(
-      datos.rafagas
-    ) +
-    " km/h"
-  );
-
-
-  texto(
-    "presion",
-    Math.round(
-      datos.presion
-    ) +
-    " hPa"
-  );
-
-
-  texto(
-    "nubosidad",
-    Math.round(
-      datos.nubosidad
-    ) +
-    "%"
-  );
-
-
-  texto(
-    "puntoRocio",
-    datos.puntoRocio
-      .toFixed(1) +
-    "°C"
-  );
-
-
-  texto(
-    "spread",
-    "Spread " +
-    datos.spread
-      .toFixed(1) +
-    "°C"
-  );
-
-
-  texto(
-    "lluviaIndicador",
-    Math.round(
-      datos.lluvia
-    ) +
-    "%"
-  );
-
-
-  texto(
-    "tormentaIndicador",
-    datos.tormenta +
-    "%"
-  );
-
-
-  const valorGranizo =
-
-    datos.granizo
-      .porcentaje === null
-
-      ? "--"
-
-      : datos.granizo
-          .porcentaje +
-        "%";
-
-
-  texto(
-    "granizoIndicador",
-    valorGranizo
-  );
-
-
-  texto(
-    "granizoNivel",
-    datos.granizo
-      .nivel
-  );
-
-
-  texto(
-    "lluviaTexto",
-    Math.round(
-      datos.lluvia
-    ) +
-    "%"
-  );
-
-
-  texto(
-    "tormentaTexto",
-    datos.tormenta +
-    "%"
-  );
-
-
-  texto(
-    "electricoTexto",
-    datos.electrico +
-    "%"
-  );
-
-
-  texto(
-    "granizoTexto",
-    valorGranizo
-  );
-
-
-  actualizarBarra(
-    "barraLluvia",
-    datos.lluvia
-  );
-
-
-  actualizarBarra(
-    "barraTormenta",
-    datos.tormenta
-  );
-
-
-  actualizarBarra(
-    "barraElectrico",
-    datos.electrico
-  );
-
-
-  actualizarBarra(
-    "barraGranizo",
-    datos.granizo
-      .porcentaje || 0
-  );
-
-
-  texto(
-    "cape",
-
-    datos.cape === null
-
-      ? "-- J/kg"
-
-      : Math.round(
-          datos.cape
-        ) +
-        " J/kg"
-  );
-
-
-  texto(
-    "liftedIndex",
-
-    datos.liftedIndex === null
-
-      ? "--"
-
-      : datos.liftedIndex
-          .toFixed(1)
-  );
-
-
-  texto(
-    "cizalladura",
-
-    datos.cizalladura === null
-
-      ? "-- km/h"
-
-      : Math.round(
-          datos.cizalladura
-        ) +
-        " km/h"
-  );
-
-
-  texto(
-    "nivelCongelacion",
-
-    datos.nivelCongelacion === null
-
-      ? "-- m"
-
-      : Math.round(
-          datos.nivelCongelacion
-        ) +
-        " m"
-  );
-
-
-  texto(
-    "granizoEstado",
-
-    "Potencial " +
-
-    datos.granizo.nivel +
-
-    " de granizo: " +
-
-    valorGranizo +
-
-    ". Índice ambiental experimental."
-  );
-
-
-  elemento(
-    "analisis"
-  ).innerHTML = `
-
-    ☁️ Nubosidad:
-    ${Math.round(datos.nubosidad)}%
-
-    <br>
-
-    💧 Humedad:
-    ${Math.round(datos.humedad)}%
-
-    <br>
-
-    ⛈️ CAPE máximo 12 h:
-    ${Math.round(datos.cape || 0)} J/kg
-
-    <br>
-
-    📉 Lifted Index mínimo:
-    ${
-      datos.liftedIndex === null
-      ? "--"
-      : datos.liftedIndex.toFixed(1)
-    }
-
-    <br>
-
-    🌀 Cizalladura:
-    ${
-      datos.cizalladura === null
-      ? "--"
-      : Math.round(datos.cizalladura) +
-        " km/h"
-    }
-
-    <br>
-
-    ❄️ Nivel de congelación:
-    ${
-      datos.nivelCongelacion === null
-      ? "--"
-      : Math.round(datos.nivelCongelacion) +
-        " m"
-    }
-
-  `;
-
-
-  if(
-
-    datos.granizo
-      .porcentaje >= 50 ||
-
-    datos.tormenta >= 70
-
-  ){
-
-    texto(
-      "estadoGeneral",
-      "🔴 INESTABILIDAD ALTA"
-    );
-
-
-    texto(
-      "estadoDescripcion",
-      "Parámetros convectivos importantes. Revisar radar."
-    );
-
-  }
-
-
-  else if(
-
-    datos.lluvia >= 50 ||
-
-    datos.tormenta >= 40
-
-  ){
-
-    texto(
-      "estadoGeneral",
-      "🟡 INESTABILIDAD MODERADA"
-    );
-
-
-    texto(
-      "estadoDescripcion",
-      "Posibles lluvias o tormentas aisladas."
-    );
-
-  }
-
-
-  else{
-
-    texto(
-      "estadoGeneral",
-      "🟢 CONDICIONES ESTABLES"
-    );
-
-
-    texto(
-      "estadoDescripcion",
-      "Sin inestabilidad convectiva significativa."
-    );
-
-  }
-
-
-  texto(
-    "estadoSistema",
-    "● EN LÍNEA"
-  );
-
-
-  texto(
-    "actualizacion",
-
-    "Actualizado: " +
-
-    new Date()
-      .toLocaleString(
-        "es-AR"
-      )
-
-  );
-
-
-  actualizarAlertaRadar();
-
-  limpiarError();
-
-}
-
-
-/* =====================================
-   ALERTA RADAR
-===================================== */
-
-function actualizarAlertaRadar(){
-
-  if(
-    !datosActuales
-  ){
-
-    return;
-
-  }
-
-
-  const alerta =
-    elemento(
-      "alertaRadar"
-    );
-
-
-  alerta.className =
-    "alerta-radar";
-
-
-  const datos =
-    datosActuales;
-
-
-  if(
-    !radarActivo
-  ){
-
-    alerta.textContent =
-      "⚠️ Radar sin confirmar. Evaluación basada en el modelo.";
-
-
-    actualizarCirculoAlerta(
-      "ninguno"
-    );
-
-
-    return;
-
-  }
-
-
-  if(
-
-    datos.granizo
-      .porcentaje >= 50 &&
-
-    datos.cape >= 800 &&
-
-    datos.liftedIndex <= -2
-
-  ){
-
-    alerta.className =
-      "alerta-radar violeta";
-
-
-    alerta.textContent =
-      "🧊 Ambiente favorable para granizo. Revisá núcleos intensos en el mapa.";
-
-
-    actualizarCirculoAlerta(
-      "violeta"
-    );
-
-
-    return;
-
-  }
-
-
-  if(
-
-    datos.tormenta >= 70 &&
-
-    datos.cape >= 1000
-
-  ){
-
-    alerta.className =
-      "alerta-radar roja";
-
-
-    alerta.textContent =
-      "🚨 Ambiente favorable para núcleos convectivos intensos.";
-
-
-    actualizarCirculoAlerta(
-      "rojo"
-    );
-
-
-    return;
-
-  }
-
-
-  if(
-
-    datos.tormenta >= 45 ||
-
-    datos.cape >= 500 ||
-
-    datos.granizo
-      .porcentaje >= 30
-
-  ){
-
-    alerta.className =
-      "alerta-radar naranja";
-
-
-    alerta.textContent =
-      "⛈️ Vigilancia de núcleos fuertes dentro del radio.";
-
-
-    actualizarCirculoAlerta(
-      "ninguno"
-    );
-
-
-    return;
-
-  }
-
-
-  alerta.className =
-    "alerta-radar verde";
-
-
-  alerta.textContent =
-    "📡 Radar activo. Sin señal ambiental severa.";
-
-
-  actualizarCirculoAlerta(
-    "ninguno"
-  );
-
-}
-
-
-/* =====================================
-   12 HORAS
-===================================== */
-
-function actualizarPronosticoHoras(
-  horario,
-  inicio
-){
-
-  const tarjetas = [];
-
-
-  for(
-
-    let i = inicio;
-
-    i <
-    Math.min(
-      inicio + 12,
-      horario.time.length
-    );
-
-    i++
-
-  ){
-
-    const fecha =
-      new Date(
-        horario.time[i]
-      );
-
-
-    const hora =
-      fecha.toLocaleTimeString(
-
-        "es-AR",
-
-        {
-
-          hour:
-            "2-digit",
-
-          minute:
-            "2-digit"
-
-        }
-
-      );
-
-
-    const clima =
-      obtenerClima(
-        horario
-          .weather_code
-          ?.[i]
-      );
-
-
-    tarjetas.push(`
-
-      <article class="hora-card">
-
-        <small>
-          ${hora}
-        </small>
-
-        <div class="icono-clima">
-          ${clima[0]}
-        </div>
-
-        <div class="temperatura-hora">
-
-          ${
-            numero(
-              horario
-                .temperature_2m
-                ?.[i]
-            )
-            .toFixed(1)
-          }°
-
-        </div>
-
-        <div class="detalle-hora">
-
-          🌧️ ${
-            Math.round(
-              numero(
-                horario
-                  .precipitation_probability
-                  ?.[i]
-              )
-            )
-          }%
-
-        </div>
-
-      </article>
-
-    `);
-
-  }
-
-
-  elemento(
-    "pronosticoHoras"
-  ).innerHTML =
-    tarjetas.join("");
-
-}
-
-
-/* =====================================
-   7 DÍAS
-===================================== */
-
-function actualizarPronosticoDias(
-  diario
-){
-
-  const etiquetas = [];
-
-  const maximas = [];
-
-  const minimas = [];
-
-  const tarjetas = [];
-
-
-  diario.time
-    .slice(
-      0,
-      7
+  const data={
+    temperature:number(current.temperature_2m),
+    humidity:number(current.relative_humidity_2m),
+    dew:number(current.dew_point_2m),
+    cloud:number(current.cloud_cover),
+    wind:number(current.wind_speed_10m),
+    gust:number(current.wind_gusts_10m),
+    pressure:number(current.pressure_msl),
+
+    cape:maximum(
+      hourly.cape,index,CONFIG.hours
+    ),
+
+    liftedIndex:minimum(
+      hourly.lifted_index,index,CONFIG.hours
+    ),
+
+    freezing:minimum(
+      hourly.freezing_level_height,
+      index,
+      CONFIG.hours
+    ),
+
+    rain:maximum(
+      hourly.precipitation_probability,
+      index,
+      CONFIG.hours
+    )||0,
+
+    shear:maximumShear(
+      hourly,index,CONFIG.hours
     )
-    .forEach(
-
-      (
-        fechaISO,
-        indice
-      ) => {
-
-
-        const fecha =
-          new Date(
-
-            fechaISO +
-
-            "T12:00:00"
-
-          );
-
-
-        const nombre =
-          fecha
-            .toLocaleDateString(
-
-              "es-AR",
-
-              {
-                weekday:
-                  "short"
-              }
-
-            )
-            .toUpperCase();
-
-
-        const fechaCorta =
-          fecha
-            .toLocaleDateString(
-
-              "es-AR",
-
-              {
-
-                day:
-                  "2-digit",
-
-                month:
-                  "2-digit"
-
-              }
-
-            );
-
-
-        const maxima =
-          numero(
-
-            diario
-              .temperature_2m_max
-              ?.[indice]
-
-          );
-
-
-        const minima =
-          numero(
-
-            diario
-              .temperature_2m_min
-              ?.[indice]
-
-          );
-
-
-        const lluvia =
-          Math.round(
-
-            numero(
-
-              diario
-                .precipitation_probability_max
-                ?.[indice]
-
-            )
-
-          );
-
-
-        const clima =
-          obtenerClima(
-
-            diario
-              .weather_code
-              ?.[indice]
-
-          );
-
-
-        etiquetas.push(
-          nombre
-        );
-
-
-        maximas.push(
-          maxima
-        );
-
-
-        minimas.push(
-          minima
-        );
-
-
-        tarjetas.push(`
-
-          <article class="dia-card">
-
-            <strong>
-              ${nombre}
-            </strong>
-
-            <div class="dia-fecha">
-              ${fechaCorta}
-            </div>
-
-            <div class="icono-clima">
-              ${clima[0]}
-            </div>
-
-            <div class="temperaturas-dia">
-
-              <span class="temp-max">
-
-                ${maxima.toFixed(1)}°
-
-              </span>
-
-              <span style="color:#64748b">
-                /
-              </span>
-
-              <span class="temp-min">
-
-                ${minima.toFixed(1)}°
-
-              </span>
-
-            </div>
-
-            <div class="detalle-dia">
-
-              🌧️
-              ${lluvia}%
-
-            </div>
-
-          </article>
-
-        `);
-
-      }
-
-    );
-
-
-  elemento(
-    "pronosticoDias"
-  ).innerHTML =
-    tarjetas.join("");
-
-
-  dibujarGraficaSVG(
-
-    etiquetas,
-
-    maximas,
-
-    minimas
-
-  );
-
-}
-
-
-/* =====================================
-   SVG TEMPERATURAS
-===================================== */
-
-function dibujarGraficaSVG(
-  etiquetas,
-  maximas,
-  minimas
-){
-
-  const ancho =
-    1000;
-
-  const alto =
-    300;
-
-
-  const margen = {
-
-    izquierda:55,
-
-    derecha:35,
-
-    superior:35,
-
-    inferior:40
-
   };
 
-
-  const valores = [
-
-    ...maximas,
-
-    ...minimas
-
-  ];
-
-
-  let minimo =
-    Math.floor(
-
-      Math.min(
-        ...valores
-      ) -
-      2
-
-    );
-
-
-  let maximo =
-    Math.ceil(
-
-      Math.max(
-        ...valores
-      ) +
-      2
-
-    );
-
-
-  if(
-    minimo === maximo
-  ){
-
-    maximo =
-      minimo + 1;
-
-  }
-
-
-  function x(indice){
-
-    return(
-
-      margen.izquierda +
-
-      indice *
-
-      (
-
-        (
-          ancho -
-          margen.izquierda -
-          margen.derecha
-        )
-
-        /
-
-        (
-          etiquetas.length -
-          1
-        )
-
-      )
-
-    );
-
-  }
-
-
-  function y(valor){
-
-    return(
-
-      margen.superior +
-
-      (
-        maximo -
-        valor
-      )
-
-      /
-
-      (
-        maximo -
-        minimo
-      )
-
-      *
-
-      (
-        alto -
-        margen.superior -
-        margen.inferior
-      )
-
-    );
-
-  }
-
-
-  const puntosMaximas =
-
-    maximas
-      .map(
-
-        (
-          valor,
-          indice
-        ) =>
-
-          x(indice) +
-          "," +
-          y(valor)
-
-      )
-      .join(" ");
-
-
-  const puntosMinimas =
-
-    minimas
-      .map(
-
-        (
-          valor,
-          indice
-        ) =>
-
-          x(indice) +
-          "," +
-          y(valor)
-
-      )
-      .join(" ");
-
-
-  let grilla = "";
-
-  let puntos = "";
-
-  let nombres = "";
-
-
-  for(
-    let i = 0;
-    i <= 5;
-    i++
-  ){
-
-    const valor =
-
-      minimo +
-
-      (
-        maximo -
-        minimo
-      )
-
-      *
-
-      i /
-      5;
-
-
-    const posicionY =
-      y(valor);
-
-
-    grilla += `
-
-      <line
-
-        x1="${margen.izquierda}"
-
-        y1="${posicionY}"
-
-        x2="${ancho - margen.derecha}"
-
-        y2="${posicionY}"
-
-        stroke="rgba(148,163,184,.13)"
-
-      />
-
-
-      <text
-
-        x="${margen.izquierda - 10}"
-
-        y="${posicionY + 4}"
-
-        fill="#94a3b8"
-
-        font-size="11"
-
-        text-anchor="end"
-
-      >
-
-        ${Math.round(valor)}°
-
-      </text>
-
-    `;
-
-  }
-
-
-  etiquetas.forEach(
-
-    (
-      nombre,
-      indice
-    ) => {
-
-
-      nombres += `
-
-        <text
-
-          x="${x(indice)}"
-
-          y="${alto - 12}"
-
-          fill="#94a3b8"
-
-          font-size="11"
-
-          text-anchor="middle"
-
-        >
-
-          ${nombre}
-
-        </text>
-
-      `;
-
-
-      puntos += `
-
-        <circle
-
-          cx="${x(indice)}"
-
-          cy="${y(maximas[indice])}"
-
-          r="4.5"
-
-          fill="#fb923c"
-
-        />
-
-
-        <text
-
-          x="${x(indice)}"
-
-          y="${y(maximas[indice]) - 10}"
-
-          fill="#fb923c"
-
-          font-size="11"
-
-          text-anchor="middle"
-
-          font-weight="600"
-
-        >
-
-          ${maximas[indice].toFixed(1)}°
-
-        </text>
-
-
-        <circle
-
-          cx="${x(indice)}"
-
-          cy="${y(minimas[indice])}"
-
-          r="4.5"
-
-          fill="#38bdf8"
-
-        />
-
-
-        <text
-
-          x="${x(indice)}"
-
-          y="${y(minimas[indice]) + 18}"
-
-          fill="#38bdf8"
-
-          font-size="11"
-
-          text-anchor="middle"
-
-        >
-
-          ${minimas[indice].toFixed(1)}°
-
-        </text>
-
-      `;
-
-    }
-
-  );
-
-
-  elemento(
-    "graficaTemperaturas"
-  ).innerHTML = `
-
-    <svg
-
-      viewBox="0 0 ${ancho} ${alto}"
-
-      preserveAspectRatio="xMidYMid meet"
-
-      role="img"
-
-      aria-label="Temperaturas máximas y mínimas"
-
-    >
-
-      ${grilla}
-
-
-      <polyline
-
-        points="${puntosMaximas}"
-
-        fill="none"
-
-        stroke="#fb923c"
-
-        stroke-width="3"
-
-        stroke-linejoin="round"
-
-        stroke-linecap="round"
-
-      />
-
-
-      <polyline
-
-        points="${puntosMinimas}"
-
-        fill="none"
-
-        stroke="#38bdf8"
-
-        stroke-width="3"
-
-        stroke-linejoin="round"
-
-        stroke-linecap="round"
-
-      />
-
-
-      ${puntos}
-
-      ${nombres}
-
-    </svg>
-
-  `;
-
-}
-
-
-/* =====================================
-   GPS OK
-===================================== */
-
-async function posicionCorrecta(
-  posicion
-){
-
-  latitud =
-    posicion.coords.latitude;
-
-
-  longitud =
-    posicion.coords.longitude;
-
-
-  const precision =
-    posicion.coords.accuracy;
-
-
-  texto(
-    "gpsIndicador",
-    "ACTIVO"
-  );
-
-
-  texto(
-    "gpsPrecision",
-    "Precisión " +
+  data.spread=data.temperature-data.dew;
+  data.hail=hailRisk(data);
+  data.storm=stormRisk(data);
+
+  data.electric=clamp(
     Math.round(
-      precision
-    ) +
-    " m"
+      (data.cape>=500?25:0)+
+      (data.liftedIndex<0?20:0)+
+      (data.cloud>=80?10:0)
+    )
   );
 
+  currentData=data;
 
-  texto(
-    "gpsEstado",
-    "GPS activo"
-  );
-
-
-  texto(
-    "gpsRadar",
-    "Activo"
-  );
-
-
-  texto(
-    "precisionDetalle",
-
-    Math.round(
-      precision
-    ) +
-    " m"
-
-  );
-
-
-  texto(
-    "coordenadas",
-
-    latitud
-      .toFixed(4) +
-
-    ", " +
-
-    longitud
-      .toFixed(4)
-
-  );
-
-
-  try{
-
-    await cargarLeaflet();
-
-
-    iniciarMapa();
-
-
-    const resultados =
-
-      await Promise.allSettled(
-
-        [
-
-          consultarMeteorologia(),
-
-          cargarRadar()
-
-        ]
-
-      );
-
-
-    resultados.forEach(
-
-      resultado => {
-
-        if(
-
-          resultado.status ===
-          "rejected"
-
-        ){
-
-          console.error(
-            resultado.reason
-          );
-
-        }
-
-      }
-
-    );
-
-  }
-
-  catch(error){
-
-    mostrarError(
-      error.message
-    );
-
-
-    await consultarMeteorologia();
-
-  }
-
+  updatePanel(data);
+  renderHourly(hourly,index);
+  renderWeekly(api.daily);
 }
 
+function updatePanel(data){
+  setText("temperature",data.temperature.toFixed(1)+"°C");
+  setText("humidity",Math.round(data.humidity)+"%");
+  setText("wind",Math.round(data.wind)+" km/h");
+  setText("windDetail","Ráfagas "+Math.round(data.gust)+" km/h");
+  setText("pressure",Math.round(data.pressure)+" hPa");
+  setText("cloud",Math.round(data.cloud)+"%");
+  setText("dew",data.dew.toFixed(1)+"°C");
+  setText("spread","Spread "+data.spread.toFixed(1)+"°C");
 
-/* =====================================
-   GPS ERROR
-===================================== */
+  setText("rainValue",Math.round(data.rain)+"%");
+  setText("stormValue",data.storm+"%");
 
-function errorGPS(
-  error
-){
+  const hailValue=data.hail.percentage===null
+    ?"--"
+    :data.hail.percentage+"%";
 
-  texto(
-    "gpsIndicador",
-    "ERROR"
+  setText("hailValue",hailValue);
+  setText("hailLevel",data.hail.level);
+
+  setText("rainText",Math.round(data.rain)+"%");
+  setText("stormText",data.storm+"%");
+  setText("electricText",data.electric+"%");
+  setText("hailText",hailValue);
+
+  setBar("rainBar",data.rain);
+  setBar("stormBar",data.storm);
+  setBar("electricBar",data.electric);
+  setBar("hailBar",data.hail.percentage||0);
+
+  setText(
+    "cape",
+    data.cape===null
+      ?" -- J/kg"
+      :Math.round(data.cape)+" J/kg"
   );
 
-
-  texto(
-    "gpsEstado",
-    "No disponible"
+  setText(
+    "liftedIndex",
+    data.liftedIndex===null
+      ?" --"
+      :data.liftedIndex.toFixed(1)
   );
 
-
-  texto(
-    "gpsRadar",
-    "No disponible"
+  setText(
+    "shear",
+    data.shear===null
+      ?" -- km/h"
+      :Math.round(data.shear)+" km/h"
   );
 
-
-  texto(
-    "estadoSistema",
-    "● SIN GPS"
+  setText(
+    "freezing",
+    data.freezing===null
+      ?" -- m"
+      :Math.round(data.freezing)+" m"
   );
 
-
-  let mensaje =
-    "No se pudo obtener el GPS.";
-
-
-  if(
-    error?.code === 1
-  ){
-
-    mensaje =
-      "El permiso de ubicación fue rechazado.";
-
-  }
-
-  else if(
-    error?.code === 2
-  ){
-
-    mensaje =
-      "La ubicación no está disponible.";
-
-  }
-
-  else if(
-    error?.code === 3
-  ){
-
-    mensaje =
-      "La solicitud GPS superó el tiempo de espera.";
-
-  }
-
-
-  mostrarError(
-    mensaje
-  );
-
-}
-
-
-/* =====================================
-   INICIO
-===================================== */
-
-if(
-  "geolocation" in navigator
-){
-
-  navigator
-    .geolocation
-    .watchPosition(
-
-      posicionCorrecta,
-
-      errorGPS,
-
-      {
-
-        enableHighAccuracy:
-          true,
-
-        timeout:
-          15000,
-
-        maximumAge:
-          30000
-
-      }
-
-    );
-
-}
-
-else{
-
-  errorGPS({});
-
-}
-
-</script>
-
-</body>
-</html>
+  
