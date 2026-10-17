@@ -2,14 +2,18 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#07111f">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+  name="theme-color"
+  content="#07111f"
+>
 
 <title>Territoria Meteo</title>
-
-https://unpkg.com/leaflet@1.9.4/dist/leaflet.css
-
-https://unpkg.com/leaflet@1.9.4/dist/leaflet.jsscript>
 
 <style>
 * {
@@ -19,7 +23,7 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.jsscript>
 :root {
   --fondo: #07111f;
   --panel: #101d31;
-  --panel2: #17263d;
+  --panel-secundario: #17263d;
   --borde: #293b55;
   --texto: #e7edf6;
   --secundario: #9baac0;
@@ -28,13 +32,17 @@ https://unpkg.com/leaflet@1.9.4/dist/leaflet.jsscript>
   --amarillo: #facc15;
   --naranja: #f59e0b;
   --rojo: #ef4444;
-  --violeta: #818cf8;
+  --violeta: #a855f7;
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  padding: 8px;
+  padding: 7px;
   overflow-x: hidden;
   background: var(--fondo);
   color: var(--texto);
@@ -61,8 +69,13 @@ select {
 }
 
 .header {
-  background: linear-gradient(135deg, #102b49, #153f68);
   border-color: #1d4a70;
+  background:
+    linear-gradient(
+      135deg,
+      #102b49,
+      #153f68
+    );
 }
 
 .header-superior {
@@ -116,18 +129,19 @@ select {
 
 .estado-general {
   border-left: 5px solid var(--amarillo);
-  background: #111d30;
-  color: var(--amarillo);
-  font-size: 16px;
-  font-weight: 700;
 }
 
-.estado-general small {
-  display: block;
-  margin-top: 7px;
+.estado-general h2 {
+  margin: 0;
+  color: var(--amarillo);
+  font-size: 18px;
+}
+
+.estado-general p {
+  margin: 8px 0 0;
   color: #cbd5e1;
   font-size: 12px;
-  font-weight: 400;
+  line-height: 1.5;
 }
 
 .indicadores {
@@ -209,20 +223,25 @@ select {
   transition: width .6s ease;
 }
 
-.lluvia {
+.barra-lluvia {
   background: #0ea5e9;
 }
 
-.tormenta {
+.barra-tormenta {
   background: #f59e0b;
 }
 
-.electrico {
+.barra-electrico {
   background: #ef4444;
 }
 
-.granizo {
-  background: linear-gradient(90deg, #22d3ee, #818cf8);
+.barra-granizo {
+  background:
+    linear-gradient(
+      90deg,
+      #22d3ee,
+      #818cf8
+    );
 }
 
 .dato {
@@ -324,14 +343,68 @@ select {
   border-radius: 8px;
   background: #172554;
   color: white;
+  cursor: pointer;
 }
 
-#mapaRadar {
+.radar-contenedor {
+  position: relative;
   width: 100%;
-  height: 380px;
+  min-height: 320px;
   overflow: hidden;
-  border-radius: 11px;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background:
+    radial-gradient(
+      circle,
+      #17263d,
+      #07111f
+    );
+}
+
+.radar-imagen {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  object-fit: cover;
   background: #0f172a;
+}
+
+.radar-centro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 13px rgba(239, 68, 68, .9);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.radar-circulo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 62%;
+  aspect-ratio: 1;
+  border: 2px dashed #38bdf8;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, .04);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.radar-sin-datos {
+  display: grid;
+  position: absolute;
+  inset: 0;
+  place-items: center;
+  padding: 20px;
+  color: var(--secundario);
+  text-align: center;
+  pointer-events: none;
 }
 
 .leyenda {
@@ -392,7 +465,7 @@ select {
   padding: 11px 8px;
   border: 1px solid var(--borde);
   border-radius: 11px;
-  background: var(--panel2);
+  background: var(--panel-secundario);
   text-align: center;
   scroll-snap-align: start;
 }
@@ -407,13 +480,13 @@ select {
   font-size: 25px;
 }
 
-.temperatura {
+.temperatura-hora {
   color: var(--azul);
   font-size: 18px;
   font-weight: 700;
 }
 
-.detalle {
+.detalle-hora {
   margin-top: 7px;
   color: #cbd5e1;
   font-size: 10px;
@@ -421,16 +494,26 @@ select {
 }
 
 .grafica {
-  position: relative;
   width: 100%;
-  height: 280px;
+  min-height: 280px;
   margin-bottom: 12px;
+  overflow-x: auto;
+  border: 1px solid var(--borde);
+  border-radius: 11px;
+  background: #0c1728;
+}
+
+.grafica svg {
+  display: block;
+  width: 100%;
+  min-width: 600px;
+  height: 280px;
 }
 
 .analisis {
   color: #d3dce9;
   font-size: 12px;
-  line-height: 1.8;
+  line-height: 1.9;
 }
 
 .footer {
@@ -464,12 +547,9 @@ select {
     grid-template-columns: 1fr;
   }
 
-  #mapaRadar {
-    height: 350px;
-  }
-
-  .grafica {
-    height: 250px;
+  .radar-contenedor,
+  .radar-imagen {
+    min-height: 290px;
   }
 
   .leyenda {
@@ -490,30 +570,51 @@ select {
 <div class="dashboard">
 
   <header class="card header">
+
     <div class="header-superior">
+
       <div>
         <h1>🌎 TERRITORIA METEO</h1>
         <p>Monitoreo meteorológico y convectivo</p>
       </div>
 
-      <div class="estado-sistema" id="estadoSistema">
+      <div
+        class="estado-sistema"
+        id="estadoSistema"
+      >
         ● INICIANDO
       </div>
+
     </div>
 
-    <small class="actualizacion" id="actualizacion">
+    <small
+      class="actualizacion"
+      id="actualizacion"
+    >
       Esperando GPS...
     </small>
+
   </header>
 
-  <div class="error" id="error"></div>
 
-  <section class="card estado-general" id="estadoGeneral">
-    🟡 OBTENIENDO INFORMACIÓN
-    <small id="estadoDescripcion">
+  <div
+    class="error"
+    id="error"
+  ></div>
+
+
+  <section class="card estado-general">
+
+    <h2 id="estadoGeneral">
+      🟡 OBTENIENDO INFORMACIÓN
+    </h2>
+
+    <p id="estadoDescripcion">
       Solicitando ubicación y modelo meteorológico.
-    </small>
+    </p>
+
   </section>
+
 
   <section class="indicadores">
 
@@ -589,7 +690,9 @@ select {
 
   </section>
 
+
   <section class="card">
+
     <h3>🔮 Índices Territoria</h3>
 
     <div class="metrica">
@@ -597,8 +700,12 @@ select {
         <span>🌧️ Riesgo de lluvia</span>
         <strong id="lluviaTexto">--%</strong>
       </div>
+
       <div class="barra">
-        <div class="progreso lluvia" id="barraLluvia"></div>
+        <div
+          class="progreso barra-lluvia"
+          id="barraLluvia"
+        ></div>
       </div>
     </div>
 
@@ -607,8 +714,12 @@ select {
         <span>⛈️ Riesgo de tormenta</span>
         <strong id="tormentaTexto">--%</strong>
       </div>
+
       <div class="barra">
-        <div class="progreso tormenta" id="barraTormenta"></div>
+        <div
+          class="progreso barra-tormenta"
+          id="barraTormenta"
+        ></div>
       </div>
     </div>
 
@@ -617,8 +728,12 @@ select {
         <span>⚡ Riesgo eléctrico</span>
         <strong id="electricoTexto">--%</strong>
       </div>
+
       <div class="barra">
-        <div class="progreso electrico" id="barraElectrico"></div>
+        <div
+          class="progreso barra-electrico"
+          id="barraElectrico"
+        ></div>
       </div>
     </div>
 
@@ -627,18 +742,28 @@ select {
         <span>🧊 Potencial de granizo</span>
         <strong id="granizoTexto">--%</strong>
       </div>
+
       <div class="barra">
-        <div class="progreso granizo" id="barraGranizo"></div>
+        <div
+          class="progreso barra-granizo"
+          id="barraGranizo"
+        ></div>
       </div>
     </div>
+
   </section>
+
 
   <div class="panel-grid">
 
     <section class="card">
+
       <h3>🧊 Análisis de Granizo</h3>
 
-      <div class="estado-granizo" id="granizoEstado">
+      <div
+        class="estado-granizo"
+        id="granizoEstado"
+      >
         Esperando variables convectivas...
       </div>
 
@@ -661,9 +786,12 @@ select {
         <span>Nivel de congelación</span>
         <strong id="nivelCongelacion">-- m</strong>
       </div>
+
     </section>
 
+
     <section class="card">
+
       <h3>📍 Ubicación</h3>
 
       <div class="dato">
@@ -685,82 +813,154 @@ select {
         <span>Radio radar</span>
         <strong id="radioTexto">50 km</strong>
       </div>
+
     </section>
 
   </div>
 
+
   <section class="card">
+
     <h3>📡 Radar y vigilancia</h3>
 
-    <div class="alerta-radar" id="alertaRadar">
+    <div
+      class="alerta-radar"
+      id="alertaRadar"
+    >
       Esperando ubicación y radar...
     </div>
 
     <div class="controles">
-      <button type="button" onclick="centrarRadar()">
-        📍 Centrar GPS
-      </button>
 
-      <button type="button" onclick="cargarRadar()">
+      <button
+        type="button"
+        onclick="cargarRadar()"
+      >
         🔄 Actualizar radar
       </button>
 
-      <select id="radioRadar" onchange="cambiarRadio()">
+      <select
+        id="radioRadar"
+        onchange="cambiarRadio()"
+      >
         <option value="20">20 km</option>
         <option value="50" selected>50 km</option>
         <option value="100">100 km</option>
       </select>
+
     </div>
 
-    <div id="mapaRadar"></div>
+    <div class="radar-contenedor">
+
+      <img
+        class="radar-imagen"
+        id="radarImagen"
+        alt="Radar meteorológico"
+      >
+
+      <div
+        class="radar-sin-datos"
+        id="radarSinDatos"
+      >
+        Esperando la imagen radar...
+      </div>
+
+      <div class="radar-circulo"></div>
+
+      <div class="radar-centro"></div>
+
+    </div>
+
 
     <div class="leyenda">
-      <div class="dbz-verde">20-34 dBZ<br>Moderado</div>
-      <div class="dbz-amarillo">35-44 dBZ<br>Fuerte</div>
-      <div class="dbz-rojo">45-54 dBZ<br>Muy fuerte</div>
-      <div class="dbz-violeta">≥55 dBZ<br>Intenso</div>
+
+      <div class="dbz-verde">
+        20-34 dBZ<br>
+        Moderado
+      </div>
+
+      <div class="dbz-amarillo">
+        35-44 dBZ<br>
+        Fuerte
+      </div>
+
+      <div class="dbz-rojo">
+        45-54 dBZ<br>
+        Muy fuerte
+      </div>
+
+      <div class="dbz-violeta">
+        ≥55 dBZ<br>
+        Intenso
+      </div>
+
     </div>
+
 
     <div class="aviso">
-      El radar permite vigilar ecos intensos, pero esta versión no
-      analiza automáticamente los píxeles dBZ. La alerta combina radar
-      disponible con CAPE, Lifted Index, tormenta y potencial de granizo.
+
+      El radar permite observar ecos cercanos al GPS.
+      La alerta de granizo es experimental y no confirma
+      granizo en superficie.
+
     </div>
+
   </section>
 
+
   <section class="card">
+
     <h3>🕒 Próximas 12 horas</h3>
 
-    <div class="pronostico-horas" id="pronosticoHoras">
+    <div
+      class="pronostico-horas"
+      id="pronosticoHoras"
+    >
       Cargando...
     </div>
+
   </section>
 
+
   <section class="card">
+
     <h3>📅 Pronóstico de 7 días</h3>
 
-    <div class="grafica">
-      <canvas id="graficaTemperaturas"></canvas>
-    </div>
+    <div
+      class="grafica"
+      id="graficaTemperaturas"
+    ></div>
 
-    <div class="pronostico-dias" id="pronosticoDias">
+    <div
+      class="pronostico-dias"
+      id="pronosticoDias"
+    >
       Cargando...
     </div>
+
   </section>
+
 
   <section class="card">
+
     <h3>📋 Análisis atmosférico</h3>
 
-    <div class="analisis" id="analisis">
+    <div
+      class="analisis"
+      id="analisis"
+    >
       Esperando datos...
     </div>
+
   </section>
+
 
   <footer class="footer">
     TERRITORIA · Open-Meteo · RainViewer
   </footer>
 
 </div>
+
 
 <script>
 const CONFIG = {
@@ -770,17 +970,11 @@ const CONFIG = {
 
 let latitud = null;
 let longitud = null;
-
-let mapa = null;
-let marcador = null;
-let circulo = null;
-let capaRadar = null;
-let grafica = null;
-
-let radarActivo = false;
 let datosActuales = null;
+let radarDisponible = false;
 
-const elemento = id => document.getElementById(id);
+const elemento = id =>
+  document.getElementById(id);
 
 function texto(id, valor) {
   const nodo = elemento(id);
@@ -790,8 +984,15 @@ function texto(id, valor) {
   }
 }
 
-function limitar(valor, minimo = 0, maximo = 100) {
-  return Math.min(maximo, Math.max(minimo, valor));
+function limitar(
+  valor,
+  minimo = 0,
+  maximo = 100
+) {
+  return Math.min(
+    maximo,
+    Math.max(minimo, valor)
+  );
 }
 
 function esNumero(valor) {
@@ -802,90 +1003,167 @@ function esNumero(valor) {
   );
 }
 
-function numero(valor, reemplazo = 0) {
-  return esNumero(valor) ? Number(valor) : reemplazo;
+function numero(
+  valor,
+  reemplazo = 0
+) {
+  return esNumero(valor)
+    ? Number(valor)
+    : reemplazo;
 }
 
-function redondear(valor, decimales = 0) {
+function redondear(
+  valor,
+  decimales = 0
+) {
   if (!esNumero(valor)) {
     return null;
   }
 
-  const factor = Math.pow(10, decimales);
+  const factor =
+    Math.pow(10, decimales);
 
-  return Math.round(Number(valor) * factor) / factor;
+  return (
+    Math.round(
+      Number(valor) *
+      factor
+    ) / factor
+  );
 }
 
-function barra(id, valor) {
-  elemento(id).style.width = limitar(numero(valor)) + "%";
+function actualizarBarra(
+  id,
+  valor
+) {
+  elemento(id).style.width =
+    limitar(numero(valor)) +
+    "%";
 }
 
 function mostrarError(mensaje) {
-  const caja = elemento("error");
+  const caja =
+    elemento("error");
 
-  caja.style.display = "block";
-  caja.textContent = mensaje;
+  caja.style.display =
+    "block";
+
+  caja.textContent =
+    mensaje;
 }
 
 function limpiarError() {
-  const caja = elemento("error");
+  const caja =
+    elemento("error");
 
-  caja.style.display = "none";
+  caja.style.display =
+    "none";
+
   caja.textContent = "";
 }
 
-function maximoVentana(valores, inicio, cantidad) {
-  const ventana = (valores || [])
-    .slice(inicio, inicio + cantidad)
-    .filter(esNumero)
-    .map(Number);
+function maximoVentana(
+  valores,
+  inicio,
+  cantidad
+) {
+  const ventana =
+    (valores || [])
+      .slice(
+        inicio,
+        inicio + cantidad
+      )
+      .filter(esNumero)
+      .map(Number);
 
-  return ventana.length ? Math.max(...ventana) : null;
+  return ventana.length
+    ? Math.max(...ventana)
+    : null;
 }
 
-function minimoVentana(valores, inicio, cantidad) {
-  const ventana = (valores || [])
-    .slice(inicio, inicio + cantidad)
-    .filter(esNumero)
-    .map(Number);
+function minimoVentana(
+  valores,
+  inicio,
+  cantidad
+) {
+  const ventana =
+    (valores || [])
+      .slice(
+        inicio,
+        inicio + cantidad
+      )
+      .filter(esNumero)
+      .map(Number);
 
-  return ventana.length ? Math.min(...ventana) : null;
+  return ventana.length
+    ? Math.min(...ventana)
+    : null;
 }
 
-function indiceMasCercano(tiempos, hora) {
+function indiceMasCercano(
+  tiempos,
+  hora
+) {
   let indice = 0;
   let diferencia = Infinity;
 
-  tiempos.forEach((tiempo, actual) => {
-    const distancia = Math.abs(
-      new Date(tiempo).getTime() -
-      new Date(hora).getTime()
-    );
+  tiempos.forEach(
+    (tiempo, actual) => {
 
-    if (distancia < diferencia) {
-      diferencia = distancia;
-      indice = actual;
+      const distancia =
+        Math.abs(
+          new Date(tiempo).getTime() -
+          new Date(hora).getTime()
+        );
+
+      if (
+        distancia <
+        diferencia
+      ) {
+        diferencia =
+          distancia;
+
+        indice =
+          actual;
+      }
+
     }
-  });
+  );
 
   return indice;
 }
 
-function vientoUV(velocidad, direccion) {
-  const radianes = numero(direccion) * Math.PI / 180;
+function vientoUV(
+  velocidad,
+  direccion
+) {
+  const radianes =
+    numero(direccion) *
+    Math.PI / 180;
 
   return {
-    u: -numero(velocidad) * Math.sin(radianes),
-    v: -numero(velocidad) * Math.cos(radianes)
+    u:
+      -numero(velocidad) *
+      Math.sin(radianes),
+
+    v:
+      -numero(velocidad) *
+      Math.cos(radianes)
   };
 }
 
-function calcularCizalladura(horario, inicio, cantidad) {
+function calcularCizalladura(
+  horario,
+  inicio,
+  cantidad
+) {
   const resultados = [];
 
   for (
     let i = inicio;
-    i < Math.min(inicio + cantidad, horario.time.length);
+    i < Math.min(
+      inicio + cantidad,
+      horario.time.length
+    );
     i++
   ) {
     const datos = [
@@ -895,17 +1173,31 @@ function calcularCizalladura(horario, inicio, cantidad) {
       horario.wind_direction_500hPa?.[i]
     ];
 
-    if (!datos.every(esNumero)) {
+    if (
+      !datos.every(esNumero)
+    ) {
       continue;
     }
 
-    const superficie = vientoUV(datos[0], datos[1]);
-    const altura = vientoUV(datos[2], datos[3]);
+    const superficie =
+      vientoUV(
+        datos[0],
+        datos[1]
+      );
+
+    const altura =
+      vientoUV(
+        datos[2],
+        datos[3]
+      );
 
     resultados.push(
       Math.hypot(
-        altura.u - superficie.u,
-        altura.v - superficie.v
+        altura.u -
+        superficie.u,
+
+        altura.v -
+        superficie.v
       )
     );
   }
@@ -964,7 +1256,7 @@ function calcularGranizo(datos) {
     score += 20;
   } else if (datos.liftedIndex <= -2) {
     score += 14;
-  } else if (datos.liftedIndex < 0) {
+  } else {
     score += 6;
   }
 
@@ -995,9 +1287,13 @@ function calcularGranizo(datos) {
     score += 8;
   }
 
-  const porcentaje = limitar(Math.round(score));
+  const porcentaje =
+    limitar(
+      Math.round(score)
+    );
 
-  let nivel = "MUY BAJO";
+  let nivel =
+    "MUY BAJO";
 
   if (porcentaje >= 70) {
     nivel = "MUY ALTO";
@@ -1058,11 +1354,14 @@ function calcularTormenta(datos) {
     score += 5;
   }
 
-  return limitar(Math.round(score));
+  return limitar(
+    Math.round(score)
+  );
 }
 
 function obtenerClima(codigo) {
-  const valor = Number(codigo);
+  const valor =
+    Number(codigo);
 
   if (valor === 0) {
     return ["☀️", "Despejado"];
@@ -1081,8 +1380,11 @@ function obtenerClima(codigo) {
   }
 
   if (
-    [51, 53, 55, 61, 63, 65, 80, 81, 82]
-      .includes(valor)
+    [
+      51, 53, 55,
+      61, 63, 65,
+      80, 81, 82
+    ].includes(valor)
   ) {
     return ["🌧️", "Lluvia"];
   }
@@ -1097,7 +1399,10 @@ function obtenerClima(codigo) {
 async function consultarMeteorologia() {
   limpiarError();
 
-  texto("estadoSistema", "● CONSULTANDO");
+  texto(
+    "estadoSistema",
+    "● CONSULTANDO"
+  );
 
   const actuales = [
     "temperature_2m",
@@ -1130,28 +1435,30 @@ async function consultarMeteorologia() {
     "precipitation_probability_max"
   ].join(",");
 
-  const parametros = new URLSearchParams({
-    latitude: latitud,
-    longitude: longitud,
-    current: actuales,
-    hourly: horarias,
-    daily: diarias,
-    forecast_days: "7",
-    timezone: "auto",
-    wind_speed_unit: "kmh"
-  });
+  const parametros =
+    new URLSearchParams({
+      latitude: latitud,
+      longitude: longitud,
+      current: actuales,
+      hourly: horarias,
+      daily: diarias,
+      forecast_days: "7",
+      timezone: "auto",
+      wind_speed_unit: "kmh"
+    });
 
-  const respuesta = await fetch(
-    "https://api.open-meteo.com/v1/forecast?" +
-    parametros.toString(),
-    {
-      cache: "no-store"
-    }
-  );
+  const respuesta =
+    await fetch(
+      "https://api.open-meteo.com/v1/forecast?" +
+      parametros.toString(),
+      {
+        cache: "no-store"
+      }
+    );
 
   if (!respuesta.ok) {
     throw new Error(
-      "Open-Meteo respondió HTTP " +
+      "Open-Meteo HTTP " +
       respuesta.status
     );
   }
@@ -1162,52 +1469,88 @@ async function consultarMeteorologia() {
 }
 
 function procesarMeteorologia(api) {
-  const actual = api.current;
-  const horario = api.hourly;
+  const actual =
+    api.current;
 
-  const indice = indiceMasCercano(
-    horario.time,
-    actual.time
-  );
+  const horario =
+    api.hourly;
+
+  const indice =
+    indiceMasCercano(
+      horario.time,
+      actual.time
+    );
 
   const datos = {
-    temperatura: numero(actual.temperature_2m),
-    humedad: numero(actual.relative_humidity_2m),
-    puntoRocio: numero(actual.dew_point_2m),
-    nubosidad: numero(actual.cloud_cover),
-    viento: numero(actual.wind_speed_10m),
-    rafagas: numero(actual.wind_gusts_10m),
-    presion: numero(actual.pressure_msl),
+    temperatura:
+      numero(
+        actual.temperature_2m
+      ),
 
-    cape: maximoVentana(
-      horario.cape,
-      indice,
-      CONFIG.horas
-    ),
+    humedad:
+      numero(
+        actual.relative_humidity_2m
+      ),
 
-    liftedIndex: minimoVentana(
-      horario.lifted_index,
-      indice,
-      CONFIG.horas
-    ),
+    puntoRocio:
+      numero(
+        actual.dew_point_2m
+      ),
 
-    nivelCongelacion: minimoVentana(
-      horario.freezing_level_height,
-      indice,
-      CONFIG.horas
-    ),
+    nubosidad:
+      numero(
+        actual.cloud_cover
+      ),
 
-    lluvia: maximoVentana(
-      horario.precipitation_probability,
-      indice,
-      CONFIG.horas
-    ) || 0,
+    viento:
+      numero(
+        actual.wind_speed_10m
+      ),
 
-    cizalladura: calcularCizalladura(
-      horario,
-      indice,
-      CONFIG.horas
-    )
+    rafagas:
+      numero(
+        actual.wind_gusts_10m
+      ),
+
+    presion:
+      numero(
+        actual.pressure_msl
+      ),
+
+    cape:
+      maximoVentana(
+        horario.cape,
+        indice,
+        CONFIG.horas
+      ),
+
+    liftedIndex:
+      minimoVentana(
+        horario.lifted_index,
+        indice,
+        CONFIG.horas
+      ),
+
+    nivelCongelacion:
+      minimoVentana(
+        horario.freezing_level_height,
+        indice,
+        CONFIG.horas
+      ),
+
+    lluvia:
+      maximoVentana(
+        horario.precipitation_probability,
+        indice,
+        CONFIG.horas
+      ) || 0,
+
+    cizalladura:
+      calcularCizalladura(
+        horario,
+        indice,
+        CONFIG.horas
+      )
   };
 
   datos.spread =
@@ -1220,15 +1563,29 @@ function procesarMeteorologia(api) {
   datos.tormenta =
     calcularTormenta(datos);
 
-  datos.electrico = limitar(
-    Math.round(
-      (datos.cape >= 500 ? 25 : 0) +
-      (datos.liftedIndex < 0 ? 20 : 0) +
-      (datos.nubosidad >= 80 ? 10 : 0)
-    )
-  );
+  datos.electrico =
+    limitar(
+      Math.round(
+        (
+          datos.cape >= 500
+          ? 25
+          : 0
+        ) +
+        (
+          datos.liftedIndex < 0
+          ? 20
+          : 0
+        ) +
+        (
+          datos.nubosidad >= 80
+          ? 10
+          : 0
+        )
+      )
+    );
 
-  datosActuales = datos;
+  datosActuales =
+    datos;
 
   actualizarPanel(datos);
 
@@ -1245,17 +1602,20 @@ function procesarMeteorologia(api) {
 function actualizarPanel(datos) {
   texto(
     "temperatura",
-    datos.temperatura.toFixed(1) + "°C"
+    datos.temperatura.toFixed(1) +
+    "°C"
   );
 
   texto(
     "humedad",
-    Math.round(datos.humedad) + "%"
+    Math.round(datos.humedad) +
+    "%"
   );
 
   texto(
     "viento",
-    Math.round(datos.viento) + " km/h"
+    Math.round(datos.viento) +
+    " km/h"
   );
 
   texto(
@@ -1267,17 +1627,20 @@ function actualizarPanel(datos) {
 
   texto(
     "presion",
-    Math.round(datos.presion) + " hPa"
+    Math.round(datos.presion) +
+    " hPa"
   );
 
   texto(
     "nubosidad",
-    Math.round(datos.nubosidad) + "%"
+    Math.round(datos.nubosidad) +
+    "%"
   );
 
   texto(
     "puntoRocio",
-    datos.puntoRocio.toFixed(1) + "°C"
+    datos.puntoRocio.toFixed(1) +
+    "°C"
   );
 
   texto(
@@ -1289,17 +1652,27 @@ function actualizarPanel(datos) {
 
   texto(
     "lluviaIndicador",
-    Math.round(datos.lluvia) + "%"
+    Math.round(datos.lluvia) +
+    "%"
   );
 
   texto(
     "tormentaIndicador",
-    datos.tormenta + "%"
+    datos.tormenta +
+    "%"
   );
 
   texto(
     "granizoIndicador",
-    datos.granizo.porcentaje + "%"
+    (
+      datos.granizo.porcentaje ??
+      "--"
+    ) +
+    (
+      datos.granizo.porcentaje === null
+      ? ""
+      : "%"
+    )
   );
 
   texto(
@@ -1309,49 +1682,61 @@ function actualizarPanel(datos) {
 
   texto(
     "lluviaTexto",
-    Math.round(datos.lluvia) + "%"
+    Math.round(datos.lluvia) +
+    "%"
   );
 
   texto(
     "tormentaTexto",
-    datos.tormenta + "%"
+    datos.tormenta +
+    "%"
   );
 
   texto(
     "electricoTexto",
-    datos.electrico + "%"
+    datos.electrico +
+    "%"
   );
 
   texto(
     "granizoTexto",
-    datos.granizo.porcentaje + "%"
+    (
+      datos.granizo.porcentaje ??
+      "--"
+    ) +
+    (
+      datos.granizo.porcentaje === null
+      ? ""
+      : "%"
+    )
   );
 
-  barra(
+  actualizarBarra(
     "barraLluvia",
     datos.lluvia
   );
 
-  barra(
+  actualizarBarra(
     "barraTormenta",
     datos.tormenta
   );
 
-  barra(
+  actualizarBarra(
     "barraElectrico",
     datos.electrico
   );
 
-  barra(
+  actualizarBarra(
     "barraGranizo",
-    datos.granizo.porcentaje
+    datos.granizo.porcentaje || 0
   );
 
   texto(
     "cape",
     datos.cape === null
       ? "-- J/kg"
-      : Math.round(datos.cape) + " J/kg"
+      : Math.round(datos.cape) +
+        " J/kg"
   );
 
   texto(
@@ -1365,7 +1750,9 @@ function actualizarPanel(datos) {
     "cizalladura",
     datos.cizalladura === null
       ? "-- km/h"
-      : Math.round(datos.cizalladura) +
+      : Math.round(
+          datos.cizalladura
+        ) +
         " km/h"
   );
 
@@ -1375,7 +1762,8 @@ function actualizarPanel(datos) {
       ? "-- m"
       : Math.round(
           datos.nivelCongelacion
-        ) + " m"
+        ) +
+        " m"
   );
 
   texto(
@@ -1383,52 +1771,48 @@ function actualizarPanel(datos) {
     "Potencial " +
     datos.granizo.nivel +
     " de granizo: " +
-    datos.granizo.porcentaje +
-    "%. Índice ambiental experimental."
-  );
-
-  const descripcion = [];
-
-  descripcion.push(
-    "☁️ Nubosidad: " +
-    Math.round(datos.nubosidad) +
-    "%"
-  );
-
-  descripcion.push(
-    "💧 Humedad: " +
-    Math.round(datos.humedad) +
-    "%"
-  );
-
-  descripcion.push(
-    "⛈️ CAPE máximo 12 h: " +
-    Math.round(datos.cape || 0) +
-    " J/kg"
-  );
-
-  descripcion.push(
-    "📉 Lifted Index mínimo: " +
     (
+      datos.granizo.porcentaje ??
+      "--"
+    ) +
+    (
+      datos.granizo.porcentaje === null
+      ? ""
+      : "%"
+    ) +
+    ". Índice ambiental experimental."
+  );
+
+  elemento("analisis").innerHTML = `
+    ☁️ Nubosidad:
+    ${Math.round(datos.nubosidad)}%
+    <br>
+
+    💧 Humedad:
+    ${Math.round(datos.humedad)}%
+    <br>
+
+    ⛈️ CAPE máximo 12 h:
+    ${Math.round(datos.cape || 0)} J/kg
+    <br>
+
+    📉 Lifted Index mínimo:
+    ${
       datos.liftedIndex === null
-        ? "--"
-        : datos.liftedIndex.toFixed(1)
-    )
-  );
+      ? "--"
+      : datos.liftedIndex.toFixed(1)
+    }
+    <br>
 
-  descripcion.push(
-    "🌀 Cizalladura aproximada: " +
-    (
+    🌀 Cizalladura aproximada:
+    ${
       datos.cizalladura === null
-        ? "--"
-        : Math.round(
-            datos.cizalladura
-          ) + " km/h"
-    )
-  );
-
-  elemento("analisis").innerHTML =
-    descripcion.join("<br>");
+      ? "--"
+      : Math.round(
+          datos.cizalladura
+        ) + " km/h"
+    }
+  `;
 
   if (
     datos.granizo.porcentaje >= 50 ||
@@ -1441,7 +1825,7 @@ function actualizarPanel(datos) {
 
     texto(
       "estadoDescripcion",
-      "Parámetros convectivos importantes. Revisar radar."
+      "Parámetros convectivos importantes. Revisar evolución."
     );
   } else if (
     datos.lluvia >= 50 ||
@@ -1476,10 +1860,13 @@ function actualizarPanel(datos) {
   texto(
     "actualizacion",
     "Actualizado: " +
-    new Date().toLocaleString("es-AR")
+    new Date()
+      .toLocaleString("es-AR")
   );
 
   actualizarAlertaRadar();
+
+  limpiarError();
 }
 
 function actualizarAlertaRadar() {
@@ -1493,7 +1880,7 @@ function actualizarAlertaRadar() {
   alerta.className =
     "alerta-radar";
 
-  if (!radarActivo) {
+  if (!radarDisponible) {
     alerta.textContent =
       "⚠️ Radar no disponible. Evaluación basada en el modelo.";
 
@@ -1512,7 +1899,7 @@ function actualizarAlertaRadar() {
       "alerta-radar violeta";
 
     alerta.textContent =
-      "🧊 ALERTA: ambiente favorable para granizo. Revisá núcleos intensos dentro del radio.";
+      "🧊 ALERTA: ambiente favorable para granizo. Revisá núcleos intensos.";
 
     return;
   }
@@ -1525,7 +1912,7 @@ function actualizarAlertaRadar() {
       "alerta-radar roja";
 
     alerta.textContent =
-      "🚨 Núcleo convectivo intenso potencial. Revisá ecos rojos o violetas.";
+      "🚨 Núcleo convectivo intenso potencial.";
 
     return;
   }
@@ -1539,7 +1926,7 @@ function actualizarAlertaRadar() {
       "alerta-radar naranja";
 
     alerta.textContent =
-      "⛈️ Vigilancia de núcleos fuertes dentro del radio.";
+      "⛈️ Vigilancia de núcleos fuertes.";
 
     return;
   }
@@ -1548,7 +1935,7 @@ function actualizarAlertaRadar() {
     "alerta-radar verde";
 
   alerta.textContent =
-    "📡 Radar activo. Sin señal ambiental severa en este momento.";
+    "📡 Radar activo. Sin señal ambiental severa.";
 }
 
 function actualizarPronosticoHoras(
@@ -1566,7 +1953,9 @@ function actualizarPronosticoHoras(
     i++
   ) {
     const fecha =
-      new Date(horario.time[i]);
+      new Date(
+        horario.time[i]
+      );
 
     const hora =
       fecha.toLocaleTimeString(
@@ -1584,36 +1973,46 @@ function actualizarPronosticoHoras(
 
     tarjetas.push(`
       <article class="hora-card">
+
         <small>${hora}</small>
 
         <div class="icono-clima">
           ${clima[0]}
         </div>
 
-        <div class="temperatura">
-          ${numero(
-            horario.temperature_2m?.[i]
-          ).toFixed(1)}°
+        <div class="temperatura-hora">
+          ${
+            numero(
+              horario.temperature_2m?.[i]
+            ).toFixed(1)
+          }°
         </div>
 
-        <div class="detalle">
-          🌧️ ${Math.round(
-            numero(
-              horario
-                .precipitation_probability
-                ?.[i]
+        <div class="detalle-hora">
+          🌧️ ${
+            Math.round(
+              numero(
+                horario
+                  .precipitation_probability
+                  ?.[i]
+              )
             )
-          )}%
+          }%
         </div>
+
       </article>
     `);
   }
 
-  elemento("pronosticoHoras").innerHTML =
+  elemento(
+    "pronosticoHoras"
+  ).innerHTML =
     tarjetas.join("");
 }
 
-function actualizarPronosticoDias(diario) {
+function actualizarPronosticoDias(
+  diario
+) {
   const etiquetas = [];
   const maximas = [];
   const minimas = [];
@@ -1621,296 +2020,363 @@ function actualizarPronosticoDias(diario) {
 
   diario.time
     .slice(0, 7)
-    .forEach((fechaISO, indice) => {
-      const fecha =
-        new Date(
-          fechaISO + "T12:00:00"
-        );
+    .forEach(
+      (fechaISO, indice) => {
 
-      const nombre =
-        fecha
-          .toLocaleDateString(
-            "es-AR",
-            {
-              weekday: "short"
-            }
-          )
-          .toUpperCase();
+        const fecha =
+          new Date(
+            fechaISO +
+            "T12:00:00"
+          );
 
-      const maxima =
-        numero(
-          diario
-            .temperature_2m_max
-            ?.[indice]
-        );
+        const nombre =
+          fecha
+            .toLocaleDateString(
+              "es-AR",
+              {
+                weekday: "short"
+              }
+            )
+            .toUpperCase();
 
-      const minima =
-        numero(
-          diario
-            .temperature_2m_min
-            ?.[indice]
-        );
-
-      const lluvia =
-        Math.round(
+        const maxima =
           numero(
             diario
-              .precipitation_probability_max
+              .temperature_2m_max
               ?.[indice]
-          )
-        );
+          );
 
-      const clima =
-        obtenerClima(
-          diario.weather_code?.[indice]
-        );
+        const minima =
+          numero(
+            diario
+              .temperature_2m_min
+              ?.[indice]
+          );
 
-      etiquetas.push(nombre);
-      maximas.push(maxima);
-      minimas.push(minima);
+        const lluvia =
+          Math.round(
+            numero(
+              diario
+                .precipitation_probability_max
+                ?.[indice]
+            )
+          );
 
-      tarjetas.push(`
-        <article class="dia-card">
-          <strong>${nombre}</strong>
+        const clima =
+          obtenerClima(
+            diario.weather_code?.[indice]
+          );
 
-          <div class="icono-clima">
-            ${clima[0]}
-          </div>
+        etiquetas.push(nombre);
+        maximas.push(maxima);
+        minimas.push(minima);
 
-          <div>
-            <span style="color:#fb923c">
-              ${maxima.toFixed(1)}°
-            </span>
+        tarjetas.push(`
+          <article class="dia-card">
 
-            /
+            <strong>${nombre}</strong>
 
-            <span style="color:#38bdf8">
-              ${minima.toFixed(1)}°
-            </span>
-          </div>
+            <div class="icono-clima">
+              ${clima[0]}
+            </div>
 
-          <div class="detalle">
-            🌧️ ${lluvia}%
-          </div>
-        </article>
-      `);
-    });
+            <div>
+              <span style="color:#fb923c">
+                ${maxima.toFixed(1)}°
+              </span>
 
-  elemento("pronosticoDias").innerHTML =
+              /
+
+              <span style="color:#38bdf8">
+                ${minima.toFixed(1)}°
+              </span>
+            </div>
+
+            <div class="detalle-hora">
+              🌧️ ${lluvia}%
+            </div>
+
+          </article>
+        `);
+
+      }
+    );
+
+  elemento(
+    "pronosticoDias"
+  ).innerHTML =
     tarjetas.join("");
 
-  dibujarGrafica(
+  dibujarGraficaSVG(
     etiquetas,
     maximas,
     minimas
   );
 }
 
-function dibujarGrafica(
+function dibujarGraficaSVG(
   etiquetas,
   maximas,
   minimas
 ) {
-  if (typeof Chart === "undefined") {
-    mostrarError(
-      "Chart.js no pudo cargarse."
+  const ancho = 700;
+  const alto = 280;
+
+  const margen = {
+    izquierda: 48,
+    derecha: 25,
+    superior: 35,
+    inferior: 45
+  };
+
+  const todos = [
+    ...maximas,
+    ...minimas
+  ];
+
+  let minimo =
+    Math.floor(
+      Math.min(...todos) - 2
     );
 
-    return;
+  let maximo =
+    Math.ceil(
+      Math.max(...todos) + 2
+    );
+
+  if (minimo === maximo) {
+    maximo = minimo + 1;
   }
 
-  if (grafica) {
-    grafica.destroy();
+  function puntoX(indice) {
+    const disponible =
+      ancho -
+      margen.izquierda -
+      margen.derecha;
+
+    return (
+      margen.izquierda +
+      indice *
+      (
+        disponible /
+        (etiquetas.length - 1)
+      )
+    );
   }
 
-  grafica = new Chart(
-    elemento("graficaTemperaturas"),
-    {
-      type: "line",
+  function puntoY(valor) {
+    const disponible =
+      alto -
+      margen.superior -
+      margen.inferior;
 
-      data: {
-        labels: etiquetas,
+    return (
+      margen.superior +
+      (
+        maximo - valor
+      ) /
+      (
+        maximo - minimo
+      ) *
+      disponible
+    );
+  }
 
-        datasets: [
-          {
-            label: "Máxima °C",
-            data: maximas,
-            borderColor: "#fb923c",
-            backgroundColor:
-              "rgba(251,146,60,.12)",
-            pointBackgroundColor:
-              "#fb923c",
-            borderWidth: 3,
-            pointRadius: 4,
-            tension: .35
-          },
-          {
-            label: "Mínima °C",
-            data: minimas,
-            borderColor: "#38bdf8",
-            backgroundColor:
-              "rgba(56,189,248,.12)",
-            pointBackgroundColor:
-              "#38bdf8",
-            borderWidth: 3,
-            pointRadius: 4,
-            tension: .35
-          }
-        ]
-      },
+  const puntosMaximas =
+    maximas
+      .map(
+        (valor, indice) =>
+          puntoX(indice) +
+          "," +
+          puntoY(valor)
+      )
+      .join(" ");
 
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
+  const puntosMinimas =
+    minimas
+      .map(
+        (valor, indice) =>
+          puntoX(indice) +
+          "," +
+          puntoY(valor)
+      )
+      .join(" ");
 
-        plugins: {
-          legend: {
-            labels: {
-              color: "#cbd5e1",
-              usePointStyle: true
-            }
-          }
-        },
+  let lineas = "";
 
-        scales: {
-          x: {
-            ticks: {
-              color: "#94a3b8"
-            },
+  const divisiones = 5;
 
-            grid: {
-              color:
-                "rgba(148,163,184,.08)"
-            }
-          },
+  for (
+    let i = 0;
+    i <= divisiones;
+    i++
+  ) {
+    const valor =
+      minimo +
+      (
+        maximo - minimo
+      ) *
+      i /
+      divisiones;
 
-          y: {
-            ticks: {
-              color: "#94a3b8",
+    const y =
+      puntoY(valor);
 
-              callback: valor =>
-                valor + "°"
-            },
+    lineas += `
+      <line
+        x1="${margen.izquierda}"
+        y1="${y}"
+        x2="${ancho - margen.derecha}"
+        y2="${y}"
+        stroke="rgba(148,163,184,.14)"
+      />
 
-            grid: {
-              color:
-                "rgba(148,163,184,.12)"
-            }
-          }
-        }
-      }
+      <text
+        x="${margen.izquierda - 8}"
+        y="${y + 4}"
+        fill="#94a3b8"
+        font-size="10"
+        text-anchor="end"
+      >
+        ${Math.round(valor)}°
+      </text>
+    `;
+  }
+
+  let etiquetasSVG = "";
+  let puntosSVG = "";
+
+  etiquetas.forEach(
+    (etiqueta, indice) => {
+
+      const x =
+        puntoX(indice);
+
+      etiquetasSVG += `
+        <text
+          x="${x}"
+          y="${alto - 15}"
+          fill="#94a3b8"
+          font-size="10"
+          text-anchor="middle"
+        >
+          ${etiqueta}
+        </text>
+      `;
+
+      puntosSVG += `
+        <circle
+          cx="${x}"
+          cy="${puntoY(maximas[indice])}"
+          r="4"
+          fill="#fb923c"
+        />
+
+        <text
+          x="${x}"
+          y="${puntoY(maximas[indice]) - 9}"
+          fill="#fb923c"
+          font-size="10"
+          text-anchor="middle"
+        >
+          ${maximas[indice].toFixed(1)}°
+        </text>
+
+        <circle
+          cx="${x}"
+          cy="${puntoY(minimas[indice])}"
+          r="4"
+          fill="#38bdf8"
+        />
+
+        <text
+          x="${x}"
+          y="${puntoY(minimas[indice]) + 17}"
+          fill="#38bdf8"
+          font-size="10"
+          text-anchor="middle"
+        >
+          ${minimas[indice].toFixed(1)}°
+        </text>
+      `;
+
     }
   );
-}
 
-function iniciarMapa() {
-  if (typeof L === "undefined") {
-    mostrarError(
-      "Leaflet no pudo cargarse."
-    );
+  elemento(
+    "graficaTemperaturas"
+  ).innerHTML = `
+    <svg
+      viewBox="0 0 ${ancho} ${alto}"
+      role="img"
+      aria-label="Temperaturas máximas y mínimas"
+    >
+      ${lineas}
 
-    return;
-  }
+      <text
+        x="${margen.izquierda}"
+        y="20"
+        fill="#fb923c"
+        font-size="11"
+      >
+        ● Máxima
+      </text>
 
-  if (!mapa) {
-    mapa = L.map(
-      "mapaRadar"
-    ).setView(
-      [latitud, longitud],
-      8
-    );
+      <text
+        x="${margen.izquierda + 85}"
+        y="20"
+        fill="#38bdf8"
+        font-size="11"
+      >
+        ● Mínima
+      </text>
 
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          "&copy; OpenStreetMap"
-      }
-    ).addTo(mapa);
-  }
+      <polyline
+        points="${puntosMaximas}"
+        fill="none"
+        stroke="#fb923c"
+        stroke-width="3"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
 
-  if (!marcador) {
-    marcador = L
-      .marker([latitud, longitud])
-      .addTo(mapa)
-      .bindPopup("📍 Ubicación actual");
-  } else {
-    marcador.setLatLng(
-      [latitud, longitud]
-    );
-  }
+      <polyline
+        points="${puntosMinimas}"
+        fill="none"
+        stroke="#38bdf8"
+        stroke-width="3"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
 
-  actualizarCirculo();
+      ${puntosSVG}
 
-  setTimeout(() => {
-    mapa.invalidateSize();
-  }, 250);
-}
-
-function actualizarCirculo() {
-  if (!mapa) {
-    return;
-  }
-
-  if (circulo) {
-    mapa.removeLayer(circulo);
-  }
-
-  circulo = L.circle(
-    [latitud, longitud],
-    {
-      radius:
-        CONFIG.radioKm * 1000,
-      color: "#38bdf8",
-      fillColor: "#38bdf8",
-      fillOpacity: .06,
-      weight: 2
-    }
-  ).addTo(mapa);
-
-  mapa.fitBounds(
-    circulo.getBounds(),
-    {
-      padding: [15, 15]
-    }
-  );
-}
-
-function centrarRadar() {
-  actualizarCirculo();
-}
-
-function cambiarRadio() {
-  CONFIG.radioKm = Number(
-    elemento("radioRadar").value
-  );
-
-  texto(
-    "radioTexto",
-    CONFIG.radioKm + " km"
-  );
-
-  actualizarCirculo();
+      ${etiquetasSVG}
+    </svg>
+  `;
 }
 
 async function cargarRadar() {
-  if (!mapa) {
+  if (
+    latitud === null ||
+    longitud === null
+  ) {
     return;
   }
 
   texto(
     "alertaRadar",
-    "📡 Consultando la última imagen radar..."
+    "📡 Consultando radar..."
   );
 
   try {
-    const respuesta = await fetch(
-      "https://api.rainviewer.com/public/weather-maps.json",
-      {
-        cache: "no-store"
-      }
-    );
+    const respuesta =
+      await fetch(
+        "https://api.rainviewer.com/public/weather-maps.json",
+        {
+          cache: "no-store"
+        }
+      );
 
     if (!respuesta.ok) {
       throw new Error(
@@ -1923,54 +2389,76 @@ async function cargarRadar() {
       await respuesta.json();
 
     const cuadros =
-      datos.radar?.past || [];
+      datos.radar?.past ||
+      [];
 
     if (!cuadros.length) {
       throw new Error(
-        "No hay cuadros radar disponibles."
+        "Sin cuadros radar."
       );
     }
 
     const ultimo =
-      cuadros[cuadros.length - 1];
+      cuadros[
+        cuadros.length - 1
+      ];
 
-    if (capaRadar) {
-      mapa.removeLayer(capaRadar);
+    let zoom = 7;
+
+    if (CONFIG.radioKm >= 100) {
+      zoom = 6;
+    } else if (CONFIG.radioKm <= 20) {
+      zoom = 7;
     }
 
     const ruta =
       datos.host +
       ultimo.path +
-      "/256/{z}/{x}/{y}/2/1_1.png";
+      "/512/" +
+      zoom +
+      "/" +
+      latitud.toFixed(5) +
+      "/" +
+      longitud.toFixed(5) +
+      "/2/1_1.png";
 
-    capaRadar = L.tileLayer(
-      ruta,
-      {
-        opacity: .72,
-        zIndex: 10,
-        maxNativeZoom: 7,
-        maxZoom: 18,
-        attribution:
-          "Radar: RainViewer"
-      }
-    );
+    const imagen =
+      elemento("radarImagen");
 
-    capaRadar.on("load", () => {
-      radarActivo = true;
+    imagen.onload = () => {
+      radarDisponible = true;
+
+      elemento(
+        "radarSinDatos"
+      ).style.display =
+        "none";
 
       actualizarAlertaRadar();
-    });
+    };
 
-    capaRadar.on("tileerror", () => {
+    imagen.onerror = () => {
+      radarDisponible = false;
+
+      elemento(
+        "radarSinDatos"
+      ).style.display =
+        "grid";
+
       texto(
-        "alertaRadar",
-        "⚠️ Algunas teselas radar no están disponibles."
+        "radarSinDatos",
+        "No hay imagen radar disponible para esta ubicación."
       );
-    });
 
-    capaRadar.addTo(mapa);
+      actualizarAlertaRadar();
+    };
+
+    imagen.src =
+      ruta +
+      "?v=" +
+      Date.now();
+
   } catch (error) {
-    radarActivo = false;
+    radarDisponible = false;
 
     texto(
       "alertaRadar",
@@ -1980,7 +2468,26 @@ async function cargarRadar() {
   }
 }
 
-async function posicionCorrecta(posicion) {
+function cambiarRadio() {
+  CONFIG.radioKm =
+    Number(
+      elemento(
+        "radioRadar"
+      ).value
+    );
+
+  texto(
+    "radioTexto",
+    CONFIG.radioKm +
+    " km"
+  );
+
+  cargarRadar();
+}
+
+async function posicionCorrecta(
+  posicion
+) {
   latitud =
     posicion.coords.latitude;
 
@@ -2020,28 +2527,30 @@ async function posicionCorrecta(posicion) {
     longitud.toFixed(4)
   );
 
-  iniciarMapa();
-
   const resultados =
     await Promise.allSettled([
       consultarMeteorologia(),
       cargarRadar()
     ]);
 
-  resultados.forEach(resultado => {
-    if (
-      resultado.status ===
-      "rejected"
-    ) {
-      mostrarError(
-        resultado.reason?.message ||
-        "Error actualizando módulos."
-      );
+  resultados.forEach(
+    resultado => {
+
+      if (
+        resultado.status ===
+        "rejected"
+      ) {
+        mostrarError(
+          resultado.reason?.message ||
+          "Error actualizando módulos."
+        );
+      }
+
     }
-  });
+  );
 }
 
-function errorGPS() {
+function errorGPS(error) {
   texto(
     "gpsIndicador",
     "ERROR"
@@ -2057,12 +2566,20 @@ function errorGPS() {
     "● SIN GPS"
   );
 
-  mostrarError(
-    "No se pudo obtener el GPS. Revisá el permiso de ubicación."
-  );
+  let mensaje =
+    "No se pudo obtener el GPS.";
+
+  if (error?.code === 1) {
+    mensaje =
+      "El permiso de ubicación fue rechazado.";
+  }
+
+  mostrarError(mensaje);
 }
 
-if ("geolocation" in navigator) {
+if (
+  "geolocation" in navigator
+) {
   navigator.geolocation.watchPosition(
     posicionCorrecta,
     errorGPS,
@@ -2073,7 +2590,7 @@ if ("geolocation" in navigator) {
     }
   );
 } else {
-  errorGPS();
+  errorGPS({});
 }
 </script>
 
