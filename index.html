@@ -2,619 +2,236 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Territoria Meteo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing Predicción Meteorológica</title>
 
 <style>
 body{
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    padding: 10px;
-    margin: 0;
-}
-
-/* Encabezado de Marca Corporativa Limpio */
-.header-territoria {
-    text-align: center;
-    background: linear-gradient(135deg, #0d3b66, #1565c0);
-    color: white;
-    padding: 18px 15px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 8px rgba(0,0,0,.15);
-}
-
-.header-territoria h1 {
-    margin: 0 0 5px 0;
-    font-size: 22px;
-    letter-spacing: 1px;
-}
-
-.header-territoria p {
-    margin: 0;
-    font-size: 13px;
-    opacity: 0.9;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-h2{
-    color: #1565c0;
-    margin-bottom: 5px;
-    text-align: center;
-}
-
-/* Banner de Alerta General superior */
-#banner-alerta {
-    background: #e2e8f0;
-    color: #333;
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 8px rgba(0,0,0,.12);
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    transition: all 0.3s ease;
-}
-
-#banner-alerta.alerta-verde { background: #d4edda; color: #155724; border-left: 6px solid #28a745; }
-#banner-alerta.alerta-amarillo { background: #fff3cd; color: #856404; border-left: 6px solid #ffc107; }
-#banner-alerta.alerta-rojo { background: #f8d7da; color: #721c24; border-left: 6px solid #dc3545; }
-
-.banner-icono {
-    font-size: 32px;
-}
-
-.banner-texto h4 {
-    margin: 0 0 4px 0;
-    font-size: 17px;
-}
-
-.banner-texto p {
-    margin: 0;
-    font-size: 14px;
+    background:#071220;
+    color:white;
+    font-family:Arial, sans-serif;
+    padding:20px;
 }
 
 .card{
-    background: white;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,.10);
+    max-width:800px;
+    margin:auto;
+    background:#0f1c34;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
+}
+
+h1{
+    text-align:center;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.box{
+    background:#172846;
+    padding:15px;
+    border-radius:12px;
 }
 
 .valor{
-    font-size: 24px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size:28px;
+    font-weight:bold;
+    color:#59c7ff;
 }
 
-.referencia-texto {
-    font-size: 13px;
-    font-weight: normal;
-    color: #666;
-    margin-top: 2px;
+.alerta{
+    margin:20px 0;
+    padding:15px;
+    border-radius:12px;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
 }
 
-.proyeccion-caja {
-    font-size: 13px;
-    color: #2c3e50;
-    background: #ebf5fb;
-    border-left: 3px solid #2980b9;
-    padding: 10px;
-    margin-top: 8px;
-    border-radius: 4px;
-    line-height: 1.5;
+.verde{background:#0d5e3f;}
+.amarillo{background:#8b6b00;}
+.naranja{background:#c76a00;}
+.rojo{background:#b00020;}
+
+.barra{
+    width:100%;
+    height:20px;
+    background:#24354f;
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:8px;
 }
 
-.circulo-estado {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: inline-block;
-    flex-shrink: 0;
+.progreso{
+    height:100%;
+    transition:1s;
 }
 
-.bg-verde{ background-color: #2e7d32; }
-.bg-amarillo{ background-color: #f9a825; }
-.bg-rojo{ background-color: #c62828; }
+.lluvia{
+    background:#19a7ff;
+}
 
-canvas{
-    width: 100%;
-    max-width: 100%;
-    height: 160px;
-    display: block;
-    margin: auto;
-    background: #fafbfc;
-    border: 1px solid #e1e4e8;
-    border-radius: 10px;
+.tormenta{
+    background:#ff9800;
 }
 </style>
 </head>
-
 <body>
 
-<!-- Encabezado Corporativo Territoria -->
-<div class="header-territoria">
-    <h1>TERRITORIA</h1>
-    <p>Plataforma Inteligente de Gestión Territorial</p>
-</div>
+<div class="card">
 
-<h2>🌎 Territoria Meteo</h2>
+<h1>🌦 Predictor Experimental</h1>
 
-<!-- Banner inteligente superior de advertencia -->
-<div id="banner-alerta" class="alerta-verde">
-    <div class="banner-icono" id="banner-icono">✅</div>
-    <div class="banner-texto">
-        <h4 id="banner-titulo">Condiciones Estables</h4>
-        <p id="banner-desc">Analizando variables meteorológicas de la zona...</p>
+<div class="grid">
+    <div class="box">
+        <div>Temperatura</div>
+        <div class="valor">14°C</div>
+    </div>
+
+    <div class="box">
+        <div>Humedad</div>
+        <div class="valor">66%</div>
+    </div>
+
+    <div class="box">
+        <div>Punto Rocío</div>
+        <div class="valor">7.2°C</div>
+    </div>
+
+    <div class="box">
+        <div>Nubosidad</div>
+        <div class="valor">86%</div>
+    </div>
+
+    <div class="box">
+        <div>Presión</div>
+        <div class="valor">930 hPa</div>
+    </div>
+
+    <div class="box">
+        <div>Viento</div>
+        <div class="valor">6 km/h</div>
     </div>
 </div>
 
-<div class="card">
-<h3>📍 Ubicación</h3>
-<div class="valor" id="ubicacion" style="font-size: 18px;">
-Cargando ubicación por defecto...
-</div>
+<div id="alerta" class="alerta">
+Calculando...
 </div>
 
-<div class="card">
-<h3>🌡️ Temperatura</h3>
-<div class="valor" id="temp">--</div>
+<h3>🌧 Probabilidad de Lluvia</h3>
+
+<div>
+    <span id="lluviaValor">0%</span>
+    <div class="barra">
+        <div class="progreso lluvia" id="barraLluvia"></div>
+    </div>
 </div>
 
-<div class="card">
-<h3>💧 Humedad</h3>
-<div class="valor" id="humedad">--</div>
+<h3>⛈ Riesgo de Tormenta</h3>
+
+<div>
+    <span id="tormentaValor">0%</span>
+    <div class="barra">
+        <div class="progreso tormenta" id="barraTormenta"></div>
+    </div>
 </div>
 
-<div class="card">
-<h3>🍃 Punto de Rocío</h3>
-<div class="valor" id="rocio" style="font-size: 20px;">--</div>
-</div>
-
-<div class="card">
-<h3>🌬️ Viento y Dirección</h3>
-<div class="valor" id="viento" style="font-size: 20px;">--</div>
-</div>
-
-<div class="card">
-<h3>🌧️ Probabilidad / Registro de Lluvia</h3>
-<div class="valor" id="lluvia" style="font-size: 20px;">--</div>
-</div>
-
-<div class="card">
-<h3>☁️ Nubosidad</h3>
-<div class="valor" id="nubes">--</div>
-</div>
-
-<div class="card">
-<h3>📊 Presión Atmosférica</h3>
-<div class="valor" id="presion" style="font-size: 20px;">--</div>
-</div>
-
-<div class="card">
-<h3>🔮 Predicción y Tendencia Próximas Horas</h3>
-<div id="bloque-proyeccion" class="proyeccion-caja">Calculando tendencias de corto plazo...</div>
-</div>
-
-<div class="card">
-<h3>❄️ Probabilidad de Helada</h3>
-<div class="valor" id="helada">--</div>
-</div>
-
-<div class="card">
-<h3>🌪️ Probabilidad de Tormenta</h3>
-<div class="valor" id="tormenta">--</div>
-</div>
-
-<div class="card">
-<h3>🧊 Probabilidad de Granizo</h3>
-<div class="valor" id="granizo">--</div>
-</div>
-
-<div class="card">
-<h3>🔥 Probabilidad de Fuego (Incendio)</h3>
-<div class="valor" id="incendio">--</div>
-</div>
-
-<div class="card">
-<h3>🌵 Probabilidad de Zonda</h3>
-<div class="valor" id="zonda">--</div>
-</div>
-
-<div class="card">
-<h3>🌿 Índice de Alergias / Polen</h3>
-<div class="valor" id="polen">--</div>
-</div>
-
-<div class="card">
-<h3>📈 Histórico de Presión</h3>
-<canvas id="grafico" width="500" height="160"></canvas>
 </div>
 
 <script>
-let historialPresion = JSON.parse(localStorage.getItem("historialPresion")) || [];
 
-// Coordenadas por defecto (Mendoza) por si el GPS no responde o no hay permisos
-let latDefault = -32.8895;
-let lonDefault = -68.8458;
+// Datos simulados
 
-function obtenerClaseColor(valor){
-    if(valor < 30) return "bg-verde";
-    if(valor < 70) return "bg-amarillo";
-    return "bg-rojo";
-}
-
-function obtenerTextoReferencia(valor){
-    if(valor < 30) return "Bajo";
-    if(valor < 70) return "Moderado";
-    return "Alto";
-}
-
-function mostrarRiesgoConCirculo(id, valor){
-    const claseBg = obtenerClaseColor(valor);
-    const textoRef = obtenerTextoReferencia(valor);
-    
-    document.getElementById(id).innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <span class="circulo-estado ${claseBg}"></span>
-            <span>${valor}%</span>
-        </div>
-        <div class="referencia-texto">Nivel: ${textoRef}</div>
-    `;
-}
-
-function convertirGradosAcardinal(grados) {
-    const val = Math.floor((grados / 22.5) + 0.5);
-    const arr = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-    return arr[(val % 16)];
-}
-
-function actualizarBannerAlerta(riesgos, detalleHelada) {
-    const banner = document.getElementById("banner-alerta");
-    const icono = document.getElementById("banner-icono");
-    const titulo = document.getElementById("banner-titulo");
-    const desc = document.getElementById("banner-desc");
-
-    let maxRiesgo = 0;
-    let tipoCritico = "Estable";
-
-    for(let r in riesgos){
-        if(riesgos[r].valor > maxRiesgo){
-            maxRiesgo = riesgos[r].valor;
-            tipoCritico = riesgos[r].nombre;
-        }
-    }
-
-    if(maxRiesgo >= 70){
-        banner.className = "alerta-rojo";
-        icono.innerHTML = "⚠️";
-        if(tipoCritico === "Helada" && detalleHelada){
-            titulo.innerHTML = `ALERTA HELADA: ${detalleHelada.tipo} (${maxRiesgo}%)`;
-            desc.innerHTML = detalleHelada.actionBanner;
-        } else {
-            titulo.innerHTML = `ALERTA ALTA: Riesgo de ${tipoCritico} (${maxRiesgo}%)`;
-            desc.innerHTML = "Condiciones atmosféricas críticas detectadas localmente. Extremar precauciones.";
-        }
-    } else if(maxRiesgo >= 30){
-        banner.className = "alerta-amarillo";
-        icono.innerHTML = "⚡";
-        if(tipoCritico === "Helada" && detalleHelada){
-            titulo.innerHTML = `Atención: Posible ${detalleHelada.tipo} (${maxRiesgo}%)`;
-            desc.innerHTML = "Monitorear descenso de temperatura en las próximas horas.";
-        } else {
-            titulo.innerHTML = `Atención: Inestabilidad por ${tipoCritico} (${maxRiesgo}%)`;
-            desc.innerHTML = "Variables moderadas. Monitorear evolución de presión y vientos.";
-        }
-    } else {
-        banner.className = "alerta-verde";
-        icono.innerHTML = "✅";
-        titulo.innerHTML = "Condiciones Estables";
-        desc.innerHTML = "Sin alertas críticas en los indicadores actuales de la zona.";
-    }
-}
-
-function guardarPresion(valor){
-    const ultimo = historialPresion[historialPresion.length - 1];
-    if(!ultimo || ultimo.presion !== valor){
-        historialPresion.push({
-            hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            presion: valor
-        });
-
-        if(historialPresion.length > 30){
-            historialPresion.shift();
-        }
-
-        localStorage.setItem("historialPresion", JSON.stringify(historialPresion));
-    }
-    dibujarGrafico();
-}
-
-function dibujarGrafico(){
-    const canvas = document.getElementById("grafico");
-    const ctx = canvas.getContext("2d");
-    const w = canvas.width;
-    const h = canvas.height;
-
-    ctx.clearRect(0, 0, w, h);
-
-    if(historialPresion.length < 2){
-        ctx.font = "14px Arial";
-        ctx.fillStyle = "#888";
-        ctx.textAlign = "center";
-        ctx.fillText("Recopilando mediciones para el gráfico...", w / 2, h / 2);
-        return;
-    }
-
-    const valores = historialPresion.map(x => x.presion);
-    const min = Math.min(...valores);
-    const max = Math.max(...valores);
-    const margenExtra = (max === min) ? 2 : (max - min) * 0.2;
-    const minGraf = min - margenExtra;
-    const maxGraf = max + margenExtra;
-    const rango = maxGraf - minGraf;
-
-    ctx.strokeStyle = "#edf2f7";
-    ctx.lineWidth = 1;
-    for(let i = 1; i <= 3; i++){
-        let yGuia = (h / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(40, yGuia);
-        ctx.lineTo(w - 20, yGuia);
-        ctx.stroke();
-    }
-
-    const puntos = historialPresion.map((dato, i) => {
-        const x = 50 + (i / (historialPresion.length - 1)) * (w - 70);
-        const y = h - 25 - (((dato.presion - minGraf) / rango) * (h - 50));
-        return { x, y, presion: dato.presion, hora: dato.hora };
-    });
-
-    const gradiente = ctx.createLinearGradient(0, 0, 0, h);
-    gradiente.addColorStop(0, "rgba(21, 101, 192, 0.25)");
-    gradiente.addColorStop(1, "rgba(21, 101, 192, 0.0)");
-
-    ctx.beginPath();
-    ctx.moveTo(puntos[0].x, h - 20);
-    puntos.forEach(p => ctx.lineTo(p.x, p.y));
-    ctx.lineTo(puntos[puntos.length - 1].x, h - 20);
-    ctx.fillStyle = gradiente;
-    ctx.fill();
-
-    ctx.beginPath();
-    puntos.forEach((p, i) => {
-        if(i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-    });
-    ctx.strokeStyle = "#1565c0";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    puntos.forEach((p, i) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "#ffffff";
-        ctx.fill();
-        ctx.strokeStyle = "#1565c0";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        if(i === 0 || i === puntos.length - 1){
-            ctx.font = "10px Arial";
-            ctx.fillStyle = "#555";
-            ctx.textAlign = "center";
-            ctx.fillText(p.presion + " hPa", p.x, p.y - 10);
-            ctx.fillText(p.hora, p.x, h - 8);
-        }
-    });
-}
-
-async function cargarClima(lat, lon){
-    try{
-        const geo = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
-            { headers: { 'User-Agent': 'TerritoriaMeteoApp/1.0' } }
-        );
-        const lugar = await geo.json();
-
-        const localidad =
-            lugar.address?.city ||
-            lugar.address?.town ||
-            lugar.address?.village ||
-            lugar.address?.suburb ||
-            lugar.address?.county ||
-            "Mendoza (Zona Base)";
-
-        const provincia = lugar.address?.state || "Mendoza";
-        document.getElementById("ubicacion").innerHTML = `📍 ${localidad}, ${provincia}`;
-    }catch(e){
-        document.getElementById("ubicacion").innerHTML = "📍 Mendoza (Zona Base)";
-    }
-
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,surface_pressure,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m`;
-    
-    const r = await fetch(url);
-    const d = await r.json();
-
-    const t = d.current.temperature_2m;
-    const h = d.current.relative_humidity_2m;
-    const p = d.current.surface_pressure;
-    const v = d.current.wind_speed_10m;
-    const dirGrados = d.current.wind_direction_10m;
-    const n = d.current.cloud_cover;
-    const precipitacionActual = d.current.precipitation || 0;
-
-    const rocio = (t - ((100 - h) / 5)).toFixed(1);
-    const dirCardinal = convertirGradosAcardinal(dirGrados);
-
-    let tendenciaHTML = p + " hPa";
-    if(historialPresion.length > 0){
-        const ultimaPresion = historialPresion[historialPresion.length - 1].presion;
-        const diferencia = (p - ultimaPresion).toFixed(1);
-        if(diferencia > 0.3) tendenciaHTML += ' <span style="color:#2e7d32; font-size:16px;">📈 (En alza)</span>';
-        else if(diferencia < -0.3) tendenciaHTML += ' <span style="color:#c62828; font-size:16px;">📉 (Cayendo)</span>';
-        else tendenciaHTML += ' <span style="color:#666; font-size:16px;">➡️ (Estable)</span>';
-    }
-
-    document.getElementById("temp").innerHTML = t + " °C";
-    document.getElementById("humedad").innerHTML = h + " %";
-    document.getElementById("rocio").innerHTML = rocio + " °C";
-    document.getElementById("viento").innerHTML = `${v} km/h (${dirCardinal})`;
-    document.getElementById("nubes").innerHTML = n + " %";
-    document.getElementById("presion").innerHTML = tendenciaHTML;
-
-    let lluviaTexto = precipitacionActual > 0 ? `${precipitacionActual} mm (Lloviendo)` : "0 mm (Sin lluvia)";
-    document.getElementById("lluvia").innerHTML = lluviaTexto;
-
-    if(d.hourly && d.hourly.time){
-        const ahoraIndex = new Date().getHours();
-        let temperaturasFuturas = d.hourly.temperature_2m.slice(ahoraIndex + 1, ahoraIndex + 7);
-        let probabilidadesLluvia = d.hourly.precipitation_probability.slice(ahoraIndex + 1, ahoraIndex + 7);
-        let vientosFuturos = d.hourly.wind_speed_10m.slice(ahoraIndex + 1, ahoraIndex + 7);
-
-        let minTempProyectada = Math.min(...temperaturasFuturas);
-        let maxLluviaProb = Math.max(...probabilidadesLluvia);
-        let maxVientoProyectado = Math.max(...vientosFuturos);
-
-        let mensajeProyeccion = `🕒 <b>Próximas 6 horas en la zona:</b><br>`;
-        mensajeProyeccion += `• Temperatura mínima esperada: <b>${minTempProyectada} °C</b><br>`;
-        mensajeProyeccion += `• Probabilidad máxima de lluvia: <b>${maxLluviaProb}%</b><br>`;
-        mensajeProyeccion += `• Ráfagas estimadas de hasta: <b>${maxVientoProyectado} km/h</b>`;
-
-        if(minTempProyectada < 4){
-            mensajeProyeccion += `<br><span style="color:#c62828;">⚠️ <b>Aviso predictivo:</b> Se proyecta descenso crítico de temperatura hacia la madrugada con riesgo de helada.</span>`;
-        }
-        if(maxLluviaProb > 60){
-            mensajeProyeccion += `<br><span style="color:#c62828;">⚠️ <b>Aviso predictivo:</b> Alta probabilidad de precipitaciones en corto plazo.</span>`;
-        }
-
-        document.getElementById("bloque-proyeccion").innerHTML = mensajeProyeccion;
-    }
-
-    // --- CÁLCULO DE RIESGOS ---
-
-    let helada = 0;
-    let infoHelada = null;
-
-    if(t < 8) helada += 40;
-    if(t < 4) helada += 40;
-
-    if(v < 10) {
-        helada += 20;
-        infoHelada = {
-            tipo: "Helada por Irradiación (Noche Calma)",
-            actionBanner: "Noche sin viento y despejada. <b>Se recomienda encender fuego en tachos/estufas de biomasa</b> entre las hileras de cultivos para elevar la temperatura."
-        };
-    } else if(v >= 15 && t < 5) {
-        helada += 30;
-        infoHelada = {
-            tipo: "Helada por Advección (Ingreso de Aire Frío)",
-            actionBanner: "Ingreso de masa fría con viento moderado/fuerte. El calor del fuego abierto se disipa rápido; evaluar calefacción activa intensiva."
-        };
-    }
-
-    let tormenta = 0;
-    if(h > 60) tormenta += 20;
-    if(h > 80) tormenta += 20;
-    if(n > 50) tormenta += 20;
-    if(n > 80) tormenta += 20;
-    if(v > 20) tormenta += 20;
-
-    let granizo = 0;
-    if(h > 70) granizo += 20;
-    if(h > 85) granizo += 20;
-    if(n > 60) granizo += 20;
-    if(n > 80) granizo += 20;
-    if(t > 20) granizo += 20;
-
-    let incendio = 0;
-    if(h < 40) incendio += 40;
-    if(h < 25) incendio += 30;
-    if(v > 20) incendio += 30;
-
-    let zonda = 0;
-    if(t > 22) zonda += 30;
-    if(t > 28) zonda += 20;
-    if(h < 35 && (dirCardinal.includes("W") || dirCardinal.includes("NW"))) {
-        zonda += 40;
-    } else if(h < 30) {
-        zonda += 25;
-    }
-    if(v > 20) zonda += 20;
-
-    let polen = 0;
-    if(t > 15) polen += 30;
-    if(t > 22) polen += 20;
-    if(h < 50) polen += 30;
-    if(v > 10) polen += 20;
-
-    helada = Math.min(100, helada);
-    tormenta = Math.min(100, tormenta);
-    granizo = Math.min(100, granizo);
-    incendio = Math.min(100, incendio);
-    zonda = Math.min(100, zonda);
-    polen = Math.min(100, polen);
-
-    mostrarRiesgoConCirculo("helada", helada);
-    mostrarRiesgoConCirculo("tormenta", tormenta);
-    mostrarRiesgoConCirculo("granizo", granizo);
-    mostrarRiesgoConCirculo("incendio", incendio);
-    mostrarRiesgoConCirculo("zonda", zonda);
-    mostrarRiesgoConCirculo("polen", polen);
-
-    actualizarBannerAlerta({
-        helada: { nombre: "Helada", valor: helada },
-        tormenta: { nombre: "Tormenta", valor: tormenta },
-        granizo: { nombre: "Granizo", valor: granizo },
-        incendio: { nombre: "Incendio", valor: incendio },
-        zonda: { nombre: "Zonda", valor: zonda }
-    }, infoHelada);
-
-    guardarPresion(p);
-}
-
-function iniciar(){
-    // Guardamos la posición por defecto de entrada para asegurar que cargue de inmediato
-    window.userLat = latDefault;
-    window.userLon = lonDefault;
-
-    // Intentamos cargar el clima de entrada con la zona por defecto para que no quede vacío
-    cargarClima(latDefault, lonDefault);
-
-    if(!navigator.geolocation){
-        return; // Si no soporta GPS, se queda con la zona por defecto silenciosamente
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        function(pos){
-            // Si el GPS responde con éxito, actualizamos con la ubicación real del usuario
-            window.userLat = pos.coords.latitude;
-            window.userLon = pos.coords.longitude;
-            cargarClima(window.userLat, window.userLon);
-        },
-        function(error){
-            // Si el usuario deniega el permiso o falla el GPS, mantenemos la zona por defecto sin romper nada
-            console.warn("GPS no disponible, usando ubicación base.");
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
-}
-
-window.onload = function(){
-    iniciar();
-
-    setInterval(function(){
-        if(window.userLat && window.userLon){
-            cargarClima(window.userLat, window.userLon);
-        }
-    }, 300000);
+const meteo = {
+    temperature: 14,
+    humidity: 66,
+    dewPoint: 7.2,
+    cloudCover: 86,
+    pressure: 930,
+    pressureTrend: "falling",
+    wind: 6,
+    rainProbability: 37,
+    cape: 1200,
+    liftedIndex: -3
 };
+
+// SCORE LLUVIA
+
+function calcularLluvia(d){
+
+    let score = 0;
+
+    score += d.humidity * 0.25;
+    score += d.cloudCover * 0.20;
+    score += d.rainProbability * 0.25;
+
+    if(d.pressureTrend === "falling")
+        score += 15;
+
+    const spread = d.temperature - d.dewPoint;
+
+    if(spread < 2)
+        score += 20;
+    else if(spread < 5)
+        score += 10;
+
+    return Math.min(100, Math.round(score));
+}
+
+// SCORE TORMENTA
+
+function calcularTormenta(d){
+
+    let score = 0;
+
+    if(d.cape > 500) score += 20;
+    if(d.cape > 1000) score += 20;
+    if(d.cape > 2000) score += 20;
+
+    if(d.liftedIndex < -2) score += 20;
+    if(d.liftedIndex < -4) score += 10;
+
+    if(d.humidity > 60) score += 10;
+
+    if(d.pressureTrend === "falling")
+        score += 20;
+
+    return Math.min(score,100);
+}
+
+const lluvia = calcularLluvia(meteo);
+const tormenta = calcularTormenta(meteo);
+
+document.getElementById("lluviaValor").innerHTML = lluvia + "%";
+document.getElementById("barraLluvia").style.width = lluvia + "%";
+
+document.getElementById("tormentaValor").innerHTML = tormenta + "%";
+document.getElementById("barraTormenta").style.width = tormenta + "%";
+
+const alerta = document.getElementById("alerta");
+
+if(tormenta > 75){
+    alerta.className = "alerta rojo";
+    alerta.innerHTML = "⛈ Alta probabilidad de tormenta";
+}
+else if(lluvia > 60){
+    alerta.className = "alerta naranja";
+    alerta.innerHTML = "🌧 Lluvia probable en las próximas horas";
+}
+else if(lluvia > 40){
+    alerta.className = "alerta amarillo";
+    alerta.innerHTML = "⚠️ Inestabilidad moderada";
+}
+else{
+    alerta.className = "alerta verde";
+    alerta.innerHTML = "✅ Condiciones estables";
+}
+
 </script>
 
 </body>
