@@ -17,7 +17,7 @@
 <script>
 const INPRES_API_URL="https://inpres-proxy.elexpreso17.workers.dev";
 const USGS_API_URL="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson";
-const FIRMS_MAP_KEY="PEGA_AQUI_TU_MAP_KEY_FIRMS";
+const FIRMS_MAP_KEY="77a9490b2a337c7055de7a2e5948c836";
 let lat=-32.89,lon=-68.84,acc=0,map,radarLayer,usgsLayer,inpresLayer,fireLayer,radiusCircle,gpsMarker,lotMap,drawn,treeMap,treeGroup,treeGpsMarker,treeAccuracy,manualTree=false,treeCapture=null,closestFires=[],currentFireIndex=0,fireRotationTimer=null,currentFireMarker=null,radarVisible=true,quakesVisible=true,viirsVisible=false;
 let trees=JSON.parse(localStorage.getItem('territoria_arboles')||'[]');
 const $=id=>document.getElementById(id),set=(id,v)=>{const e=$(id);if(e)e.textContent=v},num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
