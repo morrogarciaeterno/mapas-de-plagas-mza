@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visor Geográfico Pro - Campo & Clima</title>
+    <title>Visor Geográfico Pro - Campo & Ríos</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Selector de Capas -->
+        <!-- Selector de Capas (Incluyendo Ríos e Hidrografía) -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="none" checked class="text-emerald-500">
@@ -35,8 +35,8 @@
                 <span>IGN Base GDE</span>
             </label>
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="radar" class="text-emerald-500">
-                <span>🌧️ Lluvia / Radar</span>
+                <input type="radio" name="layer" value="rios" class="text-emerald-500">
+                <span>🌊 Ríos e Hidrografía</span>
             </label>
         </div>
     </header>
@@ -65,7 +65,6 @@
         }).addTo(map);
 
         let wmsLayer = null;
-        let radarLayer = null;
         let userMarker = null;
         let userAccuracyCircle = null;
         let clickMarker = null;
@@ -74,10 +73,11 @@
 
         // Control de selección de capas
         document.querySelectorAll('input[type=radio][name="layer"]').forEach(radio => {
-            radio.addEventListener('change', async (e) => {
-                // Limpiar capas previas
-                if (wmsLayer) { map.removeLayer(wmsLayer); wmsLayer = null; }
-                if (radarLayer) { map.removeLayer(radarLayer); radarLayer = null; }
+            radio.addEventListener('change', (e) => {
+                if (wmsLayer) {
+                    map.removeLayer(wmsLayer);
+                    wmsLayer = null;
+                }
 
                 if (e.target.value === 'ign_base') {
                     statusEl.innerText = 'Cargando...';
@@ -88,37 +88,21 @@
                         version: '1.1.0'
                     }).addTo(map);
                     statusEl.innerText = 'Activo';
-                } else if (e.target.value === 'radar') {
-                    statusEl.innerText = 'Buscando Radar...';
-                    try {
-                        // Petición a la API de RainViewer para obtener los hosts y caminos reales del radar
-                        const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-                        const data = await response.json();
-                        
-                        if (data && data.radar && data.radar.past && data.radar.past.length > 0) {
-                            const host = data.host; // Host devuelto por la API (ej: https://tilecache.rainviewer.com)
-                            const latestFrame = data.radar.past[data.radar.past.length - 1]; // Último registro de radar pasado
-                            const path = latestFrame.path; // Ruta dinámica oficial (ej: /v2/radar/171...)
-                            
-                            // Construcción correcta de la URL de teselas con host y path oficiales
-                            // Formato: {host}{path}/512/{z}/{x}/{y}/2/1_1.png (color 2: Universal Blue, opciones: suavizado 1, sin nieve 0)
-                            const radarUrl = `${host}${path}/512/{z}/{x}/{y}/2/1_1.png`;
+                } else if (e.target.value === 'rios') {
+                    statusEl.innerText = 'Cargando Ríos...';
+                    // Capa oficial de hidrografía y cuerpos de agua del IGN
+                    wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
+                        layers: 'ign:c_hidrografia',
+                        format: 'image/png',
+                        transparent: true,
+                        version: '1.1.0',
+                        attribution: 'IGN Argentina - Hidrografía'
+                    }).addTo(map);
 
-                            radarLayer = L.tileLayer(radarUrl, {
-                                opacity: 0.7,
-                                attribution: 'RainViewer API',
-                                tileSize: 512,
-                                zoomOffset: -1
-                            }).addTo(map);
-                            
-                            statusEl.innerText = 'Lluvia Activa';
-                        } else {
-                            statusEl.innerText = 'Sin Datos';
-                        }
-                    } catch (err) {
-                        statusEl.innerText = 'Error Radar';
-                        console.error("Error al cargar radar:", err);
-                    }
+                    wmsLayer.on('load', () => {
+                        statusEl.innerText = 'Ríos Activos';
+                    });
+                    statusEl.innerText = 'Ríos Activos';
                 } else {
                     statusEl.innerText = 'Listo';
                 }
@@ -139,7 +123,7 @@
 
                 map.setView([lat, lng], 14);
 
-                if (userMarker) map.removeLayer(userMarker);
+                if (userMarker) map.map.removeLayer(userMarker);
                 if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
 
                 userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`Estás aquí<br>Precisión: ~${Math.round(accuracy)}m`).openPopup();
