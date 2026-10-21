@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visor Geográfico Pro - Campo</title>
+    <title>Visor Geográfico Pro - Campo & Clima</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Selector de Capas WMS en Horizontal Scroll -->
+        <!-- Selector de Capas (Incluyendo Lluvia/Radar) -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="none" checked class="text-emerald-500">
@@ -35,8 +35,8 @@
                 <span>IGN Base GDE</span>
             </label>
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="ign_limites" class="text-emerald-500">
-                <span>IGN Límites Provinciales</span>
+                <input type="radio" name="layer" value="radar" class="text-emerald-500">
+                <span>🌧️ Lluvia / Radar</span>
             </label>
         </div>
     </header>
@@ -45,7 +45,7 @@
     <main class="flex-1 relative w-full h-full">
         <div id="map" class="w-full h-full absolute inset-0"></div>
         
-        <!-- Cuadro Flotante de Coordenadas al Tocar -->
+        <!-- Cuadro Flotante de Coordenadas -->
         <div id="coord-box" class="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-700 text-slate-300 text-[11px] px-3 py-1.5 rounded-lg backdrop-blur z-10 shadow-lg pointer-events-none">
             Tocá el mapa para obtener coordenadas
         </div>
@@ -55,7 +55,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
-        // Inicializar el mapa centrado inicialmente en Cuyo / Argentina
         const map = L.map('map', { zoomControl: false }).setView([-32.8908, -68.8272], 7);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -66,19 +65,19 @@
         }).addTo(map);
 
         let wmsLayer = null;
+        let radarLayer = null;
         let userMarker = null;
         let userAccuracyCircle = null;
         let clickMarker = null;
         const statusEl = document.getElementById('status');
         const coordBox = document.getElementById('coord-box');
 
-        // Control de selección de capas WMS institucionales
+        // Control de selección de capas
         document.querySelectorAll('input[type=radio][name="layer"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                if (wmsLayer) {
-                    map.removeLayer(wmsLayer);
-                    wmsLayer = null;
-                }
+            radio.addEventListener('change', async (e) => {
+                // Limpiar capas previas
+                if (wmsLayer) { map.removeLayer(wmsLayer); wmsLayer = null; }
+                if (radarLayer) { map.removeLayer(radarLayer); radarLayer = null; }
 
                 if (e.target.value === 'ign_base') {
                     statusEl.innerText = 'Cargando...';
@@ -89,22 +88,37 @@
                         version: '1.1.0'
                     }).addTo(map);
                     statusEl.innerText = 'Activo';
-                } else if (e.target.value === 'ign_limites') {
-                    statusEl.innerText = 'Cargando...';
-                    wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
-                        layers: 'ign:cprovnc',
-                        format: 'image/png',
-                        transparent: true,
-                        version: '1.1.0'
-                    }).addTo(map);
-                    statusEl.innerText = 'Activo';
+                } else if (e.target.value === 'radar') {
+                    statusEl.innerText = 'Buscando Radar...';
+                    try {
+                        // Consultar la API pública de RainViewer para obtener el último timestamp de radar disponible
+                        const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+                        const data = await response.json();
+                        
+                        if (data && data.radar && data.radar.past && data.radar.past.length > 0) {
+                            // Tomar el último registro disponible de radar
+                            const latestTime = data.radar.past[data.radar.past.length - 1].time;
+                            
+                            radarLayer = L.tileLayer(`https://tile.rainviewer.com/v2/radar/${latestTime}/512/{z}/{x}/{y}/2/1_1.png`, {
+                                opacity: 0.65,
+                                attribution: 'RainViewer API'
+                            }).addTo(map);
+                            
+                            statusEl.innerText = 'Lluvia Activa';
+                        } else {
+                            statusEl.innerText = 'Sin Datos';
+                        }
+                    } catch (err) {
+                        statusEl.innerText = 'Error Radar';
+                        console.error(err);
+                    }
                 } else {
                     statusEl.innerText = 'Listo';
                 }
             });
         });
 
-        // Geolocalización GPS en tiempo real
+        // Geolocalización GPS
         document.getElementById('btn-gps').addEventListener('click', () => {
             if (!navigator.geolocation) {
                 alert('El navegador no soporta geolocalización.');
@@ -116,7 +130,7 @@
                 const lng = position.coords.longitude;
                 const accuracy = position.coords.accuracy;
 
-                map.setView([lat, lng], 15);
+                map.setView([lat, lng], 14);
 
                 if (userMarker) map.removeLayer(userMarker);
                 if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
@@ -125,12 +139,12 @@
                 userAccuracyCircle = L.circle([lat, lng], { radius: accuracy, color: '#10b981', fillOpacity: 0.15 }).addTo(map);
                 statusEl.innerText = 'Ubicado';
             }, error => {
-                alert('No se pudo obtener la posición GPS. Asegurate de dar permisos.');
+                alert('No se pudo obtener la posición GPS.');
                 statusEl.innerText = 'Error GPS';
             }, { enableHighAccuracy: true });
         });
 
-        // Obtener coordenadas y marcar al hacer clic/tocar el mapa
+        // Inspector de Coordenadas
         map.on('click', (e) => {
             const lat = e.latlng.lat.toFixed(6);
             const lng = e.latlng.lng.toFixed(6);
