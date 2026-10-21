@@ -1,78 +1,664 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Estaciones Hidrometeorológicas</title>
-    <!-- Leaflet CSS -->
+    <meta charset="utf-8" />
+    <title>Mapa de Estaciones</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        #map {
-            height: 100vh;
-            width: 100%;
-        }
-        .leaflet-popup-content-wrapper {
-            border-radius: 8px;
-        }
+        #map { width: 100%; height: 500px; }
     </style>
 </head>
 <body>
-
     <div id="map"></div>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Inicializar el mapa centrado en Mendoza
-        const map = L.map('map').setView([-32.8895, -68.8458], 7);
+        var map = L.map('map').setView([-32.445, -58.554], 7);
 
-        // Capa de OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
+            attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Aquí debes pegar tu objeto GeoJSON completo
-        const geojsonData = {
-            "type": "FeatureCollection",
-            "features": [
-                // Ejemplo de estructura, reemplaza con tus datos reales
-                {
-                    "type": "Feature",
-                    "geometry": { 
-                        "type": "Point", 
-                        "coordinates": [-68.8458, -32.8895] 
-                    },
-                    "properties": { 
-                        "nombre": "Estación Mendoza", 
-                        "distrito": "Mendoza", 
-                        "tipo": "M", 
-                        "propietario": "Ejemplo" 
-                    }
-                }
-            ]
+        var geojsonData = {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14dc",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.55488889, -32.44516667]
+              },
+              "properties": {
+                "sitecode": 1,
+                "nombre": "Ruta Provincial nº 39",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14dd",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.07680556, -32.3085]
+              },
+              "properties": {
+                "sitecode": 2,
+                "nombre": "Rosario del Tala",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14de",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.27033333, -33.10061111]
+              },
+              "properties": {
+                "sitecode": 3,
+                "nombre": "Paso Alonso",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14df",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.126, -31.80161111]
+              },
+              "properties": {
+                "sitecode": 4,
+                "nombre": "Villaguay",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e0",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.55122222, -30.92369444]
+              },
+              "properties": {
+                "sitecode": 5,
+                "nombre": "Paso Medina",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e1",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.178504, -34.589146]
+              },
+              "properties": {
+                "sitecode": 7,
+                "nombre": "Puente Jáuregui",
+                "distrito": "BUENOSAIRES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e2",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.49047222, -32.10461111]
+              },
+              "properties": {
+                "sitecode": 102,
+                "nombre": "Ruta Nacional nº 130",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e3",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.78055556, -31.49122222]
+              },
+              "properties": {
+                "sitecode": 103,
+                "nombre": "Recreo - Ruta Provincial nº 70",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e4",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-61.74394444, -29.27516667]
+              },
+              "properties": {
+                "sitecode": 105,
+                "nombre": "Tostado",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e5",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.09822222, -28.99111111]
+              },
+              "properties": {
+                "sitecode": 107,
+                "nombre": "Santa Lucía",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e6",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.72141667, -28.57113889]
+              },
+              "properties": {
+                "sitecode": 108,
+                "nombre": "San Roque",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e7",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.55938889, -28.99436111]
+              },
+              "properties": {
+                "sitecode": 109,
+                "nombre": "Paso Lucero",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e8",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.12638889, -31.95]
+              },
+              "properties": {
+                "sitecode": 110,
+                "nombre": "Segui",
+                "distrito": "ENTRERIOS",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14e9",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.78463889, -30.21663889]
+              },
+              "properties": {
+                "sitecode": 111,
+                "nombre": "Límite con Entre Ríos – Ruta Provincial nº 28",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ea",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.864625, -32.841975]
+              },
+              "properties": {
+                "sitecode": 112,
+                "nombre": "Nogoyá Ruta Provincial nº 11",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14eb",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.53652778, -35.72466667]
+              },
+              "properties": {
+                "sitecode": 114,
+                "nombre": "Ruta Provincial nº 41",
+                "distrito": "BUENOSAIRES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ec",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.76386111, -32.39463889]
+              },
+              "properties": {
+                "sitecode": 116,
+                "nombre": "Ruta Nacional Nº 12",
+                "distrito": "Entre Rios",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ed",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.86594444, -32.67333333]
+              },
+              "properties": {
+                "sitecode": 118,
+                "nombre": "Pueblo Andino",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ee",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.25869444, -30.36163889]
+              },
+              "properties": {
+                "sitecode": 119,
+                "nombre": "Paso Juncué",
+                "distrito": "ENTRERIOS",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ef",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.51297222, -30.34375]
+              },
+              "properties": {
+                "sitecode": 120,
+                "nombre": "Paso Telégrafo",
+                "distrito": "ENTRERIOS",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f0",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.21716667, -29.75711111]
+              },
+              "properties": {
+                "sitecode": 121,
+                "nombre": "Los Laureles",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f1",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.60205556, -31.66113889]
+              },
+              "properties": {
+                "sitecode": 122,
+                "nombre": "Ruta Nacional nº 168",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f2",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.990275, -32.01786111]
+              },
+              "properties": {
+                "sitecode": 123,
+                "nombre": "Autopista",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f3",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.66355556, -33.02722222]
+              },
+              "properties": {
+                "sitecode": 124,
+                "nombre": "Autopista",
+                "distrito": "SANTAFE",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f4",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.40438889, -31.15077778]
+              },
+              "properties": {
+                "sitecode": 125,
+                "nombre": "Ruta Provincial nº62",
+                "distrito": "SANTAFE",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f5",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.38794444, -28.49122222]
+              },
+              "properties": {
+                "sitecode": 126,
+                "nombre": "Villa Ocampo (Ruta Prov. Nº 32)",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f6",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.75261111, -28.99791667]
+              },
+              "properties": {
+                "sitecode": 127,
+                "nombre": "Moussy",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f7",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.49716667, -29.0655]
+              },
+              "properties": {
+                "sitecode": 128,
+                "nombre": "Fortín Olmos",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f8",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59, -27.43972222]
+              },
+              "properties": {
+                "sitecode": 129,
+                "nombre": "Resistencia",
+                "distrito": "CHACO",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14f9",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-57.67451111, -29.8458]
+              },
+              "properties": {
+                "sitecode": 130,
+                "nombre": "Paso Ledesma",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14fa",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.33467778, -33.39891944]
+              },
+              "properties": {
+                "sitecode": 133,
+                "nombre": "La Emilia",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14fb",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-58.80861111, -28.11416667]
+              },
+              "properties": {
+                "sitecode": 134,
+                "nombre": "Ruta Nacional nº 12",
+                "distrito": "CORRIENTES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14fc",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.94111111, -32.39297222]
+              },
+              "properties": {
+                "sitecode": 135,
+                "nombre": "Autopista",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14fd",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.78566667, -29.27866667]
+              },
+              "properties": {
+                "sitecode": 136,
+                "nombre": "Ruta Nacional nº 11",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14fe",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.68202778, -33.02925]
+              },
+              "properties": {
+                "sitecode": 139,
+                "nombre": "Ruta Provincial nº 18",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_14ff",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.576775, -33.36006111]
+              },
+              "properties": {
+                "sitecode": 140,
+                "nombre": "Cnel. Bogado",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1500",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-62.68333, -32.61667]
+              },
+              "properties": {
+                "sitecode": 143,
+                "nombre": "Bell Ville",
+                "distrito": "CORDOBA",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1501",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.280502, -35.372613]
+              },
+              "properties": {
+                "sitecode": 146,
+                "nombre": "Roque Perez",
+                "distrito": "BUENOSAIRES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1502",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-66.156666, -25.123332]
+              },
+              "properties": {
+                "sitecode": 147,
+                "nombre": "Cachi",
+                "distrito": "SALTA",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1503",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-59.893888, -36.831082]
+              },
+              "properties": {
+                "sitecode": 148,
+                "nombre": "Seminario Diocesano de Azul",
+                "distrito": "BUENOSAIRES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1504",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-71.40613889, -43.66833333]
+              },
+              "properties": {
+                "sitecode": 170,
+                "nombre": "Ruta Provincial Nº 044",
+                "distrito": "Chubut",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1505",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.624247, -30.744031]
+              },
+              "properties": {
+                "sitecode": 174,
+                "nombre": "San Justo - Ruta Provincial nº 2",
+                "distrito": "Chubut",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1506",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-60.841003, -31.042868]
+              },
+              "properties": {
+                "sitecode": 175,
+                "nombre": "Emilia - Ruta Provincial nº 62",
+                "distrito": "Santa Fe",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1507",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-55.13, -27.88]
+              },
+              "properties": {
+                "sitecode": 304,
+                "nombre": "San Javier",
+                "distrito": "MISIONES",
+                "pais": "Argentina"
+              }
+            },
+            {
+              "type": "Feature",
+              "id": "estaciones_por_tipo.fid-55228e2c_1a1606ea19d_1508",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-56.54216667, -28.41666667]
+              },
+              "properties": {
+                "sitecode": 319,
+                "nombre": "La Sirena",
+                "distrito": "Corrientes",
+                "pais": "Argentina"
+              }
+            }
+          ]
         };
 
-        // Función para agregar el GeoJSON al mapa con popups
         L.geoJSON(geojsonData, {
             onEachFeature: function (feature, layer) {
-                if (feature.properties) {
-                    const name = feature.properties.nombre || "Estación";
-                    const district = feature.properties.distrito || "N/A";
-                    const type = feature.properties.tipo === 'H' ? 'Hidrológica' : 'Meteorológica';
-                    const owner = feature.properties.propietario || "N/A";
-
-                    layer.bindPopup(`
-                        <strong>${name}</strong><br>
-                        <b>Provincia:</b> ${district}<br>
-                        <b>Tipo:</b> ${type}<br>
-                        <b>Propietario:</b> ${owner}
-                    `);
+                if (feature.properties && feature.properties.nombre) {
+                    layer.bindPopup("<b>Estación:</b> " + feature.properties.nombre + "<br><b>Distrito:</b> " + feature.properties.distrito);
                 }
             }
         }).addTo(map);
