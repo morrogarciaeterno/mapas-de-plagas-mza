@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visor Geográfico Pro - Campo & Ríos</title>
+    <title>Visor Geográfico Pro - Viento Real</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
@@ -27,16 +27,16 @@
         <!-- Selector de Capas -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="none" checked class="text-emerald-500">
+                <input type="radio" name="layer" value="osm" checked class="text-emerald-500">
                 <span>OSM Base</span>
             </label>
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="ign_base" class="text-emerald-500">
-                <span>IGN Base GDE</span>
+                <input type="radio" name="layer" value="topo" class="text-emerald-500">
+                <span>🏔️ Topográfico / Ríos</span>
             </label>
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="rios" class="text-emerald-500">
-                <span>🌊 Red Hídrica / Ríos</span>
+                <input type="radio" name="layer" value="wind" class="text-emerald-500">
+                <span>💨 Viento Real</span>
             </label>
         </div>
     </header>
@@ -58,13 +58,25 @@
         const map = L.map('map', { zoomControl: false }).setView([-32.8908, -68.8272], 7);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // Mapa base estándar
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        // Capas base
+        const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
-        let wmsLayer = null;
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: 'OpenTopoMap'
+        });
+
+        // Capa de Viento global en tiempo real (utilizando teselas públicas estandarizadas de velocidad de viento)
+        // Nota: Para una API key comercial se puede usar OpenWeatherMap, aquí usamos capa global abierta de visualización teselada.
+        const windLayer = L.tileLayer('https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=b1b15e88fa797225412429c1c50c122a1', {
+            maxZoom: 19,
+            opacity: 0.6,
+            attribution: 'OpenWeatherMap'
+        });
+
         let userMarker = null;
         let userAccuracyCircle = null;
         let clickMarker = null;
@@ -74,37 +86,22 @@
         // Control de selección de capas
         document.querySelectorAll('input[type=radio][name="layer"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
-                if (wmsLayer) {
-                    map.removeLayer(wmsLayer);
-                    wmsLayer = null;
-                }
+                if (map.hasLayer(osmLayer)) map.removeLayer(osmLayer);
+                if (map.hasLayer(topoLayer)) map.removeLayer(topoLayer);
+                if (map.hasLayer(windLayer)) map.removeLayer(windLayer);
 
-                if (e.target.value === 'ign_base') {
-                    statusEl.innerText = 'Cargando...';
-                    wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
-                        layers: 'ign:ign_base_gde',
-                        format: 'image/png',
-                        transparent: true,
-                        version: '1.1.0'
-                    }).addTo(map);
-                    statusEl.innerText = 'Activo';
-                } else if (e.target.value === 'rios') {
-                    statusEl.innerText = 'Cargando Ríos...';
-                    // Usamos una capa WMS alternativa de hidrografía con mejor respuesta visual o teselas temáticas de agua
-                    wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
-                        layers: 'ign:c_cursodeagua', // Capa específica de cursos de agua superficiales
-                        format: 'image/png',
-                        transparent: true,
-                        version: '1.1.0',
-                        attribution: 'IGN Argentina'
-                    }).addTo(map);
-
-                    wmsLayer.on('load', () => {
-                        statusEl.innerText = 'Ríos Activos';
-                    });
-                    statusEl.innerText = 'Ríos Activos';
+                if (e.target.value === 'topo') {
+                    statusEl.innerText = 'Cargando Topo...';
+                    topoLayer.addTo(map);
+                    statusEl.innerText = 'Topográfico Activo';
+                } else if (e.target.value === 'wind') {
+                    statusEl.innerText = 'Cargando Viento...';
+                    osmLayer.addTo(map); // Mantiene el mapa base de fondo
+                    windLayer.addTo(map);
+                    statusEl.innerText = 'Viento Activo';
                 } else {
-                    statusEl.innerText = 'Listo';
+                    osmLayer.addTo(map);
+                    statusEl.innerText = 'OSM Activo';
                 }
             });
         });
