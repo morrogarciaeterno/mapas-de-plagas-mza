@@ -3,90 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visor Geográfico OGC - Mobile</title>
+    <title>Visor Geográfico Pro - Campo</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
-        /* Asegurar que el mapa ocupe toda la pantalla correctamente en móviles */
         html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans flex flex-col h-full">
 
-    <!-- Header / Panel Superior Compacto para Celular -->
+    <!-- Header / Panel Superior Compacto -->
     <header class="bg-slate-800 border-b border-slate-700 p-3 flex flex-col gap-2 z-20 shadow-md">
         <div class="flex justify-between items-center">
-            <h1 class="text-sm font-bold tracking-wide text-emerald-400">Visor Geográfico (OGC/WMS)</h1>
-            <span id="status" class="text-[10px] bg-emerald-950/80 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/50 font-semibold">Listo</span>
+            <h1 class="text-sm font-bold tracking-wide text-emerald-400">Visor Geográfico Pro</h1>
+            <div class="flex gap-2 items-center">
+                <button id="btn-gps" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-2.5 py-1 rounded shadow font-medium transition active:scale-95">📍 GPS</button>
+                <span id="status" class="text-[10px] bg-emerald-950/80 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/50 font-semibold">Listo</span>
+            </div>
         </div>
 
-        <!-- Selector de Capas en Mini-Pills para táctil -->
+        <!-- Selector de Capas WMS en Horizontal Scroll -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
-            <label class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
+            <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="none" checked class="text-emerald-500">
-                <span>Mapa Base</span>
+                <span>OSM Base</span>
             </label>
-            <label class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
-                <input type="radio" name="layer" value="idera" class="text-emerald-500">
-                <span>IDERA / IGN WMS</span>
+            <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
+                <input type="radio" name="layer" value="ign_base" class="text-emerald-500">
+                <span>IGN Base GDE</span>
+            </label>
+            <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
+                <input type="radio" name="layer" value="ign_limites" class="text-emerald-500">
+                <span>IGN Límites Provinciales</span>
             </label>
         </div>
     </header>
 
-    <!-- Mapa Principal ocupando todo el espacio restante -->
+    <!-- Mapa Principal -->
     <main class="flex-1 relative w-full h-full">
         <div id="map" class="w-full h-full absolute inset-0"></div>
+        
+        <!-- Cuadro Flotante de Coordenadas al Tocar -->
+        <div id="coord-box" class="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-700 text-slate-300 text-[11px] px-3 py-1.5 rounded-lg backdrop-blur z-10 shadow-lg pointer-events-none">
+            Tocá el mapa para obtener coordenadas
+        </div>
     </main>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     
     <script>
-        // Inicializar el mapa centrado en Argentina adaptado a móvil
-        const map = L.map('map', { zoomControl: false }).setView([-38.4161, -63.6167], 4);
-
-        // Mover los controles de zoom a la esquina inferior derecha para no estorbar con el header
+        // Inicializar el mapa centrado inicialmente en Cuyo / Argentina
+        const map = L.map('map', { zoomControl: false }).setView([-32.8908, -68.8272], 7);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // Mapa base libre de restricciones y sin API Keys
+        // Mapa base estándar
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution: '&copy; OpenStreetMap'
         }).addTo(map);
 
         let wmsLayer = null;
+        let userMarker = null;
+        let userAccuracyCircle = null;
+        let clickMarker = null;
         const statusEl = document.getElementById('status');
+        const coordBox = document.getElementById('coord-box');
 
-        // Control de selección de capas WMS
-        const radios = document.querySelectorAll('input[type=radio][name="layer"]');
-        radios.forEach(radio => {
+        // Control de selección de capas WMS institucionales
+        document.querySelectorAll('input[type=radio][name="layer"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (wmsLayer) {
                     map.removeLayer(wmsLayer);
                     wmsLayer = null;
                 }
 
-                if (e.target.value === 'idera') {
+                if (e.target.value === 'ign_base') {
                     statusEl.innerText = 'Cargando...';
-                    
                     wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
                         layers: 'ign:ign_base_gde',
                         format: 'image/png',
                         transparent: true,
-                        version: '1.1.0',
-                        attribution: 'IDERA / IGN'
+                        version: '1.1.0'
                     }).addTo(map);
-
-                    wmsLayer.on('load', () => {
-                        statusEl.innerText = 'Activo';
-                    });
+                    statusEl.innerText = 'Activo';
+                } else if (e.target.value === 'ign_limites') {
+                    statusEl.innerText = 'Cargando...';
+                    wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
+                        layers: 'ign:cprovnc',
+                        format: 'image/png',
+                        transparent: true,
+                        version: '1.1.0'
+                    }).addTo(map);
                     statusEl.innerText = 'Activo';
                 } else {
                     statusEl.innerText = 'Listo';
                 }
             });
+        });
+
+        // Geolocalización GPS en tiempo real
+        document.getElementById('btn-gps').addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert('El navegador no soporta geolocalización.');
+                return;
+            }
+            statusEl.innerText = 'GPS...';
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const accuracy = position.coords.accuracy;
+
+                map.setView([lat, lng], 15);
+
+                if (userMarker) map.removeLayer(userMarker);
+                if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
+
+                userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`Estás aquí<br>Precisión: ~${Math.round(accuracy)}m`).openPopup();
+                userAccuracyCircle = L.circle([lat, lng], { radius: accuracy, color: '#10b981', fillOpacity: 0.15 }).addTo(map);
+                statusEl.innerText = 'Ubicado';
+            }, error => {
+                alert('No se pudo obtener la posición GPS. Asegurate de dar permisos.');
+                statusEl.innerText = 'Error GPS';
+            }, { enableHighAccuracy: true });
+        });
+
+        // Obtener coordenadas y marcar al hacer clic/tocar el mapa
+        map.on('click', (e) => {
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+            coordBox.innerHTML = `Lat: ${lat} | Lon: ${lng}`;
+
+            if (clickMarker) map.removeLayer(clickMarker);
+            clickMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map)
+                .bindPopup(`<b>Punto Seleccionado:</b><br>Lat: ${lat}<br>Lon: ${lng}`).openPopup();
         });
     </script>
 </body>
