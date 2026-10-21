@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Selector de Capas (Incluyendo Lluvia/Radar) -->
+        <!-- Selector de Capas -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="none" checked class="text-emerald-500">
@@ -91,17 +91,24 @@
                 } else if (e.target.value === 'radar') {
                     statusEl.innerText = 'Buscando Radar...';
                     try {
-                        // Consultar la API pública de RainViewer para obtener el último timestamp de radar disponible
+                        // Petición a la API de RainViewer para obtener los hosts y caminos reales del radar
                         const response = await fetch('https://api.rainviewer.com/public/weather-maps.json');
                         const data = await response.json();
                         
                         if (data && data.radar && data.radar.past && data.radar.past.length > 0) {
-                            // Tomar el último registro disponible de radar
-                            const latestTime = data.radar.past[data.radar.past.length - 1].time;
+                            const host = data.host; // Host devuelto por la API (ej: https://tilecache.rainviewer.com)
+                            const latestFrame = data.radar.past[data.radar.past.length - 1]; // Último registro de radar pasado
+                            const path = latestFrame.path; // Ruta dinámica oficial (ej: /v2/radar/171...)
                             
-                            radarLayer = L.tileLayer(`https://tile.rainviewer.com/v2/radar/${latestTime}/512/{z}/{x}/{y}/2/1_1.png`, {
-                                opacity: 0.65,
-                                attribution: 'RainViewer API'
+                            // Construcción correcta de la URL de teselas con host y path oficiales
+                            // Formato: {host}{path}/512/{z}/{x}/{y}/2/1_1.png (color 2: Universal Blue, opciones: suavizado 1, sin nieve 0)
+                            const radarUrl = `${host}${path}/512/{z}/{x}/{y}/2/1_1.png`;
+
+                            radarLayer = L.tileLayer(radarUrl, {
+                                opacity: 0.7,
+                                attribution: 'RainViewer API',
+                                tileSize: 512,
+                                zoomOffset: -1
                             }).addTo(map);
                             
                             statusEl.innerText = 'Lluvia Activa';
@@ -110,7 +117,7 @@
                         }
                     } catch (err) {
                         statusEl.innerText = 'Error Radar';
-                        console.error(err);
+                        console.error("Error al cargar radar:", err);
                     }
                 } else {
                     statusEl.innerText = 'Listo';
