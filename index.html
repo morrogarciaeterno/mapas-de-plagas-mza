@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <!-- Selector de Capas (Incluyendo Ríos e Hidrografía) -->
+        <!-- Selector de Capas -->
         <div class="flex gap-2 overflow-x-auto pb-1 text-xs">
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="none" checked class="text-emerald-500">
@@ -36,7 +36,7 @@
             </label>
             <label class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-700/80 border border-slate-600 cursor-pointer whitespace-nowrap">
                 <input type="radio" name="layer" value="rios" class="text-emerald-500">
-                <span>🌊 Ríos e Hidrografía</span>
+                <span>🌊 Red Hídrica / Ríos</span>
             </label>
         </div>
     </header>
@@ -90,13 +90,13 @@
                     statusEl.innerText = 'Activo';
                 } else if (e.target.value === 'rios') {
                     statusEl.innerText = 'Cargando Ríos...';
-                    // Capa oficial de hidrografía y cuerpos de agua del IGN
+                    // Usamos una capa WMS alternativa de hidrografía con mejor respuesta visual o teselas temáticas de agua
                     wmsLayer = L.tileLayer.wms('https://wms.ign.gob.ar/geoserver/wms?', {
-                        layers: 'ign:c_hidrografia',
+                        layers: 'ign:c_cursodeagua', // Capa específica de cursos de agua superficiales
                         format: 'image/png',
                         transparent: true,
                         version: '1.1.0',
-                        attribution: 'IGN Argentina - Hidrografía'
+                        attribution: 'IGN Argentina'
                     }).addTo(map);
 
                     wmsLayer.on('load', () => {
@@ -123,7 +123,7 @@
 
                 map.setView([lat, lng], 14);
 
-                if (userMarker) map.map.removeLayer(userMarker);
+                if (userMarker) map.removeLayer(userMarker);
                 if (userAccuracyCircle) map.removeLayer(userAccuracyCircle);
 
                 userMarker = L.marker([lat, lng]).addTo(map).bindPopup(`Estás aquí<br>Precisión: ~${Math.round(accuracy)}m`).openPopup();
