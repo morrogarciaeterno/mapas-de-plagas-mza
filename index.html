@@ -88,6 +88,13 @@ body{font-family:Segoe UI,Arial,sans-serif;font-size:14px}.app{width:calc(100% -
 .weather-now-line{display:flex;align-items:center;justify-content:center;gap:10px}.weather-temp-hero{font-size:42px;line-height:1;font-weight:800;color:#e0f2fe;letter-spacing:-2px;text-shadow:0 0 12px #38bdf844}@media(max-width:700px){.weather-temp-hero{font-size:35px}.weather-now-line{gap:7px}}.weather-icon-stack{display:flex;flex-direction:column;align-items:center;justify-content:center}.weather-icon-stack .weather-label{margin-top:4px;white-space:nowrap}
 /* Ajustes finales: sin scroll horizontal y margenes compactos */
 html,body{width:100%;max-width:100%;overflow-x:hidden!important}body{padding-left:4px!important;padding-right:4px!important}.app{width:100%!important;max-width:100%!important;margin:0!important;padding:0!important}.card{max-width:100%}.pair5050,.status,.indicators,.charts,.two-columns,.warning-grid,.tools{max-width:100%;min-width:0}.hydro-ranking h4{font-weight:600!important}.rank-name{font-weight:500!important}.rank-value{font-weight:650!important}
+
+/* Pasos fronterizos alineados hasta el final del mapa */
+.border-stack{align-items:stretch!important}
+#borderInfoPanel,#borderSection{height:600px!important;min-height:600px!important;margin:0!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+#borderInfoPanel .border-list{flex:1!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;padding-right:4px!important}
+#borderSection #borderMap{flex:1!important;height:auto!important;min-height:0!important;margin-top:10px!important}
+@media(max-width:900px){#borderInfoPanel,#borderSection{height:auto!important;min-height:0!important}#borderInfoPanel .border-list{max-height:390px!important}#borderSection #borderMap{height:420px!important;min-height:420px!important;flex:none!important}}
 </style></head><body><main class="app">
 <header class="card head"><div class="flex"><div style="display:flex;align-items:center;gap:14px;min-width:0"><img alt="Logo Territoria" onerror="this.style.display='none'" src="logo-territoria.png" style="width:76px;height:76px;object-fit:contain;padding:3px;border-radius:14px;background:#fff"/><div><h1 style="color:#40c6ef;margin-bottom:4px">TERRITORIA</h1><div class="muted" style="font-size:12px">Plataforma inteligente de monitoreo territorial</div><div class="muted" id="updated" style="margin-top:8px">Esperando GPS…</div></div></div><span class="online" id="systemStatus">● INICIANDO</span></div></header>
 <div class="card red" id="error" style="display:none"></div>
