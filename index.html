@@ -148,6 +148,16 @@ h1{font-size:24px!important;font-weight:750!important;letter-spacing:.2px}h2{fon
 .card>h3,.hydro-head h3,.border-head h3,.tool h3{border-bottom-color:#31445e!important}
 .hydro-head h3,#waterMapSection .border-head h3,#borderInfoPanel .border-head h3,#borderSection .border-head h3{border-bottom-color:#31445e!important}
 .tree-address-search{position:relative;display:grid;grid-template-columns:minmax(240px,1fr) auto auto;gap:7px;padding:8px;border-top:1px solid var(--b);border-bottom:1px solid var(--b)}.tree-address-search input{width:100%;background:#0c1728;border-color:var(--b)}.tree-address-results{display:none;position:absolute;z-index:7000;left:12px;right:12px;top:100%;max-height:240px;overflow:auto;padding:7px;border:1px solid var(--b);border-radius:10px;background:#0b1728;box-shadow:0 10px 28px #0008}.tree-address-result{display:block;width:100%;margin-bottom:5px;text-align:left;background:#13233a;border-color:#355174}@media(max-width:700px){.tree-address-search{grid-template-columns:1fr auto}.tree-address-search button:last-of-type{grid-column:1/-1}}
+/* Censo PC: proporciones mas equilibradas */
+#treeModal .box{width:min(1240px,96vw);height:min(820px,92vh)}
+#treeModal .modalBody{grid-template-columns:minmax(0,1.85fr) minmax(340px,.85fr);gap:10px}
+#treeModal .side{padding:11px}
+#treeModal .item{padding:10px;margin-bottom:7px;font-size:11px;line-height:1.38}
+#treeModal .item>b{font-size:12px}
+#treeModal .item .muted{font-size:10px}
+#treeModal .item img{width:96px!important;height:76px!important}
+#treeModal .item button{padding:7px 8px;font-size:10px}
+@media(max-width:900px){#treeModal .box{width:98vw;height:96vh}#treeModal .modalBody{grid-template-columns:1fr}#treeModal .side{min-height:260px}}
 </style></head><body><main class="app">
 <header class="card head"><div class="flex"><div style="display:flex;align-items:center;gap:14px;min-width:0"><img alt="Logo Territoria" onerror="this.style.display='none'" src="logo-territoria.png" style="width:76px;height:76px;object-fit:contain;padding:3px;border-radius:14px;background:#fff"/><div><h1 style="color:#40c6ef;margin-bottom:4px">TERRITORIA</h1><div class="muted" style="font-size:12px">Plataforma inteligente de monitoreo territorial</div><div class="muted" id="updated" style="margin-top:8px">Esperando GPS…</div></div></div><span class="online" id="systemStatus">● INICIANDO</span></div></header>
 <div class="card red" id="error" style="display:none"></div>
