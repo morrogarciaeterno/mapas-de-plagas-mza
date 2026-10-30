@@ -363,6 +363,24 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif!important;font-
  .status>.card b{max-width:none!important}
  #earlyWarningState{white-space:normal!important}
 }
+
+/* ANDROID SATELITAL: mapa protagonista */
+@media(max-width:700px){
+ #satelliteModal{padding:0!important;align-items:stretch!important;overflow:hidden!important}
+ #satelliteModal .satellite-box{width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;min-height:100dvh!important;border-radius:0!important;overflow-y:auto!important}
+ #satelliteModal .satellite-main{display:flex!important;flex-direction:column!important;height:auto!important;min-height:0!important;overflow:visible!important;padding:8px!important;gap:8px!important}
+ #satelliteModal .satellite-map-card{order:1!important;width:100%!important;height:auto!important;min-height:0!important;padding:8px!important;overflow:visible!important}
+ #satelliteModal .satellite-central{order:2!important;width:100%!important;height:auto!important;min-height:320px!important;overflow:visible!important}
+ #satelliteModal .satellite-map-toolbar{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
+ #satelliteModal .satellite-map-toolbar button{flex:1 1 30%!important;min-width:105px!important;padding:8px 6px!important}
+ #satelliteModal .satellite-map-toolbar .sat-time{width:100%!important;margin:2px 0 0!important}
+ #satelliteModal #satelliteMap{display:block!important;width:100%!important;height:68dvh!important;min-height:560px!important;max-height:none!important;flex:none!important;border-radius:12px!important}
+ #satelliteModal .satellite-legend{padding:8px 2px 2px!important}
+ #satelliteModal .satellite-list{max-height:420px!important;overflow-y:auto!important}
+}
+@media(max-width:430px){
+ #satelliteModal #satelliteMap{height:66dvh!important;min-height:520px!important}
+}
 </style></head><body><main class="app">
 <header class="card head"><div class="flex"><div style="display:flex;align-items:center;gap:14px;min-width:0"><img alt="Logo Territoria" onerror="this.style.display='none'" src="logo-territoria.png" style="width:76px;height:76px;object-fit:contain;padding:3px;border-radius:14px;background:#fff"/><div><h1 style="color:#40c6ef;margin-bottom:4px">TERRITORIA</h1><div class="muted" style="font-size:12px">Plataforma inteligente de monitoreo territorial</div><div class="muted" id="updated" style="margin-top:8px">Esperando GPS…</div></div></div><span class="online" id="systemStatus">● INICIANDO</span></div></header>
 <div class="card red" id="error" style="display:none"></div>
