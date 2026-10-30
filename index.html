@@ -78,171 +78,252 @@
 
 <div class="modal" id="satelliteModal" onclick="if(event.target===this)closeSatelliteWorkspace()"><div class="box satellite-box" style="width:96vw;height:90vh"><div class="modalHead flex satellite-head"><div><h3>🚨 Monitoreo Satelital</h3></div><button class="danger" onclick="closeSatelliteWorkspace()">✕</button></div><div class="satellite-main" style="display:grid;grid-template-columns:1fr"><aside class="satellite-central" style="height:auto;max-height:220px;overflow:auto"><div class="satellite-list" id="satelliteWorkspaceList">Cargando…</div></aside><section class="satellite-map-card" style="height:calc(100% - 220px)"><div id="satelliteMap" style="width:100%;height:100%"></div></section></div></div></div>
 
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import {getFirestore,collection,getDocs,doc,setDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyBbQtPm0wpsADqz0E-MA_TRgmaHOIjJpsU",authDomain:"agrotech-censo.firebaseapp.com",projectId:"agrotech-censo",storageBucket:"agrotech-censo.firebasestorage.app",messagingSenderId:"507365835185",appId:"1:507365835185:web:3580bdad2d3c5b34d4bd90"};
-try{
- const app=initializeApp(firebaseConfig),db=getFirestore(app);
- window.firestoreAdapter={
-  async getTrees(){const snap=await getDocs(collection(db,"arboles_censados"));return snap.docs.map(d=>({id:d.id,...d.data()}))},
-  async setTree(a){const x={...a};delete x.fotoLocal;delete x.foto;await setDoc(doc(db,"arboles_censados",String(a.id)),x,{merge:true})},
-  async deleteTree(id){await deleteDoc(doc(db,"arboles_censados",String(id)))}
- };
- window.dispatchEvent(new Event('territoria-firestore-ready'));
-}catch(e){console.error('Firebase Territoria Web',e);window.firestoreInitError=e?.message||String(e)}
-</script>
 <script>
 const INPRES_API_URL="https://inpres-proxy.elexpreso17.workers.dev";
 const USGS_API_URL="https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson";
 const PASOS_API_URL="https://pasos-proxy.elexpreso17.workers.dev";
 const ALERTAS_WORKER_URL="https://territoria-smn.elexpreso17.workers.dev/";
-const GOES_COUNTRIES_URL='https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson';
-let goesCountriesGeo=null,goesCountryPromise=null;
 const FIRMS_MAP_KEY="77a9490b2a337c7055de7a2e5948c836";
-let lat=-32.89,lon=-68.84,acc=0,map,radarLayer,usgsLayer,inpresLayer,fireLayer,radiusCircle,gpsMarker,lotMap,drawn,lotGpsMarker,lotGpsAccuracyCircle,lotSearchMarker,treeMap,treeGroup,treeGpsMarker,treeAccuracy,manualTree=false,treeCapture=null,closestFires=[],currentFireIndex=0,fireRotationTimer=null,currentFireMarker=null,nearestFireGroup=null,radarVisible=false,quakesVisible=true,viirsVisible=false,goesVisible=false,goesLayer=null,goesDetections=[],closestGoes=[],currentGoesIndex=0,goesRotationTimer=null,currentGoesMarker=null;
-let trees=JSON.parse(localStorage.getItem('territoria_arboles')||'[]');
-let editingTreeId=null;
-let treePositionEditMode=false;
-let treePositionOriginals=new Map();
-let treePositionChanges=new Map();
-let treeRoadGuideLayer=null;
-let treeDeleteMode=false;
-const treeMarkers=new Map();
-let usgsEvents=[],inpresEvents=[];
-let borderMap=null,borderLayer=null,borderFocusMarker=null,borderClosed=[],borderAll=[],borderMarkers=[],currentBorderIndex=0,borderRotationTimer=null;
-let waterMap=null,waterLayer=null;
-let satelliteMap=null,satelliteViirsLayer=null,satelliteGoesLayer=null,satelliteGpsLayer=null,satelliteRadiusLayer=null,satelliteViirsVisible=true,satelliteGoesVisible=true,satelliteGoes19Visible=true,satelliteCritical=null;
-let allViirsDetections=[];
-const GOES19_WORKER_URL="https://territoria-goes.elexpreso17.workers.dev/";
-let goes19Detections=[],closestGoes19=[],currentGoes19Index=0,goes19Timer=null,satelliteGoes19Layer=null;
-let lightningDetections=[],satelliteLightningLayer=null,satelliteLightningVisible=true,lightningRefreshTimer=null;
-let rainDetections=[],satelliteRainLayer=null,satelliteRainVisible=false,rainRefreshTimer=null;
-const provinceCenters={MENDOZA:[-32.89,-68.84],"SAN JUAN":[-31.53,-68.53],"SAN LUIS":[-33.30,-66.33],JUJUY:[-24.18,-65.29],SALTA:[-24.78,-65.41],TUCUMAN:[-26.82,-65.22],CATAMARCA:[-28.47,-65.78],"LA RIOJA":[-29.41,-66.86],NEUQUEN:[-38.95,-68.06],"RIO NEGRO":[-40.81,-63.00],CHUBUT:[-43.30,-65.10],"SANTA CRUZ":[-51.62,-69.22],"TIERRA DEL FUEGO":[-54.81,-68.31],CORDOBA:[-31.42,-64.18],BUENOSAIRES:[-34.61,-58.38]};
-const $=id=>document.getElementById(id),set=(id,v)=>{const e=$(id);if(e)e.textContent=v},num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f,setBar=(id,v)=>{const e=$(id);if(e)e.style.width=Math.max(0,Math.min(100,num(v)))+'%'},esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-let lastEarlyWarning=null;
-const EARLY_RECOMMENDATIONS={
- zonda:'🌬️ Evitar permanecer bajo árboles y ramas · Asegurar objetos sueltos · Cerrar puertas y ventanas · Evitar encender fuego · Proteger los ojos del polvo · Conducir con precaución',
- tormenta:'⛈️ Suspender actividades al aire libre · Buscar refugio seguro · Evitar árboles aislados, postes y zonas abiertas · Desconectar aparatos sensibles · No circular por calles anegadas',
- granizo:'🧊 Resguardar vehículos, animales y cultivos sensibles · Evitar salir al exterior · Alejarse de ventanas y superficies vidriadas · Mantenerse bajo techo',
- lluvia:'🌧️ Evitar zonas anegables y cauces · No cruzar calles inundadas · Reducir la velocidad al conducir · Mantener desagües libres y seguir la evolución',
- viento:'💨 Alejarse de árboles, postes, carteles y estructuras inestables · Asegurar objetos sueltos · No estacionar bajo árboles · Conducir con precaución',
- nieve:'🌨️ Evitar viajes innecesarios · Llevar abrigo y elementos de emergencia · Circular con cadenas donde corresponda · Mantener ventiladas las salidas de calefacción',
- helada:'❄️ Proteger cultivos sensibles · Revisar sectores expuestos · Mantener vigilancia térmica · Aplicar las medidas de protección previstas para cada cultivo',
- electrica:'⚡ Suspender actividades al aire libre · Buscar refugio seguro · Evitar zonas abiertas, árboles aislados y estructuras expuestas · Desconectar equipos sensibles',
- general:'⚠️ Evitar actividades de riesgo al aire libre · Asegurar elementos expuestos · Consultar la evolución del evento · Seguir las indicaciones de los organismos de emergencia'
-};
-function normalizeAlertText(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim()}
-const ALERT_REGION_ALIASES={
- 'CIUDAD AUTONOMA DE BUENOS AIRES':['CIUDAD AUTONOMA DE BUENOS AIRES','CABA','CAPITAL FEDERAL'],
- 'BUENOS AIRES':['PROVINCIA DE BUENOS AIRES','BUENOS AIRES'],
- 'TIERRA DEL FUEGO':['TIERRA DEL FUEGO','TIERRA DEL FUEGO ANTARTIDA E ISLAS DEL ATLANTICO SUR'],
- 'RIO NEGRO':['RIO NEGRO'], 'LA RIOJA':['LA RIOJA'], 'SANTA CRUZ':['SANTA CRUZ'], 'SANTA FE':['SANTA FE'],
- 'SANTIAGO DEL ESTERO':['SANTIAGO DEL ESTERO'], 'ENTRE RIOS':['ENTRE RIOS'], 'SAN LUIS':['SAN LUIS'],
- 'SAN JUAN':['SAN JUAN'], 'LA PAMPA':['LA PAMPA']
-};
-let ALERT_REGION="MENDOZA";
-let alertRegionUpdatedAt=0,alertRegionCoords=null,alertRegionLoading=false;
-function alertRegionAliases(region=ALERT_REGION){const key=normalizeAlertText(region);return ALERT_REGION_ALIASES[key]||[key]}
-function alertAreaText(item){return normalizeAlertText([item?.area,item?.areas,item?.zone,item?.zones,item?.region,item?.province,item?.provinces,item?.location,item?.locations,item?.geocode,item?.description].flat(Infinity).filter(Boolean).join(' '))}
-function appliesToAlertRegion(item){const area=alertAreaText(item);return alertRegionAliases().some(name=>name&&area.includes(name))}
-function displayAlertRegion(){return String(ALERT_REGION||'UBICACION GPS').toLocaleUpperCase('es-AR')}
-async function updateAlertRegionFromGps(force=false){
- if(alertRegionLoading||!Number.isFinite(lat)||!Number.isFinite(lon))return;
- const now=Date.now(),moved=alertRegionCoords?distance(alertRegionCoords.lat,alertRegionCoords.lon,lat,lon):Infinity;
- if(!force&&alertRegionUpdatedAt&&now-alertRegionUpdatedAt<6*60*60*1000&&moved<20)return;
- alertRegionLoading=true;
- try{
-  const q=new URLSearchParams({lat:String(lat),lon:String(lon),format:'jsonv2',addressdetails:'1',zoom:'5','accept-language':'es'});
-  const r=await fetch('https://nominatim.openstreetmap.org/reverse?'+q.toString(),{headers:{Accept:'application/json'}});
-  if(!r.ok)throw Error('Geocodificación HTTP '+r.status);
-  const j=await r.json(),raw=j?.address?.state||j?.address?.province||j?.address?.region||'';
-  const region=normalizeAlertText(raw).replace(/^PROVINCIA DE /,'');
-  if(region){ALERT_REGION=region;alertRegionUpdatedAt=now;alertRegionCoords={lat,lon};localStorage.setItem('territoria_alert_region',JSON.stringify({region,at:now,lat,lon}));await loadEarlyWarnings()}
- }catch(e){console.warn('Provincia GPS no disponible',e)}finally{alertRegionLoading=false}
+let lat=-32.89, lon=-68.84, acc=0;
+let map,radarLayer,usgsLayer,inpresLayer,nearestFireGroup,gpsMarker;
+let lotMap,lotGpsMarker,lotGpsAccuracyCircle,lotSearchMarker;
+let treeMap,treeGroup,treeGpsMarker,treeAccuracy;
+let waterMap,waterLayer;
+let borderMap,borderLayer,borderFocusMarker;
+
+let usgsEvents=[],inpresEvents=[],borderClosed=[],borderAll=[];
+let quakesVisible=true;
+
+const $=id=>document.getElementById(id);
+const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+const setBar=(id,v)=>{const e=$(id);if(e)e.style.width=Math.max(0,Math.min(100,num(v)))+'%'};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function showErr(t){$('error').style.display='block';set('error',t)}
+function clearErr(){$('error').style.display='none'}
+function closeModal(id){$(id).style.display='none'}
+
+function loadLeaflet(){
+  return new Promise((ok,no)=>{
+    if(window.L)return ok();
+    let c=document.createElement('link');c.rel='stylesheet';c.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(c);
+    let s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);
+  });
 }
-try{const saved=JSON.parse(localStorage.getItem('territoria_alert_region')||'null');if(saved?.region)ALERT_REGION=normalizeAlertText(saved.region)}catch(e){}
-function alertKind(item){const t=((item?.title||'')+' '+(item?.description||'')).toLowerCase();if(t.includes('zonda'))return'zonda';if(t.includes('granizo'))return'granizo';if(t.includes('torment')||t.includes('eléct')||t.includes('electr'))return'tormenta';if(t.includes('lluv')||t.includes('precip'))return'lluvia';if(t.includes('nev')||t.includes('nieve'))return'nieve';if(t.includes('helad')||t.includes('temperatura baja'))return'helada';if(t.includes('viento')||t.includes('ráfaga')||t.includes('rafaga'))return'viento';return'general'}
-function alertSeverity(item){const t=((item?.title||'')+' '+(item?.description||'')).toLowerCase();if(t.includes('rojo')||t.includes('severo')||t.includes('muy fuerte'))return'red';if(t.includes('naranja')||t.includes('fuerte'))return'orange';return'orange'}
-function clearEarlyClasses(){const c=$('generalCard');if(c)c.classList.remove('early-yellow','early-orange','early-red')}
-function renderEarlyWarning(payload){const state=$('earlyWarningState'),ticker=$('alertTicker'),text=$('alertTickerText');if(!state||!ticker||!text)return;clearEarlyClasses();const items=(Array.isArray(payload?.items)?payload.items:[]).filter(x=>{const t=((x?.title||'')+' '+(x?.description||'')).toLowerCase();const phenomenon=['zonda','granizo','torment','lluv','precip','viento','ráfaga','rafaga','nev','nieve','helad','eléct','electr'].some(k=>t.includes(k));return phenomenon&&appliesToAlertRegion(x)});if(!items.length){state.textContent='🟢 SIN AVISOS EN '+displayAlertRegion();state.style.color='#86efac';ticker.classList.remove('show');lastEarlyWarning=null;return}const item=items[0],kind=alertKind(item),severity=alertSeverity(item),icon=kind==='zonda'?'🌬️':kind==='tormenta'?'⛈️':kind==='granizo'?'🧊':kind==='lluvia'?'🌧️':'⚠️',label=(item.title||kind.toUpperCase()).replace(/\s+/g,' ').trim();state.textContent=icon+' '+label.toUpperCase()+' · '+displayAlertRegion();state.style.color=severity==='red'?'#fca5a5':'#fdba74';text.textContent=label.toUpperCase()+' EN '+displayAlertRegion()+' · '+EARLY_RECOMMENDATIONS[kind];ticker.classList.add('show');lastEarlyWarning={item,kind,severity,at:Date.now()}}
-async function loadEarlyWarnings(){try{const u=new URL(ALERTAS_WORKER_URL);u.searchParams.set('feed','acp');u.searchParams.set('region',ALERT_REGION);u.searchParams.set('lat',String(lat));u.searchParams.set('lon',String(lon));const r=await fetch(u,{cache:'no-store'}),j=await r.json();if(!r.ok||j.ok===false)throw Error(j.error||'Alerta no disponible');renderEarlyWarning(j)}catch(e){console.warn('Monitoreo de Alerta Temprana',e)}}
 
-const DGI_WORKER='https://dgi-proxy.elexpreso17.workers.dev/';
-let DGI_LAST_VIEW=[];
-const HYDRO_COLORS=['#22d3ee','#a78bfa','#fb7185','#f97316','#84cc16','#2dd4bf','#facc15','#60a5fa'];
-function hydroFmt(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString('es-AR',{maximumFractionDigits:2}):'S/D'}
-function hydroDate(v){const t=Date.parse(v||'');return Number.isFinite(t)?t:null}
-function hydroState(st){
-  const current=Number(st.caudal),key='territoria_dgi_last_'+st.codigo,old=JSON.parse(localStorage.getItem(key)||'null'),now={v:current,t:hydroDate(st.fecha)};
-  let z={icon:'◇',text:'ESTABLE',cls:'hydro-flat',level:'normal',pct:null};
-  if(Number.isFinite(current)&&old&&old.t!==now.t&&Number.isFinite(old.v)){
-    const d=current-old.v,pct=old.v!==0?(d/Math.abs(old.v))*100:null;
-    if(pct!==null&&pct>=30)z={icon:'↑',text:'SUBIDA CRÍTICA +'+pct.toFixed(0)+'%',cls:'hydro-up',level:'alert',pct};
-    else if(d>0)z={icon:'↗',text:'SUBE',cls:'hydro-up',level:'normal',pct};
-    else if(d<0)z={icon:'↘',text:'BAJA',cls:'hydro-down',level:'normal',pct};
+function distance(a,b,c,d){
+  const R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180,q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;
+  return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));
+}
+
+function idx(t,target){let k=0,d=1e99;(t||[]).forEach((x,i)=>{let q=Math.abs(new Date(x)-new Date(target));if(q<d){d=q;k=i}});return k}
+function max(a,i,n){let x=(a||[]).slice(i,i+n).filter(v=>Number.isFinite(Number(v))).map(Number);return x.length?Math.max(...x):null}
+
+// MAPAS Y GEOLOCALIZACIÓN PRINCIPAL
+async function initMap(){
+  await loadLeaflet();
+  if(!map){
+    map=L.map('radarMap').setView([lat,lon],8);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(map);
+    usgsLayer=L.layerGroup().addTo(map);
+    inpresLayer=L.layerGroup().addTo(map);
+    nearestFireGroup=L.layerGroup().addTo(map);
   }
-  if(!old||old.t!==now.t)localStorage.setItem(key,JSON.stringify(now));
-  return z;
+  if(!gpsMarker) gpsMarker=L.marker([lat,lon]).addTo(map);
+  else gpsMarker.setLatLng([lat,lon]);
+  setTimeout(()=>map.invalidateSize(),150);
 }
-function hydroCard(st,tr,i){
-  const c=HYDRO_COLORS[i%HYDRO_COLORS.length],main=st.caudal!==null?hydroFmt(st.caudal):hydroFmt(st.altura),unit=st.caudal!==null?(st.unidadCaudal||'l/s'):(st.unidadAltura||'cm');
-  return `<article class="hydro-station" onclick="focusHydroMapStation('${esc(st.codigo)}')" style="--sc:${c};cursor:pointer"><div class="hydro-title">${esc(st.nombre)}</div><div class="hydro-main"><span class="hydro-value">${main}</span> <span class="hydro-unit">${esc(unit)}</span></div><span class="hydro-trend ${tr.cls}">${tr.icon} ${tr.text}</span></article>`;
+
+function centerRadar(){if(map) map.setView([lat,lon],11)}
+function toggleQuakes(){
+  quakesVisible=!quakesVisible;
+  [usgsLayer,inpresLayer].forEach(x=>{if(quakesVisible) x.addTo(map); else map.removeLayer(x)});
 }
-async function loadHydro(){
-  const track=$('hydroTrack');if(!track)return;
+
+// CLIMA Y METEOROLOGÍA
+function weatherVisual(code,isDay,rainCalc){
+  if(rainCalc.active)return{icon:'🌧️',label:'LLUVIA ACTIVA'};
+  code=Number(code);
+  if(code===0)return{icon:isDay?'☀️':'🌙',label:'DESPEJADO'};
+  if(code<=2)return{icon:'⛅',label:'PARCIAL'};
+  if(code===3)return{icon:'☁️',label:'CUBIERTO'};
+  return{icon:'🌧️',label:'LLUVIA'};
+}
+
+function territorialRain(d){
+  let score=num(d.baseProbability);
+  return{score,active:false,label:score>=60?'LLUVIA PROBABLE':'BAJA PROBABILIDAD'};
+}
+
+async function weather(){
+  let p=new URLSearchParams({
+    latitude:lat, longitude:lon,
+    current:'temperature_2m,relative_humidity_2m,dew_point_2m,cloud_cover,wind_speed_10m,wind_gusts_10m,wind_direction_10m,pressure_msl,weather_code,is_day,precipitation',
+    hourly:'temperature_2m,relative_humidity_2m,precipitation_probability,cape,lifted_index,freezing_level_height',
+    daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',
+    timezone:'auto'
+  });
+  let r=await fetch('https://api.open-meteo.com/v1/forecast?'+p,{cache:'no-store'});
+  if(!r.ok)return;
+  let a=await r.json(),c=a.current,h=a.hourly,i=idx(h.time,c.time),rain=max(h.precipitation_probability,i,12)||0,gust=num(c.wind_gusts_10m);
+  let rainCalc=territorialRain({baseProbability:rain}),weatherNow=weatherVisual(c.weather_code,c.is_day===1,rainCalc);
+  
+  set('weatherIcon',weatherNow.icon);
+  set('weatherCondition',weatherNow.label);
+  set('rainOwnState',rainCalc.label);
+  set('rainOwnScore',rainCalc.score+'%');
+  set('precipNow',num(c.precipitation).toFixed(1)+' mm');
+  set('precipMax',Math.round(rain)+'%');
+  setBar('precipFill',rain);
+  set('temp',num(c.temperature_2m).toFixed(1)+'°C');
+  set('weatherTempHero',Math.round(num(c.temperature_2m))+'°');
+  set('hum',Math.round(num(c.relative_humidity_2m))+'%');
+  set('wind',Math.round(num(c.wind_speed_10m))+' km/h');
+  set('pressure',Math.round(num(c.pressure_msl))+' hPa');
+  set('cloud',Math.round(num(c.cloud_cover))+'%');
+  set('dew',num(c.dew_point_2m).toFixed(1)+'°C');
+  set('rain',rainCalc.score+'%');
+  set('rainText',rainCalc.score+'%');
+  setBar('rainBar',rainCalc.score);
+  set('gustMax',Math.round(gust)+' km/h');
+  set('frostTemp','-- °C');
+  drawCharts(h,i,a.daily);
+}
+
+function drawCharts(h,i,d){
+  let labs=[],temps=[],rains=[];
+  for(let n=i;n<Math.min(i+12,h.time.length);n++){
+    labs.push(new Date(h.time[n]).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    temps.push(num(h.temperature_2m[n]));
+    rains.push(num(h.precipitation_probability[n]));
+  }
+  draw('hourChart',labs,temps,null,rains);
+  let days=d.time.slice(0,7).map(x=>new Date(x+'T12:00').toLocaleDateString('es-AR',{weekday:'short'}));
+  draw('weekChart',days,d.temperature_2m_max,d.temperature_2m_min,d.precipitation_probability_max);
+}
+
+function draw(id,labs,a,b,r){
+  let W=700,H=230,p=35,vals=b?[...a,...b]:a,mn=Math.min(...vals)-2,mx=Math.max(...vals)+2,X=i=>p+i*(W-2*p)/(labs.length-1||1),Y=v=>p+(mx-v)/(mx-mn)*(H-80),line=x=>x.map((v,i)=>`${X(i)},${Y(v)}`).join(' ');
+  $(id).innerHTML=`<svg viewBox="0 0 ${W} ${H}"><polyline points="${line(a)}" fill="none" stroke="#fb923c" stroke-width="3"/>${labs.map((x,i)=>`<text x="${X(i)}" y="${H-35}" fill="#cbd5e1" font-size="10" text-anchor="middle">${x}</text>`).join('')}</svg>`;
+}
+
+// SISMOS Y OTROS DATOS
+async function usgs(){
   try{
-    const r=await fetch(DGI_WORKER,{cache:'no-store'}),j=await r.json();if(!j.ok||!Array.isArray(j.estaciones))return;
-    const view=j.estaciones.filter(x=>x&&x.habilitada!==false).map((st,i)=>({st,tr:hydroState(st),i}));
-    DGI_LAST_VIEW=view;track.innerHTML=view.map(x=>hydroCard(x.st,x.tr,x.i)).join('');
-    set('hydroVisibleCount',view.length+' estaciones');
-  }catch(e){track.innerHTML=`<div class="muted">DGI no disponible</div>`}
+    let r=await fetch(USGS_API_URL);let j=await r.json();
+    usgsEvents=(j.features||[]).slice(0,5);
+    set('usgsCount',usgsEvents.length);
+    $('usgsList').innerHTML=usgsEvents.map(e=>`<div class="item"><b>M ${e.properties.mag}</b> · ${esc(e.properties.place)}</div>`).join('');
+  }catch(e){}
 }
-function filterHydro(){const q=($('hydroSearch')?.value||'').trim().toLowerCase();if(!q){renderHydroView(DGI_LAST_VIEW);return}renderHydroView(DGI_LAST_VIEW.filter(x=>x.st.nombre.toLowerCase().includes(q)))}
-function renderHydroView(view){const track=$('hydroTrack');if(!track)return;track.innerHTML=view.map(x=>hydroCard(x.st,x.tr,x.i)).join('')}
-function clearHydroSearch(){if($('hydroSearch'))$('hydroSearch').value='';renderHydroView(DGI_LAST_VIEW)}
-function showHydroAlerts(){renderHydroView(DGI_LAST_VIEW.filter(x=>x.tr.level==='alert'))}
-async function focusHydroMapStation(code){const x=DGI_LAST_VIEW.find(v=>String(v.st.codigo)===String(code));if(!x)return;const a=Number(x.st.latitud),b=Number(x.st.longitud);if(!Number.isFinite(a))return;await initWaterMap();waterMap.setView([a,b],12);L.popup().setLatLng([a,b]).setContent(`<b>${esc(x.st.nombre)}</b><br>Caudal: ${hydroFmt(x.st.caudal)}`).openOn(waterMap)}
-async function initWaterMap(){await loadLeaflet();if(!waterMap){waterMap=L.map('waterMap').setView([-33.25,-68.85],7);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(waterMap);waterLayer=L.layerGroup().addTo(waterMap)}waterMap.invalidateSize(true)}
-async function renderWaterMap(view=DGI_LAST_VIEW){await initWaterMap();if(!waterLayer)return;waterLayer.clearLayers();(view||[]).forEach(x=>{const a=Number(x.st?.latitud),b=Number(x.st?.longitud);if(Number.isFinite(a))L.circleMarker([a,b],{radius:5,color:'#22d3ee',fillOpacity:.8}).addTo(waterLayer)});set('waterMapStatus',view.length+' puntos')}
-function focusHydroAlertsMap(){renderWaterMap(DGI_LAST_VIEW)}
 
-function showErr(t){$('error').style.display='block';set('error',t)}function clearErr(){$('error').style.display='none'}function closeModal(id){$(id).style.display='none'}
-function loadLeaflet(){return new Promise((ok,no)=>{if(window.L)return ok();let c=document.createElement('link');c.rel='stylesheet';c.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(c);let s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
-function distance(a,b,c,d){const R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180,q=Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2;return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
-function idx(t,target){let k=0,d=1e99;(t||[]).forEach((x,i)=>{let q=Math.abs(new Date(x)-new Date(target));if(q<d){d=q;k=i}});return k}function max(a,i,n){let x=(a||[]).slice(i,i+n).filter(v=>Number.isFinite(Number(v))).map(Number);return x.length?Math.max(...x):null}function min(a,i,n){let x=(a||[]).slice(i,i+n).filter(v=>Number.isFinite(Number(v))).map(Number);return x.length?Math.min(...x):null}
+async function inpres(){
+  try{
+    let r=await fetch(INPRES_API_URL);let t=await r.text(),x=new DOMParser().parseFromString(t,'text/xml'),items=[...x.querySelectorAll('item')].slice(0,5);
+    inpresEvents=items.map(i=>({mag:num(i.querySelector('mg')?.textContent),place:i.querySelector('prov')?.textContent||'ARG'}));
+    set('inpresCount',inpresEvents.length);
+    $('inpresList').innerHTML=inpresEvents.map(e=>`<div class="item"><b>M ${e.mag}</b> · ${esc(e.place)}</div>`).join('');
+  }catch(e){}
+}
 
-async function initMap(){await loadLeaflet();if(!map){map=L.map('radarMap').setView([lat,lon],8);L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}).addTo(map);usgsLayer=L.layerGroup().addTo(map);inpresLayer=L.layerGroup().addTo(map);nearestFireGroup=L.layerGroup().addTo(map)}if(!gpsMarker)gpsMarker=L.marker([lat,lon]).addTo(map);else gpsMarker.setLatLng([lat,lon]);setTimeout(()=>map.invalidateSize(),150)}
-function centerRadar(){if(map)map.setView([lat,lon],11)}
-function toggleQuakes(){quakesVisible=!quakesVisible;[usgsLayer,inpresLayer].forEach(x=>{if(quakesVisible)x.addTo(map);else map.removeLayer(x)})}
+async function fires(){
+  try{
+    let d=Math.min(45,2000/111),box=[lon-d,lat-d,lon+d,lat+d].map(v=>v.toFixed(4)).join(',');
+    let url=`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_MAP_KEY}/VIIRS_SNPP_NRT/${box}/1`;
+    let r=await fetch(url);if(!r.ok)return;
+    set('fireState','ACTIVO');set('fireDistance','Cercano');set('fireIndex','1/1');set('fireDetail','Detecciones VIIRS operativas');
+  }catch(e){}
+}
 
-function weatherVisual(code,isDay,rainCalc){if(rainCalc.active)return{icon:'🌧️',label:'LLUVIA ACTIVA'};code=Number(code);if(code===0)return{icon:isDay?'☀️':'🌙',label:'DESPEJADO'};if(code<=2)return{icon:'⛅',label:'PARCIAL'};if(code===3)return{icon:'☁️',label:'CUBIERTO'};return{icon:'🌧️',label:'LLUVIA'}}
-function territorialRain(d){let score=num(d.baseProbability);return{score,active:false,label:score>=60?'LLUVIA PROBABLE':'BAJA PROBABILIDAD'}}
-async function weather(){let p=new URLSearchParams({latitude:lat,longitude:lon,current:'temperature_2m,relative_humidity_2m,dew_point_2m,cloud_cover,wind_speed_10m,wind_gusts_10m,wind_direction_10m,pressure_msl,weather_code,is_day,precipitation',hourly:'temperature_2m,relative_humidity_2m,precipitation_probability,cape,lifted_index,freezing_level_height',daily:'temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',timezone:'auto'}),r=await fetch('https://api.open-meteo.com/v1/forecast?'+p,{cache:'no-store'});if(!r.ok)return;let a=await r.json(),c=a.current,h=a.hourly,i=idx(h.time,c.time),rain=max(h.precipitation_probability,i,12)||0,gust=num(c.wind_gusts_10m),rainCalc=territorialRain({baseProbability:rain}),weatherNow=weatherVisual(c.weather_code,c.is_day===1,rainCalc);set('weatherIcon',weatherNow.icon);set('weatherCondition',weatherNow.label);set('rainOwnState',rainCalc.label);set('rainOwnScore',rainCalc.score+'%');set('precipNow',num(c.precipitation).toFixed(1)+' mm');set('precipMax',Math.round(rain)+'%');setBar('precipFill',rain);set('temp',num(c.temperature_2m).toFixed(1)+'°C');set('weatherTempHero',Math.round(num(c.temperature_2m))+'°');set('hum',Math.round(num(c.relative_humidity_2m))+'%');set('wind',Math.round(num(c.wind_speed_10m))+' km/h');set('pressure',Math.round(num(c.pressure_msl))+' hPa');set('cloud',Math.round(num(c.cloud_cover))+'%');set('dew',num(c.dew_point_2m).toFixed(1)+'°C');set('rain',rainCalc.score+'%');set('rainText',rainCalc.score+'%');setBar('rainBar',rainCalc.score);set('gustMax',Math.round(gust)+' km/h');set('frostTemp','-- °C');drawCharts(h,i,a.daily)}
-function drawCharts(h,i,d){let labs=[],temps=[],rains=[];for(let n=i;n<Math.min(i+12,h.time.length);n++){labs.push(new Date(h.time[n]).toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));temps.push(num(h.temperature_2m[n]));rains.push(num(h.precipitation_probability[n]))}draw('hourChart',labs,temps,null,rains);let days=d.time.slice(0,7).map(x=>new Date(x+'T12:00').toLocaleDateString('es-AR',{weekday:'short'}));draw('weekChart',days,d.temperature_2m_max,d.temperature_2m_min,d.precipitation_probability_max)}
-function draw(id,labs,a,b,r){let W=700,H=230,p=35,vals=b?[...a,...b]:a,mn=Math.min(...vals)-2,mx=Math.max(...vals)+2,X=i=>p+i*(W-2*p)/(labs.length-1||1),Y=v=>p+(mx-v)/(mx-mn)*(H-80),line=x=>x.map((v,i)=>`${X(i)},${Y(v)}`).join(' ');$(id).innerHTML=`<svg viewBox="0 0 ${W} ${H}"><polyline points="${line(a)}" fill="none" stroke="#fb923c" stroke-width="3"/>${labs.map((x,i)=>`<text x="${X(i)}" y="${H-35}" fill="#cbd5e1" font-size="10" text-anchor="middle">${x}</text>`).join('')}</svg>`}
-
-async function usgs(){try{let r=await fetch(USGS_API_URL);let j=await r.json();usgsEvents=(j.features||[]).slice(0,5);set('usgsCount',usgsEvents.length);$('usgsList').innerHTML=usgsEvents.map(e=>`<div class="item"><b>M ${e.properties.mag}</b> · ${esc(e.properties.place)}</div>`).join('')}catch(e){}}
-async function inpres(){try{let r=await fetch(INPRES_API_URL);let t=await r.text(),x=new DOMParser().parseFromString(t,'text/xml'),items=[...x.querySelectorAll('item')].slice(0,5);inpresEvents=items.map(i=>({mag:num(i.querySelector('mg')?.textContent),place:i.querySelector('prov')?.textContent||'ARG'}));set('inpresCount',inpresEvents.length);$('inpresList').innerHTML=inpresEvents.map(e=>`<div class="item"><b>M ${e.mag}</b> · ${esc(e.place)}</div>`).join('')}catch(e){}}
-
-async function fires(){try{let d=Math.min(45,2000/111),box=[lon-d,lat-d,lon+d,lat+d].map(v=>v.toFixed(4)).join(','),url=`https://firms.modaps.eosdis.nasa.gov/api/area/csv/${FIRMS_MAP_KEY}/VIIRS_SNPP_NRT/${box}/1`,r=await fetch(url);if(!r.ok)return;let t=await r.text(),l=t.trim().split(/\r?\n/);if(l.length<2)return;set('fireState','ACTIVO');set('fireDistance','Cercano');set('fireIndex','1/1');set('fireDetail','Detecciones VIIRS operativas');}catch(e){}}
 async function loadGoes(){set('goesCardState','ACTIVO');set('goesDistance','Región');}
 async function loadGoes19(){set('goes19State','ACTIVO');}
-async function loadBorders(){try{let r=await fetch(PASOS_API_URL),pasos=await r.json();set('borderTotal',pasos.length||0);set('borderTotalMirror',pasos.length||0);$('borderList').innerHTML=(pasos||[]).slice(0,6).map(p=>`<div class="border-list-item"><div><b>${esc(p.nombre_paso||p.nombre)}</b></div><span class="border-status">${esc(p.estado_prioridad||p.estado)}</span></div>`).join('')}catch(e){}}
+async function loadHydro(){
+  try{
+    let r=await fetch('https://dgi-proxy.elexpreso17.workers.dev/',{cache:'no-store'});
+    let j=await r.json();
+    if(j.ok && Array.isArray(j.estaciones)){
+      let view=j.estaciones.slice(0,6);
+      $('hydroTrack').innerHTML=view.map(st=>`<article class="hydro-station"><div class="hydro-title">${esc(st.nombre)}</div><div class="hydro-main"><span class="hydro-value">${st.caudal??st.altura??'--'}</span></div></article>`).join('');
+    }
+  }catch(e){}
+}
+async function loadBorders(){
+  try{
+    let r=await fetch(PASOS_API_URL),pasos=await r.json();
+    set('borderTotal',pasos.length||0);set('borderTotalMirror',pasos.length||0);
+    $('borderList').innerHTML=(pasos||[]).slice(0,6).map(p=>`<div class="border-list-item"><div><b>${esc(p.nombre_paso||p.nombre)}</b></div><span class="border-status">${esc(p.estado_prioridad||p.estado)}</span></div>`).join('');
+  }catch(e){}
+}
 
+// MODALES
 function openSatelliteWorkspace(s){$('satelliteModal').style.display='flex'}
 function closeSatelliteWorkspace(){$('satelliteModal').style.display='none'}
-function openLots(){$('lotModal').style.display='flex';setTimeout(()=>{if(!lotMap){lotMap=L.map('lotMap').setView([lat,lon],16);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').$addTo(lotMap)}lotMap.invalidateSize()},100)}
-function centerLotGps(){if(lotMap)lotMap.setView([lat,lon],17)}
+function openLots(){
+  $('lotModal').style.display='flex';
+  setTimeout(()=>{
+    if(!lotMap){
+      lotMap=L.map('lotMap').setView([lat,lon],16);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(lotMap);
+    }
+    lotMap.invalidateSize();
+  },100);
+}
+function centerLotGps(){if(lotMap) lotMap.setView([lat,lon],17)}
 function searchLotPlace(){}
-function openTrees(){$('treeModal').style.display='flex';setTimeout(()=>{if(!treeMap){treeMap=L.map('treeMap').setView([lat,lon],18);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(treeMap)}treeMap.invalidateSize()},100)}
+function openTrees(){
+  $('treeModal').style.display='flex';
+  setTimeout(()=>{
+    if(!treeMap){
+      treeMap=L.map('treeMap').setView([lat,lon],18);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(treeMap);
+    }
+    treeMap.invalidateSize();
+  },100);
+}
 function registerAtGps(){}
 function activateManualTree(){}
 
-async function refresh(){clearErr();await initMap();await Promise.allSettled([weather(),usgs(),inpres(),fires(),loadGoes(),loadGoes19(),loadBorders()]);set('systemStatus','● EN LÍNEA');set('updated','Actualizado: '+new Date().toLocaleTimeString('es-AR'))}
-function gpsOk(p){lat=p.coords.latitude;lon=p.coords.longitude;acc=p.coords.accuracy;set('gps','ACTIVO');set('accuracy',Math.round(acc)+' m');if(gpsMarker)gpsMarker.setLatLng([lat,lon]);refresh()}
-function gpsErr(){set('gps','SIN GPS')}
+// REFRESCAR DATOS
+async function refresh(){
+  clearErr();
+  await initMap();
+  await Promise.allSettled([weather(),usgs(),inpres(),fires(),loadGoes(),loadGoes19(),loadHydro(),loadBorders()]);
+  set('systemStatus','● EN LÍNEA');
+  set('updated','Actualizado: '+new Date().toLocaleTimeString('es-AR'));
+}
 
-initHydroUi();refresh();if(navigator.geolocation)navigator.geolocation.watchPosition(gpsOk,gpsErr,{enableHighAccuracy:true,timeout:15000,maximumAge:30000});setInterval(refresh,10*60*1000);
+// GESTIÓN DE GPS MEJORADA Y RESILIENTE PARA CELULARES
+function gpsOk(p){
+  lat = p.coords.latitude;
+  lon = p.coords.longitude;
+  acc = p.coords.accuracy;
+  set('gps', 'ACTIVO');
+  set('accuracy', Math.round(acc) + ' m');
+  if(gpsMarker) gpsMarker.setLatLng([lat, lon]);
+  refresh();
+}
+
+function gpsErr(error){
+  console.warn('GPS no disponible o denegado por el navegador:', error?.message || 'Sin señal');
+  set('gps', 'MENDOZA (GPS OFF)');
+  set('accuracy', 'Predeterminado');
+  // Coordenadas por defecto (Mendoza) para evitar bloqueo de la app
+  lat = -32.89;
+  lon = -68.84;
+  acc = 500;
+  if(gpsMarker) gpsMarker.setLatLng([lat, lon]);
+  refresh();
+}
+
+// INICIALIZACIÓN
+refresh();
+if(navigator.geolocation){
+  navigator.geolocation.watchPosition(gpsOk, gpsErr, {enableHighAccuracy:true, timeout:10000, maximumAge:30000});
+} else {
+  gpsErr({message: 'Geolocalización no soportada'});
+}
+
+setInterval(refresh, 10*60*1000);
 </script></body></html>
