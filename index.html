@@ -733,22 +733,38 @@ const MENDOZA_BASIN_IDS=new Set(["103-2", "103", "103-3", "103-1", "105", "105-1
 const HYDRO_COLORS=['#22d3ee','#a78bfa','#fb7185','#f97316','#84cc16','#2dd4bf','#facc15','#60a5fa','#e879f9','#34d399'];
 function hydroFmt(v){const n=Number(v);if(!Number.isFinite(n))return'S/D';return n.toLocaleString('es-AR',{maximumFractionDigits:2})}
 function hydroDate(v){const t=Date.parse(v||'');return Number.isFinite(t)?t:null}
+// TERRITORIA · motor hidrológico propio.
+// Evalúa magnitud real + persistencia. No exige lluvia local para reconocer una crecida del cauce.
+function hydroToLs(v,unit){const n=Number(v);if(!Number.isFinite(n))return null;return /m3\s*\/\s*h/i.test(String(unit||''))?n/3.6:n}
+function hydroHistoryKey(code){return 'territoria_dgi_hist_'+String(code)}
+function hydroReadHistory(code){try{const a=JSON.parse(localStorage.getItem(hydroHistoryKey(code))||'[]');return Array.isArray(a)?a:[]}catch{return[]}}
+function hydroWriteHistory(code,h){try{localStorage.setItem(hydroHistoryKey(code),JSON.stringify(h.slice(-12)))}catch{}}
+function hydroMedian(a){const x=a.filter(Number.isFinite).sort((a,b)=>a-b);if(!x.length)return null;const m=Math.floor(x.length/2);return x.length%2?x[m]:(x[m-1]+x[m])/2}
 function hydroState(st){
-  const current=Number(st.caudal),key='territoria_dgi_last_'+st.codigo,old=JSON.parse(localStorage.getItem(key)||'null'),now={v:current,t:hydroDate(st.fecha)};
-  let z={icon:'◇',text:'PRIMER REGISTRO',cls:'hydro-wait',level:'wait',pct:null};
-  if(Number.isFinite(current)&&old&&old.t!==now.t&&Number.isFinite(old.v)){
-    const d=current-old.v,pct=old.v!==0?(d/Math.abs(old.v))*100:null;
-    if(pct!==null&&pct>=30)z={icon:'↑',text:'SUBIDA CRÍTICA '+Math.abs(pct).toFixed(0)+'%',cls:'hydro-up',level:'alert',pct};
-    else if(pct!==null&&pct>=15)z={icon:'↗',text:'CAUDAL EN AUMENTO '+Math.abs(pct).toFixed(0)+'%',cls:'hydro-up',level:'attention',pct};
-    else if(pct!==null&&pct<=-30)z={icon:'↓',text:'BAJADA CRÍTICA '+Math.abs(pct).toFixed(0)+'%',cls:'hydro-down',level:'alert',pct};
-    else if(pct!==null&&pct<=-15)z={icon:'↘',text:'CAUDAL EN DESCENSO '+Math.abs(pct).toFixed(0)+'%',cls:'hydro-down',level:'attention',pct};
-    else if(d>0)z={icon:'↗',text:'SUBE '+hydroFmt(d)+' '+(st.unidadCaudal||'l/s'),cls:'hydro-up',level:'normal',pct};
-    else if(d<0)z={icon:'↘',text:'BAJA '+hydroFmt(Math.abs(d))+' '+(st.unidadCaudal||'l/s'),cls:'hydro-down',level:'normal',pct};
-    else z={icon:'→',text:'ESTABLE',cls:'hydro-flat',level:'normal',pct:0};
-  }
-  if(Number.isFinite(z.pct)&&z.pct>0)localStorage.setItem('territoria_dgi_rise_'+st.codigo,JSON.stringify({pct:z.pct,t:now.t}));if((z.pct===null||!Number.isFinite(z.pct))){const rr=JSON.parse(localStorage.getItem('territoria_dgi_rise_'+st.codigo)||'null');if(rr&&Number.isFinite(Number(rr.pct))){z.pct=Number(rr.pct);z.icon='↗';z.text='ÚLTIMA SUBIDA +'+Number(rr.pct).toFixed(0)+'%'}}if(!old||old.t!==now.t)localStorage.setItem(key,JSON.stringify(now));
-  return z;
+ const currentRaw=Number(st.caudal),current=hydroToLs(st.caudal,st.unidadCaudal),height=Number(st.altura),t=hydroDate(st.fecha),hist=hydroReadHistory(st.codigo);
+ const distinct=hist.filter(x=>x&&x.t!==t&&Number.isFinite(x.q));
+ const recent=distinct.slice(-6),base=hydroMedian(recent.map(x=>x.q)),prev=recent.at(-1)||null;
+ const delta=Number.isFinite(current)&&Number.isFinite(base)?current-base:null;
+ const pct=Number.isFinite(delta)&&Number.isFinite(base)&&Math.abs(base)>=50?(delta/Math.abs(base))*100:null;
+ const seq=[...recent.slice(-2).map(x=>x.q),current].filter(Number.isFinite),rising=seq.length>=3&&seq[0]<seq[1]&&seq[1]<seq[2];
+ const rapid=Number.isFinite(current)&&prev&&Number.isFinite(prev.q)?current-prev.q:null;
+ let z={icon:'◇',text:'MONITOREO NORMAL',cls:'hydro-wait',level:'wait',pct,delta,base,rising,falseAlarm:false,reason:'Sin tendencia confirmada'};
+ if(Number.isFinite(current)){
+   z={...z,icon:'→',text:'MONITOREO NORMAL',cls:'hydro-flat',level:'normal'};
+   const meaningful=Number.isFinite(delta)&&delta>=150;
+   const strong=Number.isFinite(delta)&&delta>=300;
+   const critical=Number.isFinite(delta)&&delta>=500;
+   const rel=Number.isFinite(pct)?pct>=25:false,relStrong=Number.isFinite(pct)?pct>=50:false;
+   // Un porcentaje enorme desde casi cero no dispara por sí solo.
+   if(rising&&critical&&relStrong)z={...z,icon:'↑',text:'ALERTA TERRITORIA · CRECIDA SOSTENIDA',cls:'hydro-up',level:'alert',reason:'Caudal elevado respecto de su referencia reciente y ascenso persistente'};
+   else if(rising&&strong&&rel)z={...z,icon:'↗',text:'VIGILANCIA TERRITORIA · CAUCE EN AUMENTO',cls:'hydro-up',level:'attention',reason:'Ascenso persistente con incremento real significativo'};
+   else if(meaningful)z={...z,icon:'↗',text:'CAUDAL EN AUMENTO · MONITOREO',cls:'hydro-up',level:'normal',reason:'Aumento real observado; aún sin persistencia suficiente'};
+   else if(Number.isFinite(rapid)&&rapid<0)z={...z,icon:'↘',text:'CAUDAL EN DESCENSO',cls:'hydro-down',level:'normal',reason:'Última lectura descendente'};
+ }
+ if(t&&Number.isFinite(current)&&!hist.some(x=>x.t===t)){hist.push({t,q:current,h:Number.isFinite(height)?height:null,raw:currentRaw});hydroWriteHistory(st.codigo,hist)}
+ return z;
 }
+function hydroTerritoriaStatus(tr){if(tr.level==='alert')return'Territoria continúa monitoreando el estado y la evolución del cauce y comunicará cambios relevantes.';if(tr.level==='attention')return'Territoria mantiene vigilancia sobre el estado y la evolución del cauce.';return'Territoria continúa monitoreando el cauce.'}
 // TERRITORIA · localidad de estaciones hídricas por geocodificación inversa.
 // Cache local por código DGI para evitar repetir consultas ya resueltas.
 const HYDRO_LOCALITY_MEM=new Map();
@@ -781,7 +797,7 @@ function dgiColor(tr,i){if(tr.level==='alert')return'#ef4444';if(tr.level==='att
 function hydroCard(st,tr,i){
   const c=dgiColor(tr,i),dt=st.fecha?new Date(st.fecha).toLocaleString('es-AR'):'--',main=st.caudal!==null?hydroFmt(st.caudal):hydroFmt(st.altura),unit=st.caudal!==null?(st.unidadCaudal||'l/s'):(st.unidadAltura||'cm'),kind=st.caudal!==null?'Caudal':'Altura';
   const label=tr.level==='alert'?'ALERTA TERRITORIA':tr.level==='attention'?'ATENCIÓN':'NORMAL';
-  return `<article class="hydro-station" onclick="focusHydroMapStation('${esc(st.codigo)}')" style="--sc:${c};cursor:pointer"><div class="flex"><div><div class="hydro-title">${esc(st.nombre)}</div><div class="hydro-id">DGI ${esc(st.codigo)} · organismo ${esc(st.organismoId??'--')}</div><div class="hydro-meta" data-hydro-locality="${esc(st.codigo)}" style="${hydroStoredLocality(st.codigo)?'':'display:none'};color:#93c5fd">${hydroStoredLocality(st.codigo)?'📍 '+esc(hydroStoredLocality(st.codigo)):''}</div></div><span class="badge" style="border-color:${c};color:${c};background:#07111f">${label}</span></div><div class="hydro-main"><div><span class="hydro-value">${main}</span> <span class="hydro-unit">${esc(unit)}</span><div class="muted">${kind}</div></div><span class="hydro-trend ${tr.cls}">${tr.icon} ${tr.text}</span></div><div class="hydro-meta">Altura: <b>${hydroFmt(st.altura)} ${esc(st.unidadAltura||'cm')}</b></div><div class="hydro-meta">Registro: ${esc(dt)}</div><div class="hydro-details">Lat/Lon: ${hydroFmt(st.latitud)}, ${hydroFmt(st.longitud)}<div style="color:#facc15;margin-top:5px">⚠ alerta calculada por Territoria, no oficial</div></div></article>`;
+  return `<article class="hydro-station" onclick="focusHydroMapStation('${esc(st.codigo)}')" style="--sc:${c};cursor:pointer"><div class="flex"><div><div class="hydro-title">${esc(st.nombre)}</div><div class="hydro-id">DGI ${esc(st.codigo)} · organismo ${esc(st.organismoId??'--')}</div><div class="hydro-meta" data-hydro-locality="${esc(st.codigo)}" style="${hydroStoredLocality(st.codigo)?'':'display:none'};color:#93c5fd">${hydroStoredLocality(st.codigo)?'📍 '+esc(hydroStoredLocality(st.codigo)):''}</div></div><span class="badge" style="border-color:${c};color:${c};background:#07111f">${label}</span></div><div class="hydro-main"><div><span class="hydro-value">${main}</span> <span class="hydro-unit">${esc(unit)}</span><div class="muted">${kind}</div></div><span class="hydro-trend ${tr.cls}">${tr.icon} ${tr.text}</span></div><div class="hydro-meta">Altura: <b>${hydroFmt(st.altura)} ${esc(st.unidadAltura||'cm')}</b></div><div class="hydro-meta">Registro: ${esc(dt)}</div><div class="hydro-meta" style="margin-top:5px;color:${tr.level==='alert'?'#fecaca':tr.level==='attention'?'#fde68a':'#9fb3c9'}">${esc(hydroTerritoriaStatus(tr))}</div><div class="hydro-details">Lat/Lon: ${hydroFmt(st.latitud)}, ${hydroFmt(st.longitud)}<div style="color:#facc15;margin-top:5px">⚠ alerta calculada por Territoria, no oficial</div></div></article>`;
 }
 async function fetchHydro(){const r=await fetch(DGI_WORKER,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const j=await r.json();if(!j.ok||!Array.isArray(j.estaciones))throw Error(j.error||'Respuesta DGI inválida');return j}
 async function loadHydro(){
@@ -836,7 +852,7 @@ function renderHydroRankings(){
  const flows=DGI_LAST_VIEW.filter(x=>Number.isFinite(Number(x.st.caudal))).sort((a,b)=>Number(b.st.caudal)-Number(a.st.caudal)).slice(0,5);
  flow.innerHTML=flows.map((x,i)=>`<div class="rank-row" onclick="focusHydroMapStation('${esc(x.st.codigo)}')"><span class="rank-pos ${i===0?'rank-flow-1':i===1?'rank-flow-2':i===2?'rank-flow-3':'rank-flow'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'º'}</span><span class="rank-name">${esc(x.st.nombre)}</span><span class="rank-value rank-flow">${hydroFmt(x.st.caudal)} ${esc(x.st.unidadCaudal||'l/s')}</span></div>`).join('')
 }
-async function focusHydroMapStation(code){const x=DGI_LAST_VIEW.find(v=>String(v.st.codigo)===String(code));if(!x)return;const a=Number(x.st.latitud),b=Number(x.st.longitud);if(!Number.isFinite(a)||!Number.isFinite(b))return;const locality=await hydroResolveLocality(x.st);await initWaterMap();waterMap.invalidateSize(true);waterMap.setView([a,b],12);L.popup().setLatLng([a,b]).setContent(`<div style="color:#111827"><b>${esc(x.st.nombre)}</b><br>${locality?'📍 '+esc(locality)+'<br>':''}DGI ${esc(x.st.codigo)}<br><b>Caudal:</b> ${hydroFmt(x.st.caudal)} ${esc(x.st.unidadCaudal||'l/s')}<br><b>Altura:</b> ${hydroFmt(x.st.altura)} ${esc(x.st.unidadAltura||'cm')}<br><b>Tendencia:</b> ${esc(x.tr.text)}<br><b>Registro:</b> ${esc(x.st.fecha?new Date(x.st.fecha).toLocaleString('es-AR'):'--')}</div>`).openOn(waterMap);document.getElementById('waterMapSection')?.scrollIntoView({behavior:'smooth',block:'center'})}
+async function focusHydroMapStation(code){const x=DGI_LAST_VIEW.find(v=>String(v.st.codigo)===String(code));if(!x)return;const a=Number(x.st.latitud),b=Number(x.st.longitud);if(!Number.isFinite(a)||!Number.isFinite(b))return;const locality=await hydroResolveLocality(x.st);await initWaterMap();waterMap.invalidateSize(true);waterMap.setView([a,b],12);L.popup().setLatLng([a,b]).setContent(`<div style="color:#111827"><b>${esc(x.st.nombre)}</b><br>${locality?'📍 '+esc(locality)+'<br>':''}DGI ${esc(x.st.codigo)}<br><b>Caudal:</b> ${hydroFmt(x.st.caudal)} ${esc(x.st.unidadCaudal||'l/s')}<br><b>Altura:</b> ${hydroFmt(x.st.altura)} ${esc(x.st.unidadAltura||'cm')}<br><b>Estado Territoria:</b> ${esc(x.tr.text)}<br>${Number.isFinite(x.tr.delta)?'<b>Variación sobre referencia:</b> '+hydroFmt(x.tr.delta)+' l/s<br>':''}<b>Registro:</b> ${esc(x.st.fecha?new Date(x.st.fecha).toLocaleString('es-AR'):'--')}<br><b>${esc(hydroTerritoriaStatus(x.tr))}</b></div>`).openOn(waterMap);document.getElementById('waterMapSection')?.scrollIntoView({behavior:'smooth',block:'center'})}
 async function initWaterMap(){
   await loadLeaflet();
   const el=$('waterMap');if(!el)return;
@@ -847,7 +863,7 @@ async function renderWaterMap(view=DGI_LAST_VIEW){
   const el=$('waterMap');if(!el)return;
   try{
     await initWaterMap();waterLayer.clearLayers();const pts=[];
-    (view||[]).forEach(x=>{const a=Number(x.st?.latitud),b=Number(x.st?.longitud);if(!Number.isFinite(a)||!Number.isFinite(b))return;pts.push([a,b]);const alert=x.tr?.level==='alert',att=x.tr?.level==='attention',c=alert?'#ef4444':att?'#facc15':'#22d3ee';L.circleMarker([a,b],{radius:alert?8:att?7:5,color:c,fillColor:c,fillOpacity:.85,weight:2}).bindPopup(`<div style="color:#111827"><b>${esc(x.st.nombre)}</b><br>${hydroStoredLocality(x.st.codigo)?'📍 '+esc(hydroStoredLocality(x.st.codigo))+'<br>':''}DGI ${esc(x.st.codigo)}<br>Caudal: ${hydroFmt(x.st.caudal)} ${esc(x.st.unidadCaudal||'l/s')}<br>Altura: ${hydroFmt(x.st.altura)} ${esc(x.st.unidadAltura||'cm')}<br>${esc(x.tr?.text||'')}</div>`).addTo(waterLayer)});
+    (view||[]).forEach(x=>{const a=Number(x.st?.latitud),b=Number(x.st?.longitud);if(!Number.isFinite(a)||!Number.isFinite(b))return;pts.push([a,b]);const alert=x.tr?.level==='alert',att=x.tr?.level==='attention',c=alert?'#ef4444':att?'#facc15':'#22d3ee';L.circleMarker([a,b],{radius:alert?8:att?7:5,color:c,fillColor:c,fillOpacity:.85,weight:2}).bindPopup(`<div style="color:#111827"><b>${esc(x.st.nombre)}</b><br>${hydroStoredLocality(x.st.codigo)?'📍 '+esc(hydroStoredLocality(x.st.codigo))+'<br>':''}DGI ${esc(x.st.codigo)}<br>Caudal: ${hydroFmt(x.st.caudal)} ${esc(x.st.unidadCaudal||'l/s')}<br>Altura: ${hydroFmt(x.st.altura)} ${esc(x.st.unidadAltura||'cm')}<br><b>${esc(x.tr?.text||'')}</b><br>${esc(hydroTerritoriaStatus(x.tr||{}))}</div>`).addTo(waterLayer)});
     if(pts.length){setTimeout(()=>{waterMap.invalidateSize(true);waterMap.fitBounds(pts,{padding:[24,24],maxZoom:10})},200)}
     set('waterMapStatus',pts.length+' puntos');
   }catch(e){set('waterMapStatus','Error: '+e.message);console.error('Mapa hídrico',e)}
