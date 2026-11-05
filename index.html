@@ -592,6 +592,160 @@ section.card,.pair5050,.border-stack,.tools{margin-bottom:16px}.charts{gap:12px!
 
 /* ALERTAS NACIONALES: ubicadas en el espacio libre izquierdo */
 .convective-left-stack>.national-alerts-panel{width:100%!important;max-width:none!important;margin:0 0 12px!important;align-self:stretch!important}.convective-left-stack>.national-alerts-panel .national-alert-list{max-height:390px!important}.convective-right-dashboard>.national-alerts-panel{display:none!important}@media(max-width:1100px){.convective-left-stack>.national-alerts-panel{margin-bottom:12px!important}.convective-left-stack>.national-alerts-panel .national-alert-list{max-height:310px!important}}
+
+/* TERRITORIA · AJUSTE COMPACTO MONITOREO HIDRICO
+   Solo presentación. No modifica IDs, datos, APIs ni lógica. */
+@media (min-width:901px){
+  .pair5050:has(#hydroSection){
+    align-items:start!important;
+    min-height:0!important;
+  }
+  .pair5050:has(#hydroSection) #hydroSection,
+  .pair5050:has(#hydroSection) #waterMapSection{
+    height:390px!important;
+    min-height:390px!important;
+    max-height:390px!important;
+    overflow:hidden!important;
+  }
+  .pair5050:has(#hydroSection) #waterMap{
+    height:310px!important;
+    min-height:310px!important;
+    max-height:310px!important;
+    margin-top:8px!important;
+  }
+  #hydroSection{
+    padding:12px!important;
+  }
+  #hydroSection .hydro-head{
+    margin-bottom:6px!important;
+  }
+  #hydroSection .hydro-search{
+    margin:0 0 7px!important;
+  }
+  #hydroSection .hydro-search input{
+    min-height:34px!important;
+    padding:7px 9px!important;
+  }
+  #hydroSection .hydro-window{
+    height:190px!important;
+    min-height:190px!important;
+    overflow:hidden!important;
+  }
+  #hydroSection .hydro-track{
+    height:190px!important;
+    gap:8px!important;
+  }
+  #hydroSection .hydro-station{
+    width:220px!important;
+    height:180px!important;
+    min-height:180px!important;
+    padding:9px 10px!important;
+    overflow:hidden!important;
+  }
+  #hydroSection .hydro-title{font-size:12px!important;line-height:1.15!important}
+  #hydroSection .hydro-id{font-size:8px!important}
+  #hydroSection .hydro-main{margin:6px 0 3px!important}
+  #hydroSection .hydro-value{font-size:22px!important}
+  #hydroSection .hydro-trend{font-size:8px!important;padding:4px 6px!important}
+  #hydroSection .hydro-meta{font-size:8px!important;margin-top:4px!important}
+  #hydroSection .hydro-details{display:none!important}
+  #hydroSection .hydro-rankings{
+    margin-top:7px!important;
+    gap:7px!important;
+  }
+  #hydroSection .hydro-ranking{
+    padding:7px!important;
+  }
+  #hydroSection .hydro-ranking h4{
+    margin-bottom:4px!important;
+    padding-bottom:4px!important;
+    font-size:10px!important;
+  }
+  #hydroSection .rank-row{
+    padding:4px 5px!important;
+    font-size:9px!important;
+  }
+  #hydroSection .rank-pos,
+  #hydroSection .rank-name,
+  #hydroSection .rank-value{font-size:9px!important}
+  #hydroSection .hydro-foot{
+    margin-top:5px!important;
+    font-size:7px!important;
+    line-height:1.2!important;
+  }
+}
+@media (max-width:900px){
+  .pair5050:has(#hydroSection) #hydroSection,
+  .pair5050:has(#hydroSection) #waterMapSection{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+  .pair5050:has(#hydroSection) #waterMap{
+    height:340px!important;
+    min-height:340px!important;
+  }
+  #hydroSection .hydro-window{
+    height:190px!important;
+    overflow-x:auto!important;
+  }
+  #hydroSection .hydro-track{height:185px!important;animation:none!important}
+  #hydroSection .hydro-station{
+    width:205px!important;
+    min-height:175px!important;
+    height:175px!important;
+    padding:9px!important;
+  }
+}
+
+
+/* TERRITORIA · AJUSTE HIDRICO MEDIO
+   Mas alto para mostrar ranking completo y conservar bordes redondeados. */
+@media (min-width:901px){
+  .pair5050:has(#hydroSection) #hydroSection,
+  .pair5050:has(#hydroSection) #waterMapSection{
+    height:455px!important;
+    min-height:455px!important;
+    max-height:455px!important;
+    border-radius:14px!important;
+    overflow:hidden!important;
+  }
+  .pair5050:has(#hydroSection) #waterMap{
+    height:375px!important;
+    min-height:375px!important;
+    max-height:375px!important;
+    border-radius:11px!important;
+  }
+  #hydroSection .hydro-window{
+    height:182px!important;
+    min-height:182px!important;
+  }
+  #hydroSection .hydro-track{height:182px!important}
+  #hydroSection .hydro-station{
+    height:172px!important;
+    min-height:172px!important;
+  }
+  #hydroSection .hydro-rankings{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    height:118px!important;
+    min-height:118px!important;
+    margin-top:8px!important;
+    overflow:hidden!important;
+  }
+  #hydroSection .hydro-ranking{
+    height:118px!important;
+    min-height:118px!important;
+    overflow:hidden!important;
+    border-radius:11px!important;
+  }
+  #hydroSection .rank-row{
+    min-height:21px!important;
+    padding:4px 6px!important;
+  }
+  #hydroSection .hydro-foot{display:none!important}
+}
+
 </style><script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script></head><body><main class="app">
 <header class="card head"><div class="flex"><div style="display:flex;align-items:center;gap:14px;min-width:0"><img alt="Logo Territoria" onerror="this.style.display='none'" src="logo-territoria.png" style="width:76px;height:76px;object-fit:contain;padding:3px;border-radius:14px;background:#fff"/><div><h1 style="color:#40c6ef;margin-bottom:4px">TERRITORIA</h1><div class="muted" style="font-size:12px">Plataforma inteligente de monitoreo territorial</div><div class="muted" id="updated" style="margin-top:8px">Esperando GPS…</div></div></div><span class="online" id="systemStatus">● INICIANDO</span></div></header>
 <div class="card red" id="error" style="display:none"></div>
