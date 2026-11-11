@@ -885,6 +885,108 @@ section.card,.pair5050,.border-stack,.tools{margin-bottom:16px}.charts{gap:12px!
    object-position:35% center!important;
  }
 }
+
+/* TERRITORIA: color dinamico exclusivo para Posible Zonda */
+#zondaCard{transition:border-color .25s ease,background .25s ease,box-shadow .25s ease!important}
+#zondaCard.yellow{border:2px solid #eab308!important;background:linear-gradient(135deg,rgba(234,179,8,.13),#101d31 62%)!important;box-shadow:inset 0 3px 0 #eab308,0 0 16px rgba(234,179,8,.16)!important}
+#zondaCard.yellow #zondaValue{color:#fde047!important}
+#zondaCard.orange{border:2px solid #f97316!important;background:linear-gradient(135deg,rgba(249,115,22,.18),#101d31 62%)!important;box-shadow:inset 0 3px 0 #f97316,0 0 18px rgba(249,115,22,.22)!important}
+#zondaCard.orange #zondaValue{color:#fb923c!important}
+#zondaCard.red{border:2px solid #ef4444!important;background:linear-gradient(135deg,rgba(239,68,68,.19),#101d31 62%)!important;box-shadow:inset 0 3px 0 #ef4444,0 0 20px rgba(239,68,68,.22)!important}
+#zondaCard.red #zondaValue{color:#f87171!important}
+
+
+/* TERRITORIA ANDROID: monitor satelital con prioridad al mapa */
+@media (max-width:700px){
+  #satelliteModal{
+    padding:0!important;
+    align-items:stretch!important;
+    justify-content:stretch!important;
+  }
+  #satelliteModal .satellite-box{
+    width:100vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+  #satelliteModal .satellite-head{
+    min-height:58px!important;
+    padding:8px 10px!important;
+    border-radius:0!important;
+  }
+  #satelliteModal .satellite-head h2,
+  #satelliteModal .satellite-head h3{
+    font-size:15px!important;
+    line-height:1.1!important;
+    margin:0!important;
+  }
+  #satelliteModal .satellite-head .muted{
+    display:none!important;
+  }
+  #satelliteModal .satellite-head button{
+    min-height:38px!important;
+    padding:7px 10px!important;
+    font-size:10px!important;
+  }
+  /* En movil, ocultar resumen/listado lateral y dejar el mapa como protagonista. */
+  #satelliteModal .satellite-alert,
+  #satelliteModal .satellite-kpis,
+  #satelliteModal .satellite-central{
+    display:none!important;
+  }
+  #satelliteModal .satellite-main{
+    display:block!important;
+    flex:1!important;
+    min-height:0!important;
+    padding:6px!important;
+  }
+  #satelliteModal .satellite-map-card{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    padding:6px!important;
+    border-radius:10px!important;
+  }
+  /* Botones en una sola cinta desplazable, sin ocupar varias filas. */
+  #satelliteModal .satellite-map-toolbar{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:0 0 6px!important;
+    margin:0!important;
+    scrollbar-width:none!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #satelliteModal .satellite-map-toolbar::-webkit-scrollbar{display:none!important}
+  #satelliteModal .satellite-map-toolbar button{
+    flex:0 0 auto!important;
+    min-width:auto!important;
+    min-height:34px!important;
+    padding:6px 9px!important;
+    font-size:9px!important;
+    white-space:nowrap!important;
+  }
+  #satelliteModal .satellite-map-toolbar .sat-time{
+    flex:0 0 auto!important;
+    margin:0!important;
+    padding:8px 4px!important;
+    font-size:8px!important;
+    white-space:nowrap!important;
+  }
+  #satelliteModal #satelliteMap{
+    flex:1!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:calc(100dvh - 125px)!important;
+    border-radius:9px!important;
+  }
+  #satelliteModal .satellite-legend{
+    display:none!important;
+  }
+}
 </style></head><body><main class="app">
 <header class="card head"><div class="flex"><div style="display:flex;align-items:center;gap:14px;min-width:0"><img alt="Logo Territoria" onerror="this.style.display='none'" src="logo-territoria.png" style="width:76px;height:76px;object-fit:contain;padding:3px;border-radius:14px;background:#fff"/><div><h1 style="color:#40c6ef;margin-bottom:4px">TERRITORIA</h1><div class="muted" style="font-size:12px">Plataforma inteligente de monitoreo territorial</div><div class="muted" id="updated" style="margin-top:8px">Esperando GPS…</div></div></div><span class="online" id="systemStatus">● INICIANDO</span></div></header>
 <div class="card red" id="error" style="display:none"></div>
